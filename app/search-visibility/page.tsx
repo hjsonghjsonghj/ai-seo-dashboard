@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Search, Calendar, Filter, TrendingUp, TrendingDown, Minus, Share2, Download, Sparkles, ExternalLink, Lightbulb, Target, FileText } from "lucide-react"
+import { ArrowLeft, Search, Calendar, Filter, TrendingUp, TrendingDown, Minus, Eye, ExternalLink, Download, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -14,14 +14,6 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -32,160 +24,145 @@ import {
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { cn } from "@/lib/utils"
 
-// Extended citation data matching dashboard (20+ rows)
-const citationData = [
-  { id: 1, source: "ChatGPT", page: "/best-seo-tools-2026", mentions: 847, optimizationScore: 92, status: "optimized", trend: [65, 72, 78, 82, 85, 88, 92], lastSeen: "2 min ago" },
-  { id: 2, source: "Claude", page: "/ai-content-optimization", mentions: 623, optimizationScore: 78, status: "in-progress", trend: [55, 62, 58, 71, 75, 78, 82], lastSeen: "5 min ago" },
-  { id: 3, source: "Perplexity", page: "/enterprise-seo-guide", mentions: 412, optimizationScore: 65, status: "in-progress", trend: [60, 62, 64, 65, 64, 65, 65], lastSeen: "12 min ago" },
-  { id: 4, source: "Google AI", page: "/technical-seo-checklist", mentions: 389, optimizationScore: 34, status: "needs-work", trend: [52, 48, 45, 42, 38, 36, 34], lastSeen: "1 hour ago" },
-  { id: 5, source: "Copilot", page: "/link-building-strategies", mentions: 256, optimizationScore: 88, status: "optimized", trend: [68, 72, 76, 80, 84, 86, 88], lastSeen: "3 min ago" },
-  { id: 6, source: "ChatGPT", page: "/keyword-research-guide", mentions: 734, optimizationScore: 85, status: "optimized", trend: [70, 74, 78, 80, 82, 84, 85], lastSeen: "8 min ago" },
-  { id: 7, source: "Perplexity", page: "/local-seo-strategies", mentions: 521, optimizationScore: 72, status: "in-progress", trend: [58, 62, 65, 68, 70, 71, 72], lastSeen: "15 min ago" },
-  { id: 8, source: "Claude", page: "/content-marketing-tips", mentions: 489, optimizationScore: 81, status: "optimized", trend: [62, 68, 72, 75, 78, 80, 81], lastSeen: "22 min ago" },
-  { id: 9, source: "Google AI", page: "/site-speed-optimization", mentions: 445, optimizationScore: 45, status: "needs-work", trend: [55, 52, 50, 48, 47, 46, 45], lastSeen: "30 min ago" },
-  { id: 10, source: "Copilot", page: "/mobile-seo-best-practices", mentions: 398, optimizationScore: 90, status: "optimized", trend: [75, 80, 83, 86, 88, 89, 90], lastSeen: "18 min ago" },
-  { id: 11, source: "ChatGPT", page: "/ecommerce-seo-guide", mentions: 612, optimizationScore: 77, status: "in-progress", trend: [60, 65, 68, 72, 74, 76, 77], lastSeen: "25 min ago" },
-  { id: 12, source: "Perplexity", page: "/voice-search-optimization", mentions: 334, optimizationScore: 58, status: "in-progress", trend: [48, 50, 52, 54, 56, 57, 58], lastSeen: "40 min ago" },
-  { id: 13, source: "Claude", page: "/schema-markup-tutorial", mentions: 567, optimizationScore: 94, status: "optimized", trend: [80, 84, 87, 90, 92, 93, 94], lastSeen: "7 min ago" },
-  { id: 14, source: "Google AI", page: "/backlink-analysis-guide", mentions: 423, optimizationScore: 29, status: "needs-work", trend: [45, 40, 36, 33, 31, 30, 29], lastSeen: "2 hours ago" },
-  { id: 15, source: "Copilot", page: "/seo-audit-checklist", mentions: 378, optimizationScore: 83, status: "optimized", trend: [68, 72, 75, 78, 80, 82, 83], lastSeen: "35 min ago" },
-  { id: 16, source: "ChatGPT", page: "/international-seo", mentions: 289, optimizationScore: 67, status: "in-progress", trend: [52, 56, 59, 62, 64, 66, 67], lastSeen: "45 min ago" },
-  { id: 17, source: "Perplexity", page: "/video-seo-strategies", mentions: 456, optimizationScore: 71, status: "in-progress", trend: [55, 60, 63, 66, 68, 70, 71], lastSeen: "50 min ago" },
-  { id: 18, source: "Claude", page: "/ai-seo-automation", mentions: 698, optimizationScore: 89, status: "optimized", trend: [72, 76, 80, 83, 86, 88, 89], lastSeen: "10 min ago" },
-  { id: 19, source: "Google AI", page: "/meta-tags-optimization", mentions: 312, optimizationScore: 42, status: "needs-work", trend: [58, 54, 50, 48, 45, 43, 42], lastSeen: "1.5 hours ago" },
-  { id: 20, source: "Copilot", page: "/structured-data-guide", mentions: 534, optimizationScore: 86, status: "optimized", trend: [70, 74, 78, 81, 83, 85, 86], lastSeen: "20 min ago" },
-  { id: 21, source: "ChatGPT", page: "/competitor-analysis", mentions: 445, optimizationScore: 73, status: "in-progress", trend: [58, 62, 65, 68, 70, 72, 73], lastSeen: "55 min ago" },
-  { id: 22, source: "Perplexity", page: "/core-web-vitals-guide", mentions: 387, optimizationScore: 79, status: "in-progress", trend: [62, 66, 70, 73, 76, 78, 79], lastSeen: "28 min ago" },
+// Expanded citations data (25 rows) - exact schema from CitationsTable
+const citations = [
+  { id: 1, source: "ChatGPT", page: "/best-seo-tools-2026", mentions: 847, trend: "up" as const, optimizationProgress: 92, lastSeen: "2 min ago" },
+  { id: 2, source: "Claude", page: "/ai-content-optimization", mentions: 623, trend: "up" as const, optimizationProgress: 78, lastSeen: "5 min ago" },
+  { id: 3, source: "Perplexity", page: "/enterprise-seo-guide", mentions: 412, trend: "stable" as const, optimizationProgress: 65, lastSeen: "12 min ago" },
+  { id: 4, source: "Google AI", page: "/technical-seo-checklist", mentions: 389, trend: "down" as const, optimizationProgress: 34, lastSeen: "1 hour ago" },
+  { id: 5, source: "Copilot", page: "/link-building-strategies", mentions: 256, trend: "up" as const, optimizationProgress: 88, lastSeen: "3 min ago" },
+  { id: 6, source: "ChatGPT", page: "/keyword-research-guide", mentions: 734, trend: "up" as const, optimizationProgress: 85, lastSeen: "8 min ago" },
+  { id: 7, source: "Perplexity", page: "/local-seo-strategies", mentions: 521, trend: "up" as const, optimizationProgress: 72, lastSeen: "15 min ago" },
+  { id: 8, source: "Claude", page: "/content-marketing-tips", mentions: 489, trend: "up" as const, optimizationProgress: 81, lastSeen: "22 min ago" },
+  { id: 9, source: "Google AI", page: "/site-speed-optimization", mentions: 445, trend: "down" as const, optimizationProgress: 45, lastSeen: "30 min ago" },
+  { id: 10, source: "Copilot", page: "/mobile-seo-best-practices", mentions: 398, trend: "up" as const, optimizationProgress: 90, lastSeen: "18 min ago" },
+  { id: 11, source: "ChatGPT", page: "/ecommerce-seo-guide", mentions: 612, trend: "up" as const, optimizationProgress: 77, lastSeen: "25 min ago" },
+  { id: 12, source: "Perplexity", page: "/voice-search-optimization", mentions: 334, trend: "stable" as const, optimizationProgress: 58, lastSeen: "40 min ago" },
+  { id: 13, source: "Claude", page: "/schema-markup-tutorial", mentions: 567, trend: "up" as const, optimizationProgress: 94, lastSeen: "7 min ago" },
+  { id: 14, source: "Google AI", page: "/backlink-analysis-guide", mentions: 423, trend: "down" as const, optimizationProgress: 29, lastSeen: "2 hours ago" },
+  { id: 15, source: "Copilot", page: "/seo-audit-checklist", mentions: 378, trend: "up" as const, optimizationProgress: 83, lastSeen: "35 min ago" },
+  { id: 16, source: "ChatGPT", page: "/international-seo", mentions: 289, trend: "stable" as const, optimizationProgress: 67, lastSeen: "45 min ago" },
+  { id: 17, source: "Perplexity", page: "/video-seo-strategies", mentions: 456, trend: "up" as const, optimizationProgress: 71, lastSeen: "50 min ago" },
+  { id: 18, source: "Claude", page: "/ai-seo-automation", mentions: 698, trend: "up" as const, optimizationProgress: 89, lastSeen: "10 min ago" },
+  { id: 19, source: "Google AI", page: "/meta-tags-optimization", mentions: 312, trend: "down" as const, optimizationProgress: 42, lastSeen: "1.5 hours ago" },
+  { id: 20, source: "Copilot", page: "/structured-data-guide", mentions: 534, trend: "up" as const, optimizationProgress: 86, lastSeen: "20 min ago" },
+  { id: 21, source: "ChatGPT", page: "/competitor-analysis", mentions: 445, trend: "up" as const, optimizationProgress: 73, lastSeen: "55 min ago" },
+  { id: 22, source: "Perplexity", page: "/core-web-vitals-guide", mentions: 387, trend: "up" as const, optimizationProgress: 79, lastSeen: "28 min ago" },
+  { id: 23, source: "Claude", page: "/content-gap-analysis", mentions: 356, trend: "stable" as const, optimizationProgress: 68, lastSeen: "1 hour ago" },
+  { id: 24, source: "Google AI", page: "/crawl-budget-optimization", mentions: 278, trend: "down" as const, optimizationProgress: 38, lastSeen: "3 hours ago" },
+  { id: 25, source: "Copilot", page: "/serp-feature-targeting", mentions: 423, trend: "up" as const, optimizationProgress: 91, lastSeen: "14 min ago" },
 ]
 
-type Citation = typeof citationData[0]
+type Citation = typeof citations[0]
 
-// AI Optimization suggestions by source
-const optimizationSuggestions: Record<string, { title: string; description: string; priority: "high" | "medium" | "low" }[]> = {
-  "ChatGPT": [
-    { title: "Optimize for conversational queries", description: "Structure content to answer natural language questions directly.", priority: "high" },
-    { title: "Include comprehensive examples", description: "ChatGPT favors content with practical, step-by-step examples.", priority: "high" },
-    { title: "Add FAQ sections", description: "Create FAQ blocks that address common user questions.", priority: "medium" },
-    { title: "Use clear headings structure", description: "Organize content with H2/H3 hierarchy for better parsing.", priority: "medium" },
-  ],
-  "Claude": [
-    { title: "Focus on accuracy and citations", description: "Include verifiable data sources and research references.", priority: "high" },
-    { title: "Provide nuanced explanations", description: "Claude prefers balanced, thorough analysis over simplified content.", priority: "high" },
-    { title: "Add technical depth", description: "Include advanced technical details for expert audiences.", priority: "medium" },
-    { title: "Structure with clear logic", description: "Use logical flow and clear argumentation in content.", priority: "low" },
-  ],
-  "Perplexity": [
-    { title: "Optimize for real-time relevance", description: "Keep content updated with current data and trends.", priority: "high" },
-    { title: "Include source links", description: "Perplexity values content that references authoritative sources.", priority: "high" },
-    { title: "Create concise summaries", description: "Add TL;DR sections for quick information retrieval.", priority: "medium" },
-    { title: "Use data visualizations", description: "Include charts and graphs for statistical content.", priority: "low" },
-  ],
-  "Google AI": [
-    { title: "Implement structured data", description: "Add Schema.org markup for enhanced AI understanding.", priority: "high" },
-    { title: "Optimize E-E-A-T signals", description: "Demonstrate expertise, experience, authoritativeness, and trust.", priority: "high" },
-    { title: "Improve page experience", description: "Ensure fast load times and mobile responsiveness.", priority: "medium" },
-    { title: "Add author credentials", description: "Include author bios with relevant expertise.", priority: "medium" },
-  ],
-  "Copilot": [
-    { title: "Format for code snippets", description: "Use proper code blocks with syntax highlighting.", priority: "high" },
-    { title: "Include actionable steps", description: "Copilot prefers content with clear action items.", priority: "high" },
-    { title: "Add integration examples", description: "Show how concepts integrate with Microsoft ecosystem.", priority: "medium" },
-    { title: "Provide templates", description: "Include downloadable templates and starter files.", priority: "low" },
-  ],
+// Exact trendIcons and trendColors from CitationsTable
+const trendIcons = {
+  up: TrendingUp,
+  down: TrendingDown,
+  stable: Minus,
 }
 
-// Mini sparkline component
-function Sparkline({ data, trend }: { data: number[]; trend: "up" | "down" | "stable" }) {
-  const max = Math.max(...data)
-  const min = Math.min(...data)
-  const range = max - min || 1
-  const width = 80
-  const height = 24
-  const padding = 2
-
-  const points = data.map((value, index) => {
-    const x = padding + (index / (data.length - 1)) * (width - padding * 2)
-    const y = height - padding - ((value - min) / range) * (height - padding * 2)
-    return `${x},${y}`
-  }).join(" ")
-
-  const strokeColor = trend === "up" 
-    ? "rgb(52, 211, 153)" 
-    : trend === "down" 
-      ? "rgb(248, 113, 113)" 
-      : "rgb(148, 163, 184)"
-
-  return (
-    <svg width={width} height={height} className="inline-block">
-      <polyline
-        points={points}
-        fill="none"
-        stroke={strokeColor}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
+const trendColors = {
+  up: "text-emerald-400",
+  down: "text-rose-400",
+  stable: "text-muted-foreground",
 }
 
-// Optimization score badge
-function OptimizationBadge({ score }: { score: number }) {
-  let bgColor = "bg-emerald-500/20 text-emerald-400"
-  let label = "High"
-  
-  if (score < 40) {
-    bgColor = "bg-rose-500/20 text-rose-400"
-    label = "Low"
-  } else if (score < 75) {
-    bgColor = "bg-amber-500/20 text-amber-400"
-    label = "Medium"
-  }
+// Exact progress color functions from CitationsTable
+function getProgressColor(progress: number): string {
+  if (progress < 40) return "stroke-red-500"
+  if (progress < 75) return "stroke-amber-500"
+  return "stroke-emerald-500"
+}
+
+function getProgressTextColor(progress: number): string {
+  if (progress < 40) return "text-red-400"
+  if (progress < 75) return "text-amber-400"
+  return "text-emerald-400"
+}
+
+// Exact ProgressRing component from CitationsTable
+function ProgressRing({ progress, size = 40 }: { progress: number; size?: number }) {
+  const strokeWidth = 3
+  const radius = (size - strokeWidth) / 2
+  const circumference = radius * 2 * Math.PI
+  const offset = circumference - (progress / 100) * circumference
+  const colorClass = getProgressColor(progress)
+  const textColorClass = getProgressTextColor(progress)
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-[14px] font-semibold tabular-nums text-white">{score}%</span>
-      <span className={`rounded-full px-2 py-0.5 text-[12px] font-medium ${bgColor}`} style={{ letterSpacing: '0.01em' }}>
-        {label}
+    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          strokeWidth={strokeWidth}
+          className="stroke-slate-700"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          className={colorClass}
+          style={{
+            strokeDasharray: circumference,
+            strokeDashoffset: offset,
+            transition: "stroke-dashoffset 0.5s ease-out, stroke 0.3s ease",
+          }}
+        />
+      </svg>
+      <span className={cn("absolute text-[11px] font-semibold tabular-nums tracking-normal", textColorClass)}>
+        {progress}%
       </span>
     </div>
   )
 }
 
-// Status badge
-function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    "optimized": "bg-emerald-500/20 text-emerald-400",
-    "in-progress": "bg-amber-500/20 text-amber-400",
-    "needs-work": "bg-rose-500/20 text-rose-400",
+// Optimization checklist items based on score
+function getOptimizationChecklist(citation: Citation) {
+  const items = []
+  
+  if (citation.optimizationProgress < 40) {
+    items.push(
+      { text: "Add structured data markup for better AI comprehension", done: false },
+      { text: "Improve content depth with comprehensive examples", done: false },
+      { text: "Optimize meta descriptions for AI snippet extraction", done: false },
+      { text: "Include FAQ sections addressing common queries", done: false }
+    )
+  } else if (citation.optimizationProgress < 75) {
+    items.push(
+      { text: "Add structured data markup for better AI comprehension", done: true },
+      { text: "Improve content depth with comprehensive examples", done: false },
+      { text: "Optimize meta descriptions for AI snippet extraction", done: false },
+      { text: "Include FAQ sections addressing common queries", done: true }
+    )
+  } else {
+    items.push(
+      { text: "Add structured data markup for better AI comprehension", done: true },
+      { text: "Improve content depth with comprehensive examples", done: true },
+      { text: "Optimize meta descriptions for AI snippet extraction", done: true },
+      { text: "Include FAQ sections addressing common queries", done: citation.optimizationProgress > 85 }
+    )
   }
   
-  const labels: Record<string, string> = {
-    "optimized": "Optimized",
-    "in-progress": "In Progress",
-    "needs-work": "Needs Work",
-  }
-
-  return (
-    <span className={`rounded-full px-2.5 py-1 text-[12px] font-medium ${styles[status]}`} style={{ letterSpacing: '0.01em' }}>
-      {labels[status]}
-    </span>
-  )
+  return items
 }
 
-// Priority badge for suggestions
-function PriorityBadge({ priority }: { priority: "high" | "medium" | "low" }) {
-  const styles: Record<string, string> = {
-    "high": "bg-rose-500/20 text-rose-400",
-    "medium": "bg-amber-500/20 text-amber-400",
-    "low": "bg-slate-500/20 text-slate-400",
+// AI Context explanation based on source
+function getAIContext(source: string, page: string) {
+  const contexts: Record<string, string> = {
+    "ChatGPT": `ChatGPT is citing ${page} because the content provides clear, conversational answers that align with user queries. The structured format and comprehensive coverage make it ideal for AI-generated responses.`,
+    "Claude": `Claude references ${page} due to its well-researched content with verifiable sources. The balanced analysis and technical depth match Claude's preference for nuanced, accurate information.`,
+    "Perplexity": `Perplexity cites ${page} for its real-time relevance and authoritative source links. The concise summaries and data visualizations support quick information retrieval.`,
+    "Google AI": `Google AI surfaces ${page} based on strong E-E-A-T signals and proper Schema.org implementation. The optimized page experience and mobile responsiveness contribute to visibility.`,
+    "Copilot": `Copilot references ${page} for its actionable content format with clear code examples. The step-by-step structure and integration guidance align with developer-focused queries.`,
   }
-
-  return (
-    <span className={`rounded-full px-2 py-0.5 text-[12px] font-medium uppercase ${styles[priority]}`} style={{ letterSpacing: '0.01em' }}>
-      {priority}
-    </span>
-  )
+  return contexts[source] || `This AI source is citing ${page} based on content relevance and quality signals.`
 }
 
 export default function SearchVisibilityPage() {
@@ -195,24 +172,17 @@ export default function SearchVisibilityPage() {
   const [selectedCitation, setSelectedCitation] = useState<Citation | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
-  const filteredCitations = citationData.filter(citation => {
+  const filteredCitations = citations.filter(citation => {
     const matchesSearch = citation.source.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          citation.page.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesSource = sourceFilter === "all" || citation.source === sourceFilter
     return matchesSearch && matchesSource
   })
 
-  const handleRowClick = (citation: Citation) => {
+  const handleReviewClick = (e: React.MouseEvent, citation: Citation) => {
+    e.stopPropagation()
     setSelectedCitation(citation)
     setIsDrawerOpen(true)
-  }
-
-  const getTrendDirection = (trend: number[]): "up" | "down" | "stable" => {
-    const first = trend[0]
-    const last = trend[trend.length - 1]
-    if (last > first + 5) return "up"
-    if (last < first - 5) return "down"
-    return "stable"
   }
 
   return (
@@ -231,7 +201,7 @@ export default function SearchVisibilityPage() {
             </Button>
           </div>
           <h1 className="text-[16px] font-semibold tracking-normal text-white">
-            Detailed Citation Analysis
+            All AI Search Citations
           </h1>
         </header>
 
@@ -239,12 +209,12 @@ export default function SearchVisibilityPage() {
           <div className="mx-auto max-w-[1600px] flex flex-col gap-14">
             {/* Filter Bar */}
             <Card className="border-border/50 bg-slate-900/60">
-              <CardHeader className="pb-4">
+              <CardHeader className="pb-4 px-6 pt-6">
                 <CardTitle className="text-[16px] font-semibold tracking-normal text-white">
                   Filters
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pb-6">
+              <CardContent className="px-6 pb-6">
                 <div className="flex flex-wrap items-center gap-4">
                   {/* Date Range */}
                   <div className="flex items-center gap-2">
@@ -295,16 +265,16 @@ export default function SearchVisibilityPage() {
               </CardContent>
             </Card>
 
-            {/* Citation Analysis Table */}
-            <Card className="border-border/50 bg-slate-900/60">
-              <CardHeader className="pb-4">
+            {/* Citations Table - Exact structure from CitationsTable */}
+            <Card className="border-border/50 bg-slate-900/60 transition-colors duration-150">
+              <CardHeader className="pb-4 px-6 pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-[16px] font-semibold tracking-normal text-white">
-                      AI Search Citations
+                    <CardTitle className="text-lg font-semibold tracking-normal text-white">
+                      Top AI Search Citations
                     </CardTitle>
-                    <p className="text-[14px] font-medium tracking-normal text-slate-400 mt-1">
-                      Click a row to view optimization suggestions
+                    <p className="text-[13px] font-medium tracking-normal text-slate-400 mt-1">
+                      Real-time tracking with optimization status
                     </p>
                   </div>
                   <span className="text-[14px] font-medium tabular-nums text-slate-300">
@@ -312,192 +282,226 @@ export default function SearchVisibilityPage() {
                   </span>
                 </div>
               </CardHeader>
-              <CardContent className="pb-6">
-                <div className="overflow-hidden rounded-lg border border-border/50">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-border/50 bg-muted/30 hover:bg-muted/30">
-                        <TableHead className="text-[14px] font-semibold tracking-normal text-slate-300 py-4 px-4">
+              <CardContent className="px-6 pb-6">
+                {/* Desktop table view */}
+                <div className="hidden md:block overflow-hidden rounded-lg border border-border/50">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border/50 bg-muted/30">
+                        <th className="px-4 py-3.5 text-left text-[13px] font-semibold uppercase tracking-wide text-slate-400">
                           Source
-                        </TableHead>
-                        <TableHead className="text-[14px] font-semibold tracking-normal text-slate-300 py-4 px-4 text-right">
+                        </th>
+                        <th className="px-4 py-3.5 text-left text-[13px] font-semibold uppercase tracking-wide text-slate-400">
+                          Page
+                        </th>
+                        <th className="px-4 py-3.5 text-left text-[13px] font-semibold uppercase tracking-wide text-slate-400">
                           Mentions
-                        </TableHead>
-                        <TableHead className="text-[14px] font-semibold tracking-normal text-slate-300 py-4 px-4">
-                          Optimization Score
-                        </TableHead>
-                        <TableHead className="text-[14px] font-semibold tracking-normal text-slate-300 py-4 px-4">
-                          Status
-                        </TableHead>
-                        <TableHead className="text-[14px] font-semibold tracking-normal text-slate-300 py-4 px-4 text-center">
+                        </th>
+                        <th className="px-4 py-3.5 text-left text-[13px] font-semibold uppercase tracking-wide text-slate-400">
                           Trend
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
+                        </th>
+                        <th className="px-4 py-3.5 text-center text-[13px] font-semibold uppercase tracking-wide text-slate-400">
+                          Optimization
+                        </th>
+                        <th className="px-4 py-3.5 text-left text-[13px] font-semibold uppercase tracking-wide text-slate-400">
+                          Last Seen
+                        </th>
+                        <th className="px-4 py-3.5 text-center text-[13px] font-semibold uppercase tracking-wide text-slate-400">
+                          Quick Action
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/30">
                       {filteredCitations.map((citation) => {
-                        const trendDirection = getTrendDirection(citation.trend)
-                        
+                        const TrendIcon = trendIcons[citation.trend]
                         return (
-                          <TableRow 
-                            key={citation.id} 
-                            className="border-border/30 transition-colors hover:bg-muted/20 cursor-pointer"
-                            onClick={() => handleRowClick(citation)}
+                          <tr
+                            key={citation.id}
+                            className="transition-colors hover:bg-muted/20"
                           >
-                            <TableCell className="py-4 px-4">
-                              <div className="flex flex-col gap-0.5">
-                                <span className="text-[14px] font-semibold tracking-normal text-violet-300">
-                                  {citation.source}
-                                </span>
-                                <span className="text-[12px] font-medium text-slate-500" style={{ letterSpacing: '0.01em' }}>
-                                  {citation.page}
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="py-4 px-4 text-right">
+                            <td className="whitespace-nowrap px-4 py-4">
+                              <span className="text-[14px] font-semibold tracking-normal text-white">
+                                {citation.source}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4">
+                              <span className="text-[13px] font-medium tracking-normal text-slate-400">
+                                {citation.page}
+                              </span>
+                            </td>
+                            <td className="whitespace-nowrap px-4 py-4">
                               <span className="text-[14px] font-semibold tabular-nums text-white">
                                 {citation.mentions.toLocaleString()}
                               </span>
-                            </TableCell>
-                            <TableCell className="py-4 px-4">
-                              <OptimizationBadge score={citation.optimizationScore} />
-                            </TableCell>
-                            <TableCell className="py-4 px-4">
-                              <StatusBadge status={citation.status} />
-                            </TableCell>
-                            <TableCell className="py-4 px-4 text-center">
-                              <Sparkline data={citation.trend} trend={trendDirection} />
-                            </TableCell>
-                          </TableRow>
+                            </td>
+                            <td className="whitespace-nowrap px-4 py-4">
+                              <TrendIcon
+                                className={cn("h-4 w-4", trendColors[citation.trend])}
+                              />
+                            </td>
+                            <td className="whitespace-nowrap px-4 py-4">
+                              <div className="flex justify-center">
+                                <ProgressRing progress={citation.optimizationProgress} />
+                              </div>
+                            </td>
+                            <td className="whitespace-nowrap px-4 py-4 text-[13px] font-medium tracking-normal text-slate-400">
+                              {citation.lastSeen}
+                            </td>
+                            <td className="whitespace-nowrap px-4 py-4">
+                              <div className="flex justify-center">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 gap-1.5 border-violet-500/30 bg-violet-500/10 px-2.5 text-[13px] font-semibold tracking-normal text-violet-300 hover:bg-violet-500/20 hover:text-violet-200"
+                                  onClick={(e) => handleReviewClick(e, citation)}
+                                >
+                                  <Eye className="h-3 w-3" />
+                                  Review
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
                         )
                       })}
-                    </TableBody>
-                  </Table>
+                    </tbody>
+                  </table>
                 </div>
 
-                {filteredCitations.length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <Search className="h-12 w-12 text-slate-600 mb-4" />
-                    <p className="text-[14px] font-medium text-slate-400">
-                      No citations found matching your filters
-                    </p>
-                    <p className="text-[14px] text-slate-500 mt-1">
-                      Try adjusting your filters or search terms
-                    </p>
-                  </div>
-                )}
+                {/* Mobile card view */}
+                <div className="md:hidden space-y-3">
+                  {filteredCitations.map((citation) => {
+                    const TrendIcon = trendIcons[citation.trend]
+                    return (
+                      <div 
+                        key={citation.id}
+                        className="flex items-center justify-between rounded-lg border border-border/50 bg-slate-900/40 p-5 transition-colors hover:bg-slate-800/50"
+                      >
+                        <div className="flex items-center gap-4">
+                          <ProgressRing progress={citation.optimizationProgress} size={44} />
+                          <div className="space-y-1.5">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[14px] font-semibold tracking-normal text-white">{citation.source}</span>
+                              <TrendIcon className={cn("h-3.5 w-3.5", trendColors[citation.trend])} />
+                            </div>
+                            <p className="text-[13px] font-medium tracking-normal text-slate-400 truncate max-w-[140px]">{citation.page}</p>
+                            <div className="flex items-center gap-2 text-[13px] tracking-normal">
+                              <span className="font-semibold tabular-nums text-white">{citation.mentions.toLocaleString()}</span>
+                              <span className="font-medium text-slate-400">mentions</span>
+                            </div>
+                          </div>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0 text-slate-400 hover:text-white"
+                          onClick={(e) => handleReviewClick(e, citation)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )
+                  })}
+                </div>
               </CardContent>
             </Card>
           </div>
         </main>
       </div>
 
-      {/* Side Drawer for Citation Details */}
+      {/* Side Drawer */}
       <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-        <SheetContent side="right" className="w-full sm:max-w-lg bg-slate-900 border-slate-800 overflow-y-auto">
+        <SheetContent className="w-full sm:max-w-md bg-slate-900 border-slate-800 overflow-y-auto">
           {selectedCitation && (
             <>
               <SheetHeader className="px-6 pt-6">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-500/15">
-                    <Sparkles className="h-5 w-5 text-violet-400" />
-                  </div>
-                  <div>
-                    <SheetTitle className="text-[16px] font-semibold tracking-normal text-white">
-                      {selectedCitation.source}
-                    </SheetTitle>
-                    <SheetDescription className="text-[14px] font-medium text-slate-400">
-                      {selectedCitation.page}
-                    </SheetDescription>
-                  </div>
-                </div>
-                
-                {/* Quick Stats */}
-                <div className="grid grid-cols-3 gap-3 mt-4">
-                  <div className="rounded-lg bg-slate-800/50 p-3">
-                    <p className="text-[12px] font-medium text-slate-400" style={{ letterSpacing: '0.01em' }}>Mentions</p>
-                    <p className="text-[16px] font-semibold tabular-nums text-white">{selectedCitation.mentions.toLocaleString()}</p>
-                  </div>
-                  <div className="rounded-lg bg-slate-800/50 p-3">
-                    <p className="text-[12px] font-medium text-slate-400" style={{ letterSpacing: '0.01em' }}>Score</p>
-                    <p className="text-[16px] font-semibold tabular-nums text-white">{selectedCitation.optimizationScore}%</p>
-                  </div>
-                  <div className="rounded-lg bg-slate-800/50 p-3">
-                    <p className="text-[12px] font-medium text-slate-400" style={{ letterSpacing: '0.01em' }}>Last Seen</p>
-                    <p className="text-[14px] font-semibold text-white">{selectedCitation.lastSeen}</p>
-                  </div>
-                </div>
+                <SheetTitle className="text-[16px] font-semibold tracking-normal text-white">
+                  {selectedCitation.source}
+                </SheetTitle>
+                <SheetDescription className="text-[14px] font-medium tracking-normal text-slate-400">
+                  {selectedCitation.page}
+                </SheetDescription>
               </SheetHeader>
 
-              <div className="px-6 py-6 space-y-6">
-                {/* AI Optimization Suggestions */}
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <Lightbulb className="h-4 w-4 text-amber-400" />
-                    <h3 className="text-[14px] font-semibold text-white">
-                      AI Optimization Suggestions
-                    </h3>
-                  </div>
+              <div className="px-6 py-6 space-y-8">
+                {/* Optimization Checklist */}
+                <div className="space-y-4">
+                  <h3 className="text-[14px] font-semibold tracking-normal text-white">
+                    Optimization Checklist
+                  </h3>
                   <div className="space-y-3">
-                    {optimizationSuggestions[selectedCitation.source]?.map((suggestion, index) => (
-                      <div 
-                        key={index}
-                        className="rounded-lg border border-border/50 bg-slate-800/30 p-4"
-                      >
-                        <div className="flex items-start justify-between gap-3 mb-2">
-                          <h4 className="text-[14px] font-semibold text-white">
-                            {suggestion.title}
-                          </h4>
-                          <PriorityBadge priority={suggestion.priority} />
-                        </div>
-                        <p className="text-[14px] font-medium text-slate-400 leading-relaxed">
-                          {suggestion.description}
-                        </p>
+                    {getOptimizationChecklist(selectedCitation).map((item, index) => (
+                      <div key={index} className="flex items-start gap-3">
+                        <CheckCircle2 
+                          className={cn(
+                            "h-5 w-5 mt-0.5 shrink-0",
+                            item.done ? "text-emerald-400" : "text-slate-600"
+                          )} 
+                        />
+                        <span className={cn(
+                          "text-[14px] font-medium tracking-normal",
+                          item.done ? "text-slate-300" : "text-slate-500"
+                        )}>
+                          {item.text}
+                        </span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Action Items */}
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <Target className="h-4 w-4 text-violet-400" />
-                    <h3 className="text-[14px] font-semibold text-white">
-                      Quick Actions
-                    </h3>
-                  </div>
-                  <div className="space-y-2">
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-start gap-2 border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-800 hover:text-white"
-                    >
-                      <FileText className="h-4 w-4" />
-                      <span className="text-[14px]">View Full Report</span>
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-start gap-2 border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-800 hover:text-white"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      <span className="text-[14px]">Open Page</span>
-                    </Button>
+                {/* AI Context */}
+                <div className="space-y-4">
+                  <h3 className="text-[14px] font-semibold tracking-normal text-white">
+                    AI Context
+                  </h3>
+                  <p className="text-[14px] font-medium tracking-normal text-slate-400 leading-relaxed">
+                    {getAIContext(selectedCitation.source, selectedCitation.page)}
+                  </p>
+                </div>
+
+                {/* Current Stats */}
+                <div className="space-y-4">
+                  <h3 className="text-[14px] font-semibold tracking-normal text-white">
+                    Current Stats
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="rounded-lg border border-border/50 bg-slate-800/50 p-4">
+                      <p className="text-[12px] font-medium uppercase tracking-wide text-slate-500" style={{ letterSpacing: '0.01em' }}>
+                        Mentions
+                      </p>
+                      <p className="text-[16px] font-semibold tabular-nums text-white mt-1">
+                        {selectedCitation.mentions.toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="rounded-lg border border-border/50 bg-slate-800/50 p-4">
+                      <p className="text-[12px] font-medium uppercase tracking-wide text-slate-500" style={{ letterSpacing: '0.01em' }}>
+                        Optimization
+                      </p>
+                      <p className={cn(
+                        "text-[16px] font-semibold tabular-nums mt-1",
+                        selectedCitation.optimizationProgress >= 75 ? "text-emerald-400" :
+                        selectedCitation.optimizationProgress >= 40 ? "text-amber-400" : "text-red-400"
+                      )}>
+                        {selectedCitation.optimizationProgress}%
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <SheetFooter className="px-6 pb-6 gap-3">
+              <SheetFooter className="px-6 pb-6 flex-col gap-3 sm:flex-col">
                 <Button 
-                  variant="outline" 
-                  className="flex-1 gap-2 border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-800 hover:text-white"
-                >
-                  <Share2 className="h-4 w-4" />
-                  <span className="text-[14px]">Share with Team</span>
-                </Button>
-                <Button 
-                  className="flex-1 gap-2 bg-violet-600 text-white hover:bg-violet-700"
+                  className="w-full gap-2 bg-violet-600 hover:bg-violet-700 text-white text-[14px] font-semibold"
                 >
                   <Download className="h-4 w-4" />
-                  <span className="text-[14px]">Export Data</span>
+                  Export to Report
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full gap-2 border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-800 hover:text-white text-[14px] font-semibold"
+                  onClick={() => setIsDrawerOpen(false)}
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  Mark as Resolved
                 </Button>
               </SheetFooter>
             </>
