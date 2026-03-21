@@ -74,9 +74,9 @@ function CustomTooltip({
 
 export function TrendsChart() {
   const isMobile = useMediaQuery("(max-width: 768px)")
-  
+
   return (
-    <Card className="border-border/50 bg-slate-900/60 transition-colors duration-150 hover:bg-slate-800/80">
+    <Card className="border-border/50 bg-slate-900/60 transition-colors duration-150 ">
       <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-4 pb-2">
         <div>
           <CardTitle className="text-lg font-semibold tracking-tight text-white">

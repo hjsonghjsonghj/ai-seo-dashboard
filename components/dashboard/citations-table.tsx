@@ -84,7 +84,7 @@ function ProgressRing({ progress, size = 40 }: { progress: number; size?: number
   const offset = circumference - (progress / 100) * circumference
   const colorClass = getProgressColor(progress)
   const textColorClass = getProgressTextColor(progress)
-  
+
   return (
     <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
@@ -121,7 +121,7 @@ function ProgressRing({ progress, size = 40 }: { progress: number; size?: number
 // Mobile card view for each citation
 function CitationCard({ citation }: { citation: typeof citations[0] }) {
   const TrendIcon = trendIcons[citation.trend]
-  
+
   return (
     <div className="flex items-center justify-between rounded-lg border border-border/50 bg-slate-900/40 p-4 transition-colors hover:bg-slate-800/50">
       <div className="flex items-center gap-3">
@@ -141,7 +141,7 @@ function CitationCard({ citation }: { citation: typeof citations[0] }) {
       <Button
         size="sm"
         variant="ghost"
-        className="h-8 w-8 p-0 text-muted-foreground hover:text-white"
+        className="h-8 w-8 p-0 text-muted-foreground hover:text-white hover:border-violet-600 active:scale-95"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>
@@ -151,7 +151,7 @@ function CitationCard({ citation }: { citation: typeof citations[0] }) {
 
 export function CitationsTable() {
   return (
-    <Card className="border-border/50 bg-slate-900/60 transition-colors duration-150 hover:bg-slate-800/80">
+    <Card className="border-border/50 bg-slate-900/60 transition-colors duration-150">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div>
