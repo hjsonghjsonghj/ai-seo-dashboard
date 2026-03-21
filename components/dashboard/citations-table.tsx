@@ -141,7 +141,7 @@ function CitationCard({ citation }: { citation: typeof citations[0] }) {
       <Button
         size="sm"
         variant="ghost"
-        className="h-8 w-8 p-0 text-muted-foreground hover:text-white hover:border-violet-600 active:scale-95"
+        className="h-8 w-8 p-0 text-muted-foreground hover:text-white"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>
