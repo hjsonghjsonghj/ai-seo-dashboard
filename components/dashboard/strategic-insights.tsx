@@ -70,7 +70,7 @@ export function StrategicInsights() {
           <Sparkles className="h-4 w-4 text-violet-400" />
         </div>
         <div>
-          <h2 
+          <h2
             id="insights-heading"
             className="text-lg font-semibold tracking-tight text-white"
           >
@@ -86,18 +86,18 @@ export function StrategicInsights() {
         {insights.map((insight) => {
           const Icon = insight.icon
           const styles = typeStyles[insight.type]
-          
+
           return (
             <Card
               key={insight.id}
               className={cn(
-                "cursor-pointer border-border/50 transition-colors duration-150",
+                "cursor-pointer border-border/50 transition-colors duration-150 flex flex-col h-full",
                 styles.bg
               )}
               role="article"
               aria-labelledby={`insight-${insight.id}-headline`}
             >
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-3 shrink-0">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", styles.icon)} aria-hidden="true">
@@ -119,9 +119,9 @@ export function StrategicInsights() {
                   </span>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 
+              <CardContent className="flex flex-col flex-1 pb-6">
+                <div className="flex-1">
+                  <h3
                     id={`insight-${insight.id}-headline`}
                     className="mb-1.5 text-base font-semibold tracking-tight text-white"
                   >
@@ -132,7 +132,7 @@ export function StrategicInsights() {
                   </p>
                 </div>
                 <Button
-                  className={cn("w-full font-medium", styles.button)}
+                  className={cn("w-full font-medium mt-4", styles.button)}
                   size="sm"
                 >
                   {insight.action}
