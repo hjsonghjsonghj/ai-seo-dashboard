@@ -23,16 +23,13 @@ import {
 } from "@/components/ui/table"
 import { Sidebar } from "@/components/dashboard/sidebar"
 
-// Sample keyword data
+// Keyword data synced with Top AI Search Citations from dashboard
 const keywordData = [
-  { id: 1, keyword: "AI SEO tools", volume: 12400, difficulty: 67, rank: 3, previousRank: 5, trend: [45, 52, 48, 61, 58, 72, 68] },
-  { id: 2, keyword: "search visibility software", volume: 8200, difficulty: 54, rank: 7, previousRank: 7, trend: [32, 38, 35, 41, 39, 42, 40] },
-  { id: 3, keyword: "AI content optimization", volume: 15600, difficulty: 72, rank: 2, previousRank: 4, trend: [55, 62, 58, 71, 75, 82, 89] },
-  { id: 4, keyword: "machine learning SEO", volume: 6800, difficulty: 61, rank: 12, previousRank: 9, trend: [28, 25, 22, 26, 24, 21, 19] },
-  { id: 5, keyword: "automated keyword research", volume: 9400, difficulty: 48, rank: 5, previousRank: 8, trend: [38, 42, 45, 51, 55, 58, 62] },
-  { id: 6, keyword: "AI-powered analytics", volume: 11200, difficulty: 58, rank: 4, previousRank: 6, trend: [42, 48, 52, 56, 61, 65, 70] },
-  { id: 7, keyword: "search engine optimization AI", volume: 18900, difficulty: 78, rank: 8, previousRank: 5, trend: [65, 62, 58, 55, 52, 48, 45] },
-  { id: 8, keyword: "content intelligence platform", volume: 5400, difficulty: 42, rank: 1, previousRank: 2, trend: [72, 75, 78, 82, 85, 88, 92] },
+  { id: 1, keyword: "best-seo-tools-2026", source: "ChatGPT", volume: 847, difficulty: 92, rank: 1, previousRank: 3, trend: [65, 72, 78, 82, 85, 88, 92] },
+  { id: 2, keyword: "ai-content-optimization", source: "Claude", volume: 623, difficulty: 78, rank: 2, previousRank: 4, trend: [55, 62, 58, 71, 75, 78, 82] },
+  { id: 3, keyword: "enterprise-seo-guide", source: "Perplexity", volume: 412, difficulty: 65, rank: 5, previousRank: 5, trend: [60, 62, 64, 65, 64, 65, 65] },
+  { id: 4, keyword: "technical-seo-checklist", source: "Google AI", volume: 389, difficulty: 34, rank: 8, previousRank: 6, trend: [52, 48, 45, 42, 38, 36, 34] },
+  { id: 5, keyword: "link-building-strategies", source: "Copilot", volume: 256, difficulty: 88, rank: 3, previousRank: 5, trend: [68, 72, 76, 80, 84, 86, 88] },
 ]
 
 // Mini sparkline component
@@ -224,10 +221,10 @@ export default function SearchVisibilityPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-[17px] font-semibold tracking-normal text-white">
-                      Keyword Analysis
+                      AI Citation Analysis
                     </CardTitle>
                     <p className="text-[14px] font-medium tracking-normal text-slate-400 mt-1">
-                      Track keyword performance and ranking trends
+                      Detailed view of top AI search citations and optimization status
                     </p>
                   </div>
                   <span className="text-[14px] font-medium tabular-nums text-slate-300">
@@ -243,11 +240,14 @@ export default function SearchVisibilityPage() {
                         <TableHead className="text-[14px] font-semibold tracking-normal text-slate-300 py-4 px-4">
                           Keyword
                         </TableHead>
+                        <TableHead className="text-[14px] font-semibold tracking-normal text-slate-300 py-4 px-4">
+                          Source
+                        </TableHead>
                         <TableHead className="text-[14px] font-semibold tracking-normal text-slate-300 py-4 px-4 text-right">
-                          Volume
+                          Mentions
                         </TableHead>
                         <TableHead className="text-[14px] font-semibold tracking-normal text-slate-300 py-4 px-4">
-                          Difficulty
+                          Optimization
                         </TableHead>
                         <TableHead className="text-[14px] font-semibold tracking-normal text-slate-300 py-4 px-4">
                           Rank Trend
@@ -273,6 +273,11 @@ export default function SearchVisibilityPage() {
                             <TableCell className="py-4 px-4">
                               <span className="text-[14px] font-medium tracking-normal text-white">
                                 {kw.keyword}
+                              </span>
+                            </TableCell>
+                            <TableCell className="py-4 px-4">
+                              <span className="text-[14px] font-semibold tracking-normal text-violet-300">
+                                {kw.source}
                               </span>
                             </TableCell>
                             <TableCell className="py-4 px-4 text-right">
