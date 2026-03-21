@@ -126,7 +126,7 @@ function ProgressRing({ progress, size = 40 }: { progress: number; size?: number
 // Optimization checklist items based on score
 function getOptimizationChecklist(citation: Citation) {
   const items = []
-  
+
   if (citation.optimizationProgress < 40) {
     items.push(
       { text: "Add structured data markup for better AI comprehension", done: false },
@@ -149,7 +149,7 @@ function getOptimizationChecklist(citation: Citation) {
       { text: "Include FAQ sections addressing common queries", done: citation.optimizationProgress > 85 }
     )
   }
-  
+
   return items
 }
 
@@ -174,7 +174,7 @@ export default function SearchVisibilityPage() {
 
   const filteredCitations = citations.filter(citation => {
     const matchesSearch = citation.source.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         citation.page.toLowerCase().includes(searchQuery.toLowerCase())
+      citation.page.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesSource = sourceFilter === "all" || citation.source === sourceFilter
     return matchesSearch && matchesSource
   })
@@ -188,7 +188,7 @@ export default function SearchVisibilityPage() {
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      
+
       <div className="pb-20 md:ml-16 md:pb-0 flex flex-col gap-14">
         {/* Header with Back Button */}
         <header className="flex h-16 items-center justify-between border-b border-border/50 bg-background/80 px-4 md:px-6 backdrop-blur-sm">
@@ -206,7 +206,7 @@ export default function SearchVisibilityPage() {
         </header>
 
         <main className="px-4 md:px-6">
-          <div className="mx-auto max-w-[1600px] flex flex-col gap-14">
+          <div className="mx-auto max-w-[1600px] flex flex-col gap-6">
             {/* Filter Bar */}
             <Card className="border-border/50 bg-slate-900/60">
               <CardHeader className="pb-4 px-6 pt-6">
@@ -372,7 +372,7 @@ export default function SearchVisibilityPage() {
                   {filteredCitations.map((citation) => {
                     const TrendIcon = trendIcons[citation.trend]
                     return (
-                      <div 
+                      <div
                         key={citation.id}
                         className="flex items-center justify-between rounded-lg border border-border/50 bg-slate-900/40 p-5 transition-colors hover:bg-slate-800/50"
                       >
@@ -431,11 +431,11 @@ export default function SearchVisibilityPage() {
                   <div className="space-y-3">
                     {getOptimizationChecklist(selectedCitation).map((item, index) => (
                       <div key={index} className="flex items-start gap-3">
-                        <CheckCircle2 
+                        <CheckCircle2
                           className={cn(
                             "h-5 w-5 mt-0.5 shrink-0",
                             item.done ? "text-emerald-400" : "text-slate-600"
-                          )} 
+                          )}
                         />
                         <span className={cn(
                           "text-[14px] font-medium tracking-normal",
@@ -479,7 +479,7 @@ export default function SearchVisibilityPage() {
                       <p className={cn(
                         "text-[16px] font-semibold tabular-nums mt-1",
                         selectedCitation.optimizationProgress >= 75 ? "text-emerald-400" :
-                        selectedCitation.optimizationProgress >= 40 ? "text-amber-400" : "text-red-400"
+                          selectedCitation.optimizationProgress >= 40 ? "text-amber-400" : "text-red-400"
                       )}>
                         {selectedCitation.optimizationProgress}%
                       </p>
@@ -489,14 +489,14 @@ export default function SearchVisibilityPage() {
               </div>
 
               <SheetFooter className="px-6 pb-6 flex-col gap-3 sm:flex-col">
-                <Button 
+                <Button
                   className="w-full gap-2 bg-violet-600 hover:bg-violet-700 text-white text-[14px] font-semibold"
                 >
                   <Download className="h-4 w-4" />
                   Export to Report
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full gap-2 border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-800 hover:text-white text-[14px] font-semibold"
                   onClick={() => setIsDrawerOpen(false)}
                 >

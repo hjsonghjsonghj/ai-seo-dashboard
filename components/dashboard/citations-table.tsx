@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ExternalLink, TrendingUp, TrendingDown, Minus, Eye, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
 
 const citations = [
   {
@@ -162,10 +163,12 @@ export function CitationsTable() {
               Real-time tracking with optimization status
             </p>
           </div>
-          <button className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-[13px] font-medium tracking-normal text-slate-300 transition-colors hover:bg-secondary">
-            View all
-            <ExternalLink className="h-3 w-3" />
-          </button>
+          <Link href="/search-visibility">
+            <button className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-[13px] font-medium tracking-normal text-slate-300 transition-colors hover:bg-secondary">
+              View all
+              <ExternalLink className="h-3 w-3" />
+            </button>
+          </Link>
         </div>
       </CardHeader>
       <CardContent className="px-6 pb-6">
