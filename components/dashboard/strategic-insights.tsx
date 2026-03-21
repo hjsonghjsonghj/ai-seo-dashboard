@@ -65,18 +65,18 @@ const typeStyles = {
 export function StrategicInsights() {
   return (
     <section className="space-y-4" aria-labelledby="insights-heading">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/15" aria-hidden="true">
           <Sparkles className="h-4 w-4 text-violet-400" />
         </div>
         <div>
           <h2
             id="insights-heading"
-            className="text-lg font-semibold tracking-tight text-white"
+            className="text-lg font-semibold tracking-normal text-white"
           >
             AI-Generated Strategic Insights
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[13px] font-medium tracking-normal text-slate-400">
             Actionable recommendations powered by Peec Intelligence
           </p>
         </div>
@@ -97,21 +97,21 @@ export function StrategicInsights() {
               role="article"
               aria-labelledby={`insight-${insight.id}-headline`}
             >
-              <CardHeader className="pb-3 shrink-0">
+              <CardHeader className="pb-3 shrink-0 px-6 pt-6">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", styles.icon)} aria-hidden="true">
                       <Icon className="h-4 w-4" />
                     </div>
                     <div>
-                      <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                      <CardTitle className="text-[13px] font-semibold uppercase tracking-wide text-slate-400">
                         {insight.title}
                       </CardTitle>
                     </div>
                   </div>
                   <span
                     className={cn(
-                      "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase",
+                      "shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase tracking-normal",
                       styles.badge
                     )}
                   >
@@ -119,20 +119,20 @@ export function StrategicInsights() {
                   </span>
                 </div>
               </CardHeader>
-              <CardContent className="flex flex-col flex-1 pb-6">
+              <CardContent className="flex flex-col flex-1 px-6 pb-6">
                 <div className="flex-1">
                   <h3
                     id={`insight-${insight.id}-headline`}
-                    className="mb-1.5 text-base font-semibold tracking-tight text-white"
+                    className="mb-2 text-base font-semibold tracking-normal text-white"
                   >
                     {insight.headline}
                   </h3>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
+                  <p className="text-[13px] font-medium leading-relaxed tracking-normal text-slate-400">
                     {insight.description}
                   </p>
                 </div>
                 <Button
-                  className={cn("w-full font-medium mt-4", styles.button)}
+                  className={cn("w-full font-semibold mt-4", styles.button)}
                   size="sm"
                 >
                   {insight.action}

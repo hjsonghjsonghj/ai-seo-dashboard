@@ -94,7 +94,7 @@ function ProgressRing({ progress, size = 40 }: { progress: number; size?: number
           r={radius}
           fill="none"
           strokeWidth={strokeWidth}
-          className="stroke-muted/30"
+          className="stroke-slate-700"
         />
         <circle
           cx={size / 2}
@@ -111,7 +111,7 @@ function ProgressRing({ progress, size = 40 }: { progress: number; size?: number
           }}
         />
       </svg>
-      <span className={cn("absolute text-[10px] font-medium", textColorClass)}>
+      <span className={cn("absolute text-[11px] font-semibold tabular-nums tracking-normal", textColorClass)}>
         {progress}%
       </span>
     </div>
@@ -123,25 +123,25 @@ function CitationCard({ citation }: { citation: typeof citations[0] }) {
   const TrendIcon = trendIcons[citation.trend]
 
   return (
-    <div className="flex items-center justify-between rounded-lg border border-border/50 bg-slate-900/40 p-4 transition-colors hover:bg-slate-800/50">
-      <div className="flex items-center gap-3">
+    <div className="flex items-center justify-between rounded-lg border border-border/50 bg-slate-900/40 p-5 transition-colors hover:bg-slate-800/50">
+      <div className="flex items-center gap-4">
         <ProgressRing progress={citation.optimizationProgress} size={44} />
-        <div className="space-y-1">
+        <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="font-medium text-white">{citation.source}</span>
+            <span className="text-[14px] font-semibold tracking-normal text-white">{citation.source}</span>
             <TrendIcon className={cn("h-3.5 w-3.5", trendColors[citation.trend])} />
           </div>
-          <p className="text-xs text-muted-foreground truncate max-w-[140px]">{citation.page}</p>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="text-white font-medium">{citation.mentions.toLocaleString()}</span>
-            <span>mentions</span>
+          <p className="text-[13px] font-medium tracking-normal text-slate-400 truncate max-w-[140px]">{citation.page}</p>
+          <div className="flex items-center gap-2 text-[13px] tracking-normal">
+            <span className="font-semibold tabular-nums text-white">{citation.mentions.toLocaleString()}</span>
+            <span className="font-medium text-slate-400">mentions</span>
           </div>
         </div>
       </div>
       <Button
         size="sm"
         variant="ghost"
-        className="h-8 w-8 p-0 text-muted-foreground hover:text-white"
+        className="h-8 w-8 p-0 text-slate-400 hover:text-white"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>
@@ -152,47 +152,47 @@ function CitationCard({ citation }: { citation: typeof citations[0] }) {
 export function CitationsTable() {
   return (
     <Card className="border-border/50 bg-slate-900/60 transition-colors duration-150">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-4 px-6 pt-6">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-lg font-semibold tracking-tight text-white">
+            <CardTitle className="text-lg font-semibold tracking-normal text-white">
               Top AI Search Citations
             </CardTitle>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-[13px] font-medium tracking-normal text-slate-400 mt-1">
               Real-time tracking with optimization status
             </p>
           </div>
-          <button className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs font-medium text-secondary-foreground transition-colors hover:bg-secondary">
+          <button className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-[13px] font-medium tracking-normal text-slate-300 transition-colors hover:bg-secondary">
             View all
             <ExternalLink className="h-3 w-3" />
           </button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-6 pb-6">
         {/* Desktop table view */}
         <div className="hidden md:block overflow-hidden rounded-lg border border-border/50">
           <table className="w-full">
             <thead>
               <tr className="border-b border-border/50 bg-muted/30">
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <th className="px-4 py-3.5 text-left text-[13px] font-semibold uppercase tracking-wide text-slate-400">
                   Source
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <th className="px-4 py-3.5 text-left text-[13px] font-semibold uppercase tracking-wide text-slate-400">
                   Page
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <th className="px-4 py-3.5 text-left text-[13px] font-semibold uppercase tracking-wide text-slate-400">
                   Mentions
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <th className="px-4 py-3.5 text-left text-[13px] font-semibold uppercase tracking-wide text-slate-400">
                   Trend
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <th className="px-4 py-3.5 text-center text-[13px] font-semibold uppercase tracking-wide text-slate-400">
                   Optimization
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <th className="px-4 py-3.5 text-left text-[13px] font-semibold uppercase tracking-wide text-slate-400">
                   Last Seen
                 </th>
-                <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <th className="px-4 py-3.5 text-center text-[13px] font-semibold uppercase tracking-wide text-slate-400">
                   Quick Action
                 </th>
               </tr>
@@ -205,40 +205,40 @@ export function CitationsTable() {
                     key={citation.id}
                     className="transition-colors hover:bg-muted/20"
                   >
-                    <td className="whitespace-nowrap px-4 py-3.5">
-                      <span className="font-medium text-white">
+                    <td className="whitespace-nowrap px-4 py-4">
+                      <span className="text-[14px] font-semibold tracking-normal text-white">
                         {citation.source}
                       </span>
                     </td>
-                    <td className="px-4 py-3.5">
-                      <span className="text-sm text-muted-foreground">
+                    <td className="px-4 py-4">
+                      <span className="text-[13px] font-medium tracking-normal text-slate-400">
                         {citation.page}
                       </span>
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3.5">
-                      <span className="text-sm font-medium text-white">
+                    <td className="whitespace-nowrap px-4 py-4">
+                      <span className="text-[14px] font-semibold tabular-nums text-white">
                         {citation.mentions.toLocaleString()}
                       </span>
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3.5">
+                    <td className="whitespace-nowrap px-4 py-4">
                       <TrendIcon
                         className={cn("h-4 w-4", trendColors[citation.trend])}
                       />
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3.5">
+                    <td className="whitespace-nowrap px-4 py-4">
                       <div className="flex justify-center">
                         <ProgressRing progress={citation.optimizationProgress} />
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3.5 text-sm text-muted-foreground">
+                    <td className="whitespace-nowrap px-4 py-4 text-[13px] font-medium tracking-normal text-slate-400">
                       {citation.lastSeen}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3.5">
+                    <td className="whitespace-nowrap px-4 py-4">
                       <div className="flex justify-center">
                         <Button
                           size="sm"
                           variant="outline"
-                          className="h-7 gap-1.5 border-violet-500/30 bg-violet-500/10 px-2.5 text-xs font-medium text-violet-400 hover:bg-violet-500/20 hover:text-violet-300"
+                          className="h-7 gap-1.5 border-violet-500/30 bg-violet-500/10 px-2.5 text-[13px] font-semibold tracking-normal text-violet-300 hover:bg-violet-500/20 hover:text-violet-200"
                         >
                           <Eye className="h-3 w-3" />
                           Review

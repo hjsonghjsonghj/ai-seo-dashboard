@@ -108,13 +108,17 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   
-  /* Headings - SemiBold with tight tracking */
+  /* Headings - SemiBold with normal tracking for dark theme readability */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+    @apply font-semibold tracking-normal;
   }
+  
+  /* WCAG Accessibility: Ensure minimum readable font sizes */
+  /* Labels and metadata should use text-[13px] minimum */
+  /* Numeric data should use tabular-nums for alignment */
 }
