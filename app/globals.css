@@ -8,49 +8,49 @@
   /* Deep charcoal/black background */
   --background: oklch(0.12 0.005 285);
   --foreground: oklch(0.95 0 0);
-  
+
   /* Card styling - slightly lighter than background */
   --card: oklch(0.15 0.008 285);
   --card-foreground: oklch(0.95 0 0);
-  
+
   /* Popover */
   --popover: oklch(0.13 0.006 285);
   --popover-foreground: oklch(0.95 0 0);
-  
+
   /* Primary - Neon indigo accent */
   --primary: oklch(0.65 0.25 275);
   --primary-foreground: oklch(0.98 0 0);
-  
+
   /* Secondary */
   --secondary: oklch(0.22 0.01 285);
   --secondary-foreground: oklch(0.9 0 0);
-  
+
   /* Muted */
   --muted: oklch(0.2 0.008 285);
   --muted-foreground: oklch(0.6 0.01 285);
-  
+
   /* Accent - bright indigo */
   --accent: oklch(0.55 0.22 275);
   --accent-foreground: oklch(0.98 0 0);
-  
+
   /* Destructive */
   --destructive: oklch(0.55 0.22 25);
   --destructive-foreground: oklch(0.98 0 0);
-  
+
   /* Borders - subtle */
   --border: oklch(0.25 0.01 285);
   --input: oklch(0.2 0.008 285);
   --ring: oklch(0.65 0.25 275);
-  
+
   /* Chart colors - indigo spectrum with cyan accent */
   --chart-1: oklch(0.65 0.25 275);
   --chart-2: oklch(0.7 0.18 220);
   --chart-3: oklch(0.6 0.2 285);
   --chart-4: oklch(0.75 0.15 200);
   --chart-5: oklch(0.55 0.18 300);
-  
+
   --radius: 0.5rem;
-  
+
   /* Sidebar */
   --sidebar: oklch(0.1 0.004 285);
   --sidebar-foreground: oklch(0.9 0 0);
@@ -107,18 +107,26 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground antialiased;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
+
   /* Headings - SemiBold with normal tracking for dark theme readability */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-semibold tracking-normal;
   }
-  
+
   /* WCAG Accessibility: Ensure minimum readable font sizes */
   /* Labels and metadata should use text-[13px] minimum */
   /* Numeric data should use tabular-nums for alignment */
+
+
 }

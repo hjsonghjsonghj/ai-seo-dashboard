@@ -154,9 +154,10 @@ export function TrendsChart() {
                     value={e.event}
                     position="top"
                     fill="oklch(0.7 0.15 285)"
-                    fontSize={10}
+                    fontSize={12}
                     fontWeight={500}
                     offset={10}
+                    style={{ letterSpacing: '0.01em' }}
                   />
                 </ReferenceLine>
               ))}

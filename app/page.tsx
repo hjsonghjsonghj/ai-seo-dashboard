@@ -12,9 +12,9 @@ export default function DashboardPage() {
       <Sidebar />
 
       {/* Main Content */}
-      <div className="pb-20 md:ml-16 md:pb-0">
+      <div className="pb-20 md:ml-16 md:pb-0 flex flex-col gap-14">
         <Header />
-        
+
         <main className="p-4 md:p-6">
           <div className="mx-auto max-w-[1600px] space-y-4 md:space-y-6">
             {/* Stats Row */}

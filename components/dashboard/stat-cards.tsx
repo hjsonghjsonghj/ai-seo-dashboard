@@ -43,7 +43,7 @@ function StatCard({ title, value, change, changeLabel, targetValue, currentValue
             <span className="font-medium tabular-nums text-slate-400">({Math.round(progressPercent)}%)</span>
           </div>
 
-          <div className="h-2 w-full rounded-full bg-slate-800 ring-1 ring-white/10 overflow-hidden">
+          <div className="h-2 w-full rounded-full bg-slate-700 ring-1 ring-white/10 overflow-hidden">
             <div
               className="h-full rounded-full bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.3)] transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
