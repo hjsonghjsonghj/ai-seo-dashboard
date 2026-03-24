@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 
-// 원본 로직 그대로 복사: Optimization checklist items based on score
+// Optimization checklist items based on score
 function getOptimizationChecklist(citation: any) {
     const items = []
     if (citation.optimizationProgress < 40) {
@@ -40,25 +40,15 @@ function getOptimizationChecklist(citation: any) {
     return items
 }
 
-// 원본 로직 그대로 복사: AI Context explanation based on source
-function getAIContext(source: string, page: string) {
-    const contexts: Record<string, string> = {
-        "ChatGPT": `ChatGPT is citing ${page} because the content provides clear, conversational answers that align with user queries. The structured format and comprehensive coverage make it ideal for AI-generated responses.`,
-        "Claude": `Claude references ${page} due to its well-researched content with verifiable sources. The balanced analysis and technical depth match Claude's preference for nuanced, accurate information.`,
-        "Perplexity": `Perplexity cites ${page} for its real-time relevance and authoritative source links. The concise summaries and data visualizations support quick information retrieval.`,
-        "Google AI": `Google AI surfaces ${page} based on strong E-E-A-T signals and proper Schema.org implementation. The optimized page experience and mobile responsiveness contribute to visibility.`,
-        "Copilot": `Copilot references ${page} for its actionable content format with clear code examples. The step-by-step structure and integration guidance align with developer-focused queries.`,
-    }
-    return contexts[source] || `This AI source is citing ${page} based on content relevance and quality signals.`
-}
 
 interface CitationDetailsDrawerProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     selectedCitation: any | null
+    onResolve?: (citation: any) => void
 }
 
-export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation }: CitationDetailsDrawerProps) {
+export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, onResolve }: CitationDetailsDrawerProps) {
     if (!selectedCitation) return null
 
     return (
@@ -105,7 +95,7 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation }: 
                             AI Context
                         </h3>
                         <p className="text-[14px] font-medium tracking-normal text-slate-400 leading-relaxed">
-                            {getAIContext(selectedCitation.source, selectedCitation.page)}
+                            {selectedCitation.aiContext}
                         </p>
                     </div>
 
@@ -149,7 +139,7 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation }: 
                     <Button
                         variant="outline"
                         className="w-full gap-2 border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-800 hover:text-white text-[14px] font-semibold"
-                        onClick={() => onOpenChange(false)}
+                        onClick={() => onResolve?.(selectedCitation)}
                     >
                         <CheckCircle2 className="h-4 w-4" />
                         Mark as Resolved

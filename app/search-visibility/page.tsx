@@ -1,9 +1,9 @@
 "use client"
 import { CitationDetailsDrawer } from "@/components/dashboard/citation-details-drawer"
-import CitationsTable from "@/components/dashboard/citations-table"
-import { useState } from "react"
+import CitationsTable, { citationsData } from "@/components/dashboard/citations-table"
+import { useMemo, useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Search, Calendar, Filter, TrendingUp, TrendingDown, Minus, Eye, ExternalLink, Download, CheckCircle2 } from "lucide-react"
+import { ArrowLeft, Search, Calendar, Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -14,68 +14,203 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  SheetFooter,
-} from "@/components/ui/sheet"
 import { Sidebar } from "@/components/dashboard/sidebar"
-import { cn } from "@/lib/utils"
-import { Form } from "@/components/ui/form"
+import { toast } from "sonner"
 
-// Expanded citations data (25 rows) - exact schema from CitationsTable
-const citations = [
-  { id: 1, source: "ChatGPT", page: "/best-seo-tools-2026", mentions: 847, trend: "up" as const, optimizationProgress: 92, lastSeen: "2 min ago" },
-  { id: 2, source: "Claude", page: "/ai-content-optimization", mentions: 623, trend: "up" as const, optimizationProgress: 78, lastSeen: "5 min ago" },
-  { id: 3, source: "Perplexity", page: "/enterprise-seo-guide", mentions: 412, trend: "stable" as const, optimizationProgress: 65, lastSeen: "12 min ago" },
-  { id: 4, source: "Google AI", page: "/technical-seo-checklist", mentions: 389, trend: "down" as const, optimizationProgress: 34, lastSeen: "1 hour ago" },
-  { id: 5, source: "Copilot", page: "/link-building-strategies", mentions: 256, trend: "up" as const, optimizationProgress: 88, lastSeen: "3 min ago" },
-  { id: 6, source: "ChatGPT", page: "/keyword-research-guide", mentions: 734, trend: "up" as const, optimizationProgress: 85, lastSeen: "8 min ago" },
-  { id: 7, source: "Perplexity", page: "/local-seo-strategies", mentions: 521, trend: "up" as const, optimizationProgress: 72, lastSeen: "15 min ago" },
-  { id: 8, source: "Claude", page: "/content-marketing-tips", mentions: 489, trend: "up" as const, optimizationProgress: 81, lastSeen: "22 min ago" },
-  { id: 9, source: "Google AI", page: "/site-speed-optimization", mentions: 445, trend: "down" as const, optimizationProgress: 45, lastSeen: "30 min ago" },
-  { id: 10, source: "Copilot", page: "/mobile-seo-best-practices", mentions: 398, trend: "up" as const, optimizationProgress: 90, lastSeen: "18 min ago" },
-  { id: 11, source: "ChatGPT", page: "/ecommerce-seo-guide", mentions: 612, trend: "up" as const, optimizationProgress: 77, lastSeen: "25 min ago" },
-  { id: 12, source: "Perplexity", page: "/voice-search-optimization", mentions: 334, trend: "stable" as const, optimizationProgress: 58, lastSeen: "40 min ago" },
-  { id: 13, source: "Claude", page: "/schema-markup-tutorial", mentions: 567, trend: "up" as const, optimizationProgress: 94, lastSeen: "7 min ago" },
-  { id: 14, source: "Google AI", page: "/backlink-analysis-guide", mentions: 423, trend: "down" as const, optimizationProgress: 29, lastSeen: "2 hours ago" },
-  { id: 15, source: "Copilot", page: "/seo-audit-checklist", mentions: 378, trend: "up" as const, optimizationProgress: 83, lastSeen: "35 min ago" },
-  { id: 16, source: "ChatGPT", page: "/international-seo", mentions: 289, trend: "stable" as const, optimizationProgress: 67, lastSeen: "45 min ago" },
-  { id: 17, source: "Perplexity", page: "/video-seo-strategies", mentions: 456, trend: "up" as const, optimizationProgress: 71, lastSeen: "50 min ago" },
-  { id: 18, source: "Claude", page: "/ai-seo-automation", mentions: 698, trend: "up" as const, optimizationProgress: 89, lastSeen: "10 min ago" },
-  { id: 19, source: "Google AI", page: "/meta-tags-optimization", mentions: 312, trend: "down" as const, optimizationProgress: 42, lastSeen: "1.5 hours ago" },
-  { id: 20, source: "Copilot", page: "/structured-data-guide", mentions: 534, trend: "up" as const, optimizationProgress: 86, lastSeen: "20 min ago" },
-  { id: 21, source: "ChatGPT", page: "/competitor-analysis", mentions: 445, trend: "up" as const, optimizationProgress: 73, lastSeen: "55 min ago" },
-  { id: 22, source: "Perplexity", page: "/core-web-vitals-guide", mentions: 387, trend: "up" as const, optimizationProgress: 79, lastSeen: "28 min ago" },
-  { id: 23, source: "Claude", page: "/content-gap-analysis", mentions: 356, trend: "stable" as const, optimizationProgress: 68, lastSeen: "1 hour ago" },
-  { id: 24, source: "Google AI", page: "/crawl-budget-optimization", mentions: 278, trend: "down" as const, optimizationProgress: 38, lastSeen: "3 hours ago" },
-  { id: 25, source: "Copilot", page: "/serp-feature-targeting", mentions: 423, trend: "up" as const, optimizationProgress: 91, lastSeen: "14 min ago" },
-]
+type Citation = typeof citationsData[0]
+type SortKey = "mentions" | "optimization" | "lastSeen"
+type SortDirection = "asc" | "desc"
 
-type Citation = typeof citations[0]
+const RESOLVED_AI_CONTEXT =
+  "All optimization tasks completed. Content is now fully optimized for AI search visibility with comprehensive structured data, clear examples, and proper schema implementation."
 
+function lastSeenToSeconds(lastSeen: string): number {
+  const raw = lastSeen.trim().toLowerCase()
+  if (raw === "just now") return 0
+  const match = raw.match(/^(\d+)\s*(min|mins|minute|minutes|hour|hours|day|days)/)
+  if (!match) {
+    const parsed = Date.parse(lastSeen)
+    if (!Number.isNaN(parsed)) {
+      return Math.max(0, Math.floor((Date.now() - parsed) / 1000))
+    }
+    return Number.MAX_SAFE_INTEGER
+  }
+  const value = Number(match[1])
+  const unit = match[2]
+  if (unit.startsWith("min")) return value * 60
+  if (unit.startsWith("hour")) return value * 3600
+  return value * 86400
+}
+
+function sortByMentionsThenRecent(a: Citation, b: Citation): number {
+  if (b.mentions !== a.mentions) return b.mentions - a.mentions
+  return lastSeenToSeconds(a.lastSeen) - lastSeenToSeconds(b.lastSeen)
+}
 
 export default function SearchVisibilityPage() {
+  // Shared source is imported from citations-table; detail page keeps local state for resolve updates.
+  const [citations, setCitations] = useState<Citation[]>(() =>
+    [...citationsData].sort(sortByMentionsThenRecent)
+  )
   const [searchQuery, setSearchQuery] = useState("")
   const [dateRange, setDateRange] = useState("30d")
   const [sourceFilter, setSourceFilter] = useState("all")
   const [selectedCitation, setSelectedCitation] = useState<Citation | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [highlightedIds, setHighlightedIds] = useState<Set<number>>(new Set())
+  const [sortBy, setSortBy] = useState<SortKey>("mentions")
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc")
+  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set())
 
-  const filteredCitations = citations.filter(citation => {
-    const matchesSearch = citation.source.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      citation.page.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesSource = sourceFilter === "all" || citation.source === sourceFilter
-    return matchesSearch && matchesSource
-  })
+  const filteredCitations = useMemo(
+    () =>
+      citations
+        .filter((citation) => {
+          const matchesSearch =
+            citation.source.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            citation.page.toLowerCase().includes(searchQuery.toLowerCase())
+          const matchesSource = sourceFilter === "all" || citation.source === sourceFilter
+          return matchesSearch && matchesSource
+        })
+        .sort((a, b) => {
+          // One active sort at a time; default is mentions desc.
+          if (sortBy === "mentions") {
+            const value = a.mentions - b.mentions
+            if (value !== 0) return sortDirection === "asc" ? value : -value
+            return sortByMentionsThenRecent(a, b)
+          }
+          if (sortBy === "optimization") {
+            const value = a.optimizationProgress - b.optimizationProgress
+            if (value !== 0) return sortDirection === "asc" ? value : -value
+            return sortByMentionsThenRecent(a, b)
+          }
+          const value = lastSeenToSeconds(a.lastSeen) - lastSeenToSeconds(b.lastSeen)
+          if (value !== 0) return sortDirection === "asc" ? -value : value
+          return sortByMentionsThenRecent(a, b)
+        }),
+    [citations, searchQuery, sourceFilter, sortBy, sortDirection]
+  )
 
-  const handleReviewClick = (e: React.MouseEvent, citation: Citation) => {
-    e.stopPropagation()
-    setSelectedCitation(citation)
-    setIsDrawerOpen(true)
+  function handleSortToggle(column: SortKey) {
+    if (sortBy !== column) {
+      setSortBy(column)
+      setSortDirection("asc")
+      return
+    }
+    if (sortDirection === "asc") {
+      setSortDirection("desc")
+      return
+    }
+    setSortBy("mentions")
+    setSortDirection("desc")
+  }
+
+  function handleToggleRow(id: number, checked: boolean) {
+    setSelectedRows((prev) => {
+      const next = new Set(prev)
+      if (checked) next.add(id)
+      else next.delete(id)
+      return next
+    })
+  }
+
+  function handleToggleAllVisible(checked: boolean, visibleIds: number[]) {
+    setSelectedRows((prev) => {
+      const next = new Set(prev)
+      visibleIds.forEach((id) => {
+        if (checked) next.add(id)
+        else next.delete(id)
+      })
+      return next
+    })
+  }
+
+  function handleExportSelected() {
+    const selected = filteredCitations.filter((item) => selectedRows.has(item.id))
+    if (selected.length === 0) return
+    const report = selected
+      .map((item, idx) => {
+        const checklist = [
+          "[✓] Add structured data markup for better AI comprehension",
+          "[✓] Improve content depth with comprehensive examples",
+          "[✓] Optimize meta descriptions for AI snippet extraction",
+          "[✓] Include FAQ sections addressing common queries",
+        ].join("\n")
+        return [
+          `#${idx + 1}`,
+          `Source: ${item.source}`,
+          `Page: ${item.page}`,
+          `Mentions: ${item.mentions}`,
+          `Optimization Score: ${item.optimizationProgress}%`,
+          `AI Context: ${item.aiContext}`,
+          "Checklist Items:",
+          checklist,
+        ].join("\n")
+      })
+      .join("\n\n---\n\n")
+
+    const blob = new Blob([report], { type: "text/plain;charset=utf-8" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `citations-report-${Date.now()}.txt`
+    a.click()
+    URL.revokeObjectURL(url)
+    toast.success(`${selected.length} citations exported`)
+  }
+
+  function handleResolve(citation: Citation) {
+    const now = new Date().toLocaleString()
+    setCitations((prev) =>
+      prev
+        .map((item) =>
+          item.source === citation.source && item.page === citation.page
+            ? {
+                ...item,
+                optimizationProgress: 100,
+                trend: "up",
+                aiContext: RESOLVED_AI_CONTEXT,
+                lastSeen: now,
+              }
+            : item
+        )
+        .sort(sortByMentionsThenRecent)
+    )
+    setIsDrawerOpen(false)
+    setSelectedCitation(null)
+    setHighlightedIds(new Set([citation.id]))
+    setTimeout(() => setHighlightedIds(new Set()), 2000)
+    toast.success("Citation marked as resolved")
+  }
+
+  function handleBulkResolve() {
+    const selected = filteredCitations.filter((item) => selectedRows.has(item.id))
+    if (selected.length === 0) return
+    const confirmed = window.confirm(`Mark ${selected.length} citations as resolved?`)
+    if (!confirmed) return
+
+    const idsToUpdate = new Set(selected.map((item) => item.id))
+    const now = new Date().toLocaleString()
+    setCitations((prev) =>
+      prev
+        .map((item) =>
+          idsToUpdate.has(item.id)
+            ? {
+                ...item,
+                optimizationProgress: 100,
+                trend: "up",
+                aiContext:
+                  "All optimization tasks completed. Content is now fully optimized for AI search visibility.",
+                lastSeen: now,
+              }
+            : item
+        )
+        .sort(sortByMentionsThenRecent)
+    )
+    setHighlightedIds(idsToUpdate)
+    setTimeout(() => setHighlightedIds(new Set()), 2000)
+    setSelectedRows(new Set())
+    toast.success(`${idsToUpdate.size} citations marked as resolved`)
   }
 
   return (
@@ -159,28 +294,95 @@ export default function SearchVisibilityPage() {
             </Card>
 
             {/* Desktop table & Mobile card view */}
-            <CitationsTable
-              data={filteredCitations}
-              onReview={(citation) => {
-                setSelectedCitation(citation);
-                setIsDrawerOpen(true);
-              }}
-              headerAction={
-                <span className="text-[14px] font-medium tabular-nums text-slate-300">
-                  {`${filteredCitations.length} citations`}
-                </span>
-              }
-            />
+            <div className="detail-table-three-state">
+              <CitationsTable
+                data={filteredCitations}
+                highlightedIds={highlightedIds}
+                stickyHeader
+                showSelectionColumn
+                title="AI Search Citations"
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                onSortToggle={handleSortToggle}
+                selectedRowIds={selectedRows}
+                onToggleRow={handleToggleRow}
+                onToggleAllVisible={handleToggleAllVisible}
+                onReview={(citation) => {
+                  setSelectedCitation(citation);
+                  setIsDrawerOpen(true);
+                }}
+                headerAction={
+                  <div className="flex items-center gap-3">
+                    <span className="text-[14px] font-medium tabular-nums text-slate-300">
+                      {`${filteredCitations.length} citations`}
+                    </span>
+                    {selectedRows.size > 0 && (
+                      <span className="text-[13px] font-medium text-v0-emerald-400">
+                        {selectedRows.size} items selected
+                      </span>
+                    )}
+                  </div>
+                }
+              />
+            </div>
 
             {/* Side Drawer */}
             <CitationDetailsDrawer
               open={isDrawerOpen}
               onOpenChange={setIsDrawerOpen}
               selectedCitation={selectedCitation}
+              onResolve={handleResolve}
             />
           </div>
         </main>
       </div>
+      {selectedRows.size > 0 && (
+        <div className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-border bg-background/95 px-4 py-3 shadow-lg backdrop-blur">
+          <span className="text-sm font-medium text-v0-white">{selectedRows.size} citations selected</span>
+          <Button size="sm" variant="outline" onClick={handleExportSelected}>
+            Export
+          </Button>
+          <Button size="sm" onClick={handleBulkResolve}>
+            Mark as Resolved
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setSelectedRows(new Set())}>
+            Clear Selection
+          </Button>
+        </div>
+      )}
+      <style jsx global>{`
+        /* Detail-page only 3-state sorting header design */
+        .detail-table-three-state thead th {
+          cursor: default;
+        }
+
+        /* State 2: sortable but inactive */
+        .detail-table-three-state thead th button[aria-label^="Sort by"] {
+          cursor: pointer;
+          background: transparent;
+          color: var(--v0-violet-300);
+          box-shadow: none;
+        }
+        .detail-table-three-state thead th button[aria-label^="Sort by"] svg {
+          color: var(--v0-violet-300);
+        }
+        .detail-table-three-state thead th button[aria-label^="Sort by"]:hover {
+          color: var(--v0-white);
+        }
+        .detail-table-three-state thead th button[aria-label^="Sort by"]:hover svg {
+          color: var(--v0-white);
+        }
+
+        /* State 1: currently selected sort column */
+        .detail-table-three-state thead th button[aria-label*="currently"] {
+          background: transparent;
+          color: var(--v0-white);
+          box-shadow: none;
+        }
+        .detail-table-three-state thead th button[aria-label*="currently"] svg {
+          color: var(--v0-white);
+        }
+      `}</style>
     </div>
   )
 }
