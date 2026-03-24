@@ -45,12 +45,12 @@ function CustomTooltip({
   const eventItem = data.find(d => d.date === label)
 
   return (
-    <div className="rounded-lg border border-border bg-slate-900/95 p-4 shadow-xl" role="tooltip">
-      <p className="mb-2 text-[14px] font-semibold tracking-normal text-white">{label}</p>
+    <div className="rounded-lg border border-border bg-v0-slate-900/95 p-4 shadow-xl" role="tooltip">
+      <p className="mb-2 text-[14px] font-semibold tracking-normal text-v0-white">{label}</p>
       {eventItem?.event && (
-        <div className="mb-2 flex items-center gap-1.5 rounded bg-violet-500/15 px-2 py-1">
-          <div className="h-1.5 w-1.5 rounded-full bg-violet-400" aria-hidden="true" />
-          <span className="text-[13px] font-medium tracking-normal text-violet-300">{eventItem.event}</span>
+        <div className="mb-2 flex items-center gap-1.5 rounded bg-v0-violet-500/15 px-2 py-1">
+          <div className="h-1.5 w-1.5 rounded-full bg-v0-violet-400" aria-hidden="true" />
+          <span className="text-[13px] font-medium tracking-normal text-v0-violet-300">{eventItem.event}</span>
         </div>
       )}
       <div className="space-y-1.5">
@@ -61,8 +61,8 @@ function CustomTooltip({
               style={{ backgroundColor: entry.color }}
               aria-hidden="true"
             />
-            <span className="font-medium tracking-normal text-slate-400">{entry.name}:</span>
-            <span className="font-semibold tabular-nums text-white">
+            <span className="font-medium tracking-normal text-v0-slate-400">{entry.name}:</span>
+            <span className="font-semibold tabular-nums text-v0-white">
               {entry.value.toLocaleString()}
             </span>
           </div>
@@ -76,28 +76,28 @@ export function TrendsChart() {
   const isMobile = useMediaQuery("(max-width: 768px)")
 
   return (
-    <Card className="border-border/50 bg-slate-900/60 transition-colors duration-150 ">
+    <Card className="border-border/50 bg-v0-slate-900/60 transition-colors duration-150 ">
       <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-4 px-6 pt-6 pb-2">
         <div>
-          <CardTitle className="text-lg font-semibold tracking-normal text-white">
+          <CardTitle className="text-lg font-semibold tracking-normal text-v0-white">
             Search Visibility Trends
           </CardTitle>
-          <p className="text-[13px] font-medium tracking-normal text-slate-400 mt-1">
+          <p className="text-[13px] font-medium tracking-normal text-v0-slate-400 mt-1">
             Monthly performance with AI event markers
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-4" role="list" aria-label="Chart legend">
           <div className="flex items-center gap-2" role="listitem">
-            <div className="h-2 w-2 rounded-full bg-violet-500" aria-hidden="true" />
-            <span className="text-[13px] font-medium tracking-normal text-slate-300">AI Discovery</span>
+            <div className="h-2 w-2 rounded-full bg-v0-violet-500" aria-hidden="true" />
+            <span className="text-[13px] font-medium tracking-normal text-v0-slate-300">AI Discovery</span>
           </div>
           <div className="flex items-center gap-2" role="listitem">
             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: "oklch(0.7 0.18 220)" }} aria-hidden="true" />
-            <span className="text-[13px] font-medium tracking-normal text-slate-300">Organic Search</span>
+            <span className="text-[13px] font-medium tracking-normal text-v0-slate-300">Organic Search</span>
           </div>
           <div className="flex items-center gap-2" role="listitem">
             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: "oklch(0.75 0.15 200)" }} aria-hidden="true" />
-            <span className="text-[13px] font-medium tracking-normal text-slate-300">Citations</span>
+            <span className="text-[13px] font-medium tracking-normal text-v0-slate-300">Citations</span>
           </div>
         </div>
       </CardHeader>

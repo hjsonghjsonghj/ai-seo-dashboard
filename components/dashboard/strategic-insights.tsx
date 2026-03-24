@@ -43,22 +43,22 @@ const insights = [
 
 const typeStyles = {
   critical: {
-    bg: "bg-slate-900/60 hover:bg-slate-800/80",
-    badge: "bg-red-500/15 text-red-400",
-    button: "bg-red-500 hover:bg-red-600 text-white focus-visible:ring-red-500",
-    icon: "bg-red-500/15 text-red-400",
+    bg: "bg-v0-slate-900/60 hover:bg-v0-slate-800/80",
+    badge: "bg-v0-red-500/15 text-v0-red-400",
+    button: "bg-v0-red-500 hover:bg-v0-red-600 text-v0-white focus-visible:ring-v0-red-500",
+    icon: "bg-v0-red-500/15 text-v0-red-400",
   },
   opportunity: {
-    bg: "bg-slate-900/60 hover:bg-slate-800/80",
-    badge: "bg-violet-500/15 text-violet-400",
-    button: "bg-violet-500 hover:bg-violet-600 text-white focus-visible:ring-violet-500",
-    icon: "bg-violet-500/15 text-violet-400",
+    bg: "bg-v0-slate-900/60 hover:bg-v0-slate-800/80",
+    badge: "bg-v0-violet-500/15 text-v0-violet-400",
+    button: "bg-v0-violet-500 hover:bg-v0-violet-600 text-v0-white focus-visible:ring-v0-violet-500",
+    icon: "bg-v0-violet-500/15 text-v0-violet-400",
   },
   optimization: {
-    bg: "bg-slate-900/60 hover:bg-slate-800/80",
-    badge: "bg-amber-500/15 text-amber-400",
-    button: "bg-amber-500 hover:bg-amber-600 text-white focus-visible:ring-amber-500",
-    icon: "bg-amber-500/15 text-amber-400",
+    bg: "bg-v0-slate-900/60 hover:bg-v0-slate-800/80",
+    badge: "bg-warning/15 text-warning",
+    button: "bg-warning hover:bg-warning/90 text-warning-foreground focus-visible:ring-warning",
+    icon: "bg-warning/15 text-warning",
   },
 }
 
@@ -66,17 +66,17 @@ export function StrategicInsights() {
   return (
     <section className="space-y-4" aria-labelledby="insights-heading">
       <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/15" aria-hidden="true">
-          <Sparkles className="h-4 w-4 text-violet-400" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-v0-violet-500/15" aria-hidden="true">
+          <Sparkles className="h-4 w-4 text-v0-violet-400" />
         </div>
         <div>
           <h2
             id="insights-heading"
-            className="text-lg font-semibold tracking-normal text-white"
+            className="text-lg font-semibold tracking-normal text-v0-white"
           >
             AI-Generated Strategic Insights
           </h2>
-          <p className="text-[13px] font-medium tracking-normal text-slate-400">
+          <p className="text-[13px] font-medium tracking-normal text-v0-slate-400">
             Actionable recommendations powered by Peec Intelligence
           </p>
         </div>
@@ -104,14 +104,14 @@ export function StrategicInsights() {
                       <Icon className="h-4 w-4" />
                     </div>
                     <div>
-                      <CardTitle className="text-[13px] font-semibold uppercase tracking-wide text-slate-400">
+                      <CardTitle className="text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">
                         {insight.title}
                       </CardTitle>
                     </div>
                   </div>
                   <span
                     className={cn(
-                      "shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase tracking-normal",
+                      "shrink-0 rounded-full px-2 py-0.5 text-[12px] font-semibold uppercase tracking-normal",
                       styles.badge
                     )}
                   >
@@ -123,11 +123,11 @@ export function StrategicInsights() {
                 <div className="flex-1">
                   <h3
                     id={`insight-${insight.id}-headline`}
-                    className="mb-2 text-base font-semibold tracking-normal text-white"
+                    className="mb-2 text-base font-semibold tracking-normal text-v0-white"
                   >
                     {insight.headline}
                   </h3>
-                  <p className="text-[13px] font-medium leading-relaxed tracking-normal text-slate-400">
+                  <p className="text-[13px] font-medium leading-relaxed tracking-normal text-v0-slate-400">
                     {insight.description}
                   </p>
                 </div>

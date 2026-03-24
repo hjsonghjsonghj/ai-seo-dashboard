@@ -7,10 +7,10 @@ export function Header() {
   return (
     <header className="flex h-16 items-center justify-between border-b border-border/50 bg-background/80 px-4 md:px-6 backdrop-blur-sm">
       <div>
-        <h1 className="text-lg md:text-xl font-semibold tracking-normal text-white">
+        <h1 className="text-lg md:text-xl font-semibold tracking-normal text-v0-white">
           Dashboard Overview
         </h1>
-        <p className="text-[13px] md:text-[14px] font-medium tracking-normal text-slate-400">
+        <p className="text-[13px] md:text-[14px] font-medium tracking-normal text-v0-slate-400">
           Track your AI search visibility and performance
         </p>
       </div>

@@ -1,11 +1,17 @@
+"use client"
+import CitationsTableComponent from "@/components/dashboard/citations-table"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { Header } from "@/components/dashboard/header"
 import { StatCards } from "@/components/dashboard/stat-cards"
 import { StrategicInsights } from "@/components/dashboard/strategic-insights"
 import { TrendsChart } from "@/components/dashboard/trends-chart"
-import { CitationsTable } from "@/components/dashboard/citations-table"
+import CitationsTable from "@/components/dashboard/citations-table"
+import { useState } from "react"
+import { CitationDetailsDrawer } from "@/components/dashboard/citation-details-drawer"
 
 export default function DashboardPage() {
+  const [selectedCitation, setSelectedCitation] = useState<any | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   return (
     <div className="min-h-screen bg-background tracking-tighter">
       {/* Sidebar (Desktop) / Bottom Bar (Mobile) */}
@@ -26,8 +32,20 @@ export default function DashboardPage() {
             {/* Chart */}
             <TrendsChart />
 
-            {/* Citations Table */}
-            <CitationsTable />
+            {/* Desktop table & Mobile card view */}
+            <CitationsTableComponent
+              onReview={(citation) => {
+                setSelectedCitation(citation);
+                setIsDrawerOpen(true);
+              }}
+            />
+
+            {/* Side Drawer */}
+            <CitationDetailsDrawer
+              open={isDrawerOpen}
+              onOpenChange={setIsDrawerOpen}
+              selectedCitation={selectedCitation}
+            />
           </div>
         </main>
       </div>
