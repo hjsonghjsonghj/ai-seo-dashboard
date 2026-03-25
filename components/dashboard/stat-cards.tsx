@@ -25,7 +25,7 @@ function StatCard({ title, value, change, changeLabel, targetValue, currentValue
       role="article"
       aria-label={`${title}: ${value}, ${isPositive ? 'up' : 'down'} ${Math.abs(change)}% ${changeLabel}`}
     >
-      <CardContent className="p-6">
+      <CardContent className="p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 space-y-1.5">
             <p className="text-[13px] font-medium tracking-normal text-v0-slate-300">{title}</p>

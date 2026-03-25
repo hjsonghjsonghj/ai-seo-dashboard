@@ -160,7 +160,7 @@ function ProgressRing({ progress, size = 40 }: { progress: number; size?: number
           style={{ strokeDasharray: circumference, strokeDashoffset: offset, transition: "stroke-dashoffset 0.5s ease-out, stroke 0.3s ease" }}
         />
       </svg>
-      <span className={cn("absolute text-[12px] font-semibold tabular-nums tracking-normal", textColorClass)}>
+      <span className={cn("absolute text-[11px] font-semibold tabular-nums tracking-normal", textColorClass)}>
         {progress}%
       </span>
     </div>
@@ -180,12 +180,12 @@ function CitationCard({ citation, onReview }: { citation: any; onReview?: (c: an
         <ProgressRing progress={citation.optimizationProgress} size={44} />
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-[14px] font-semibold tracking-normal text-v0-white">{citation.source}</span>
+            <span className="text-[14px] font-semibold tracking-normal text-v0-slate-300">{citation.source}</span>
             <TrendIcon className={cn("h-3.5 w-3.5", trendColors[citation.trend])} />
           </div>
           <p className="text-[13px] font-medium tracking-normal text-v0-slate-400 truncate max-w-[140px]">{citation.page}</p>
           <div className="flex items-center gap-2 text-[13px] tracking-normal">
-            <span suppressHydrationWarning className="font-semibold tabular-nums text-v0-white">
+            <span suppressHydrationWarning className="font-semibold tabular-nums text-v0-slate-300">
               {citation.mentions.toLocaleString()}
             </span>
             <span className="font-medium text-v0-slate-400">mentions</span>
@@ -256,10 +256,10 @@ export function CitationsTableComponent({
 
   return (
     <Card className="border-border/50 bg-v0-slate-900/60 transition-colors duration-150">
-      <CardHeader className="pb-4 px-6 pt-6">
+      <CardHeader className="pb-3 px-5 pt-5">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-lg font-semibold tracking-normal text-v0-white">{title}</CardTitle>
+            <CardTitle className="text-lg font-semibold tracking-normal text-v0-slate-300">{title}</CardTitle>
             <p className="text-[13px] font-medium tracking-normal text-v0-slate-400 mt-1">{description}</p>
           </div>
           <div className="flex items-center">
@@ -273,13 +273,13 @@ export function CitationsTableComponent({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="px-6 pb-6">
+      <CardContent className="px-5 pb-5">
         <div className="hidden md:block overflow-hidden rounded-lg border border-border/50">
           <table className="w-full">
             <thead>
               <tr className="border-b border-border/50 bg-muted/30">
                 {showSelectionColumn && (
-                  <th className="w-10 px-3 py-3.5 text-center">
+                  <th className="w-10 px-3 py-3 text-center">
                     <Checkbox
                       checked={allSelected ? true : someSelected ? "indeterminate" : false}
                       onCheckedChange={(checked) => onToggleAllVisible?.(checked === true, visibleIds)}
@@ -287,9 +287,9 @@ export function CitationsTableComponent({
                     />
                   </th>
                 )}
-                <th className="px-4 py-3.5 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">Source</th>
-                <th className="px-4 py-3.5 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">Page</th>
-                <th className="px-4 py-3.5 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">Source</th>
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">Page</th>
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">
                   {onSortToggle ? (
                     <button
                       type="button"
@@ -309,8 +309,8 @@ export function CitationsTableComponent({
                     <span className="text-v0-slate-400">MENTIONS</span>
                   )}
                 </th>
-                <th className="px-4 py-3.5 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">Trend</th>
-                <th className="px-4 py-3.5 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">Trend</th>
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">
                   {onSortToggle ? (
                     <button
                       type="button"
@@ -330,7 +330,7 @@ export function CitationsTableComponent({
                     <span className="text-v0-slate-400">OPTIMIZATION</span>
                   )}
                 </th>
-                <th className="px-4 py-3.5 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">
                   {onSortToggle ? (
                     <button
                       type="button"
@@ -350,7 +350,7 @@ export function CitationsTableComponent({
                     <span className="text-v0-slate-400">LAST SEEN</span>
                   )}
                 </th>
-                <th className="px-4 py-3.5 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">Quick Action</th>
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">Quick Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/30">
@@ -367,7 +367,7 @@ export function CitationsTableComponent({
                     )}
                   >
                     {showSelectionColumn && (
-                      <td className="whitespace-nowrap px-3 py-4 text-center">
+                      <td className="whitespace-nowrap px-3 py-2.5 text-center">
                         <Checkbox
                           checked={isSelected}
                           onCheckedChange={(checked) => onToggleRow?.(citation.id, checked === true)}
@@ -375,17 +375,17 @@ export function CitationsTableComponent({
                         />
                       </td>
                     )}
-                    <td className="whitespace-nowrap px-4 py-4 text-center"><span className="text-[14px] font-semibold text-v0-white">{citation.source}</span></td>
-                    <td className="whitespace-nowrap px-4 py-4 text-center"><span className="text-[13px] font-medium text-v0-slate-400">{citation.page}</span></td>
-                    <td className="whitespace-nowrap px-4 py-4 text-center"><span suppressHydrationWarning className="text-[14px] font-semibold tabular-nums text-v0-white">{citation.mentions.toLocaleString()}</span></td>
-                    <td className="whitespace-nowrap px-4 py-4 text-center"><TrendIcon className={cn("h-4 w-4 inline-block", trendColors[citation.trend])} /></td>
-                    <td className="whitespace-nowrap px-4 py-4"><div className="flex justify-center"><ProgressRing progress={citation.optimizationProgress} /></div></td>
-                    <td className="whitespace-nowrap px-4 py-4 text-center text-[13px] font-medium text-v0-slate-400">{citation.lastSeen}</td>
-                    <td className="whitespace-nowrap px-4 py-4">
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span className="text-[14px] font-semibold text-v0-slate-300">{citation.source}</span></td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span className="text-[13px] font-medium text-v0-slate-400">{citation.page}</span></td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span suppressHydrationWarning className="text-[14px] font-semibold tabular-nums text-v0-slate-300">{citation.mentions.toLocaleString()}</span></td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><TrendIcon className={cn("h-4 w-4 inline-block", trendColors[citation.trend])} /></td>
+                    <td className="whitespace-nowrap px-4 py-2.5"><div className="flex justify-center"><ProgressRing progress={citation.optimizationProgress} /></div></td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center text-[13px] font-medium text-v0-slate-400">{citation.lastSeen}</td>
+                    <td className="whitespace-nowrap px-4 py-2.5">
                       <div className="flex justify-center">
                         <Button
                           size="sm" variant="outline"
-                          className="h-7 gap-1.5 border-v0-violet-500/30 bg-v0-violet-500/10 px-2.5 text-[13px] font-semibold text-v0-violet-300 hover:bg-v0-violet-500/20"
+                          className="h-6 gap-1.5 border-v0-violet-500/30 bg-v0-violet-500/10 px-2.5 text-[13px] font-semibold text-v0-violet-300 hover:bg-v0-violet-500/20"
                           onClick={() => onReview?.(citation)}
                         >
                           <Eye className="h-3 w-3" /> Review

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
+import { CitationsProvider } from '@/components/dashboard/citations-context'
 
 const geistSans = Geist({
   subsets: ["latin"],
@@ -15,7 +16,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Peec AI - SEO Intelligence Dashboard',
+  title: 'SEO Intelligence Dashboard',
   description: 'AI-powered SEO intelligence platform for modern search visibility',
   generator: 'v0.app',
   icons: {
@@ -45,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="font-sans antialiased" suppressHydrationWarning>
-        {children}
+        <CitationsProvider>{children}</CitationsProvider>
         <Toaster />
         <Analytics />
       </body>

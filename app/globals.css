@@ -193,3 +193,24 @@
 
 
 }
+
+/* ─── Print report: hide all UI, show only .print-report ─── */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .print-report,
+  .print-report * {
+    visibility: visible;
+  }
+
+  .print-report {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    background: #ffffff;
+    padding: 2cm;
+    box-sizing: border-box;
+  }
+}

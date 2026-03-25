@@ -16,6 +16,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { toast } from "sonner"
+import { CitationsDetailTableSkeleton } from "@/components/ui/citations-detail-table-skeleton"
+import Head from "next/head"
+import { useCitations } from "@/components/dashboard/citations-context"
 
 type Citation = typeof citationsData[0]
 type SortKey = "mentions" | "optimization" | "lastSeen"
@@ -23,24 +26,6 @@ type SortDirection = "asc" | "desc"
 
 const RESOLVED_AI_CONTEXT =
   "All optimization tasks completed. Content is now fully optimized for AI search visibility with comprehensive structured data, clear examples, and proper schema implementation."
-
-function TableSkeleton({ rows = 25, cols = 8 }: { rows?: number; cols?: number }) {
-  return (
-    <div className="rounded-xl border border-border/50 bg-card p-6">
-      <div className="mb-4 h-6 w-56 animate-pulse rounded bg-v0-slate-800/70" />
-      <div className="overflow-hidden rounded-lg border border-border/50">
-        <div className="grid" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
-          {Array.from({ length: cols }).map((_, i) => (
-            <div key={`h-${i}`} className="h-11 animate-pulse border-b border-border/50 bg-v0-slate-800/55" />
-          ))}
-          {Array.from({ length: rows * cols }).map((_, i) => (
-            <div key={`c-${i}`} className="h-14 animate-pulse border-b border-border/30 bg-v0-slate-900/45" />
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
 
 function lastSeenToSeconds(lastSeen: string): number {
   const raw = lastSeen.trim().toLowerCase()
@@ -66,10 +51,7 @@ function sortByMentionsThenRecent(a: Citation, b: Citation): number {
 }
 
 export default function SearchVisibilityPage() {
-  // Shared source is imported from citations-table; detail page keeps local state for resolve updates.
-  const [citations, setCitations] = useState<Citation[]>(() =>
-    [...citationsData].sort(sortByMentionsThenRecent)
-  )
+  const { citations, markResolvedByIds } = useCitations()
   const [searchQuery, setSearchQuery] = useState("")
   const [dateRange, setDateRange] = useState("30d")
   const [sourceFilter, setSourceFilter] = useState("all")
@@ -82,8 +64,28 @@ export default function SearchVisibilityPage() {
   const [isTableLoading, setIsTableLoading] = useState(true)
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsTableLoading(false), 800)
+    // Skeleton delay is intentionally forced to verify shimmer/loading in dev.
+    const SKELETON_MS = 800
+    // const SKELETON_MS = 0 // uncomment to disable skeleton instantly
+    const timer = setTimeout(() => setIsTableLoading(false), SKELETON_MS)
     return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const id = params.get("id")
+    const sidebarParam = params.get("sidebar")
+    if (id && sidebarParam === "true") {
+      const citation = citations.find((c) => c.id === Number(id))
+      if (citation) {
+        setSelectedCitation(citation)
+        setIsDrawerOpen(true)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    document.title = "AI Search Citations"
   }, [])
 
   const filteredCitations = useMemo(
@@ -185,21 +187,7 @@ export default function SearchVisibilityPage() {
 
   function handleResolve(citation: Citation) {
     const now = new Date().toLocaleString()
-    setCitations((prev) =>
-      prev
-        .map((item) =>
-          item.source === citation.source && item.page === citation.page
-            ? {
-                ...item,
-                optimizationProgress: 100,
-                trend: "up",
-                aiContext: RESOLVED_AI_CONTEXT,
-                lastSeen: now,
-              }
-            : item
-        )
-        .sort(sortByMentionsThenRecent)
-    )
+    markResolvedByIds([citation.id], { lastSeen: now, aiContext: RESOLVED_AI_CONTEXT })
     setIsDrawerOpen(false)
     setSelectedCitation(null)
     setHighlightedIds(new Set([citation.id]))
@@ -215,22 +203,10 @@ export default function SearchVisibilityPage() {
 
     const idsToUpdate = new Set(selected.map((item) => item.id))
     const now = new Date().toLocaleString()
-    setCitations((prev) =>
-      prev
-        .map((item) =>
-          idsToUpdate.has(item.id)
-            ? {
-                ...item,
-                optimizationProgress: 100,
-                trend: "up",
-                aiContext:
-                  "All optimization tasks completed. Content is now fully optimized for AI search visibility.",
-                lastSeen: now,
-              }
-            : item
-        )
-        .sort(sortByMentionsThenRecent)
-    )
+    markResolvedByIds(Array.from(idsToUpdate), {
+      lastSeen: now,
+      aiContext: "All optimization tasks completed. Content is now fully optimized for AI search visibility.",
+    })
     setHighlightedIds(idsToUpdate)
     setTimeout(() => setHighlightedIds(new Set()), 2000)
     setSelectedRows(new Set())
@@ -239,13 +215,16 @@ export default function SearchVisibilityPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Head>
+        <title>AI Search Citations</title>
+      </Head>
       <Sidebar />
 
-      <div className="pb-20 md:ml-16 md:pb-0 flex flex-col gap-4 md:gap-6">
+      <div className="pb-20 md:ml-16 md:pb-0 flex flex-col gap-2 md:gap-3">
         {/* Header with Back Button */}
         <header className="flex h-16 items-center justify-between border-b border-border/50 bg-background/80 px-4 md:px-6 backdrop-blur-sm">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" asChild className="gap-2 text-slate-300 hover:text-white">
+            <Button variant="ghost" size="sm" asChild className="gap-2 text-v0-white hover:text-white">
               <Link href="/">
                 <ArrowLeft className="h-4 w-4" />
                 <span className="text-[14px] font-medium">Back to Dashboard</span>
@@ -254,16 +233,17 @@ export default function SearchVisibilityPage() {
           </div>
         </header>
 
-        <main className="px-4 pt-4 md:px-6 md:pt-6">
+        <main className="px-4 pt-2 md:px-6 md:pt-2">
+
           <div className="mx-auto max-w-[1600px] flex flex-col gap-6">
             {/* Filter Bar */}
             <Card className="border-border/50 bg-slate-900/60">
-              <CardHeader className="pb-4 px-6 pt-6">
-                <CardTitle className="text-[16px] font-semibold tracking-normal text-white">
-                  All AI Search Citations
+              <CardHeader className="pb-3 px-5 pt-5">
+                <CardTitle className="text-[16px] font-semibold tracking-normal text-v0-slate-300">
+                  Filters
                 </CardTitle>
               </CardHeader>
-              <CardContent className="px-6 pb-6">
+              <CardContent className="px-5 pb-5">
                 <div className="flex flex-wrap items-center gap-4">
                   {/* Date Range */}
                   <div className="flex items-center gap-2">
@@ -316,7 +296,7 @@ export default function SearchVisibilityPage() {
 
             {/* Desktop table & Mobile card view */}
             {isTableLoading ? (
-              <TableSkeleton rows={25} cols={8} />
+              <CitationsDetailTableSkeleton rows={25} />
             ) : (
               <div className="detail-table-three-state">
                 <CitationsTable
@@ -362,7 +342,7 @@ export default function SearchVisibilityPage() {
       </div>
       {selectedRows.size > 0 && (
         <div className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-border bg-background/95 px-4 py-3 shadow-lg backdrop-blur">
-          <span className="text-sm font-medium text-v0-white">{selectedRows.size} citations selected</span>
+          <span className="text-sm font-medium text-v0-slate-300">{selectedRows.size} citations selected</span>
           <Button size="sm" variant="outline" onClick={handleExportSelected}>
             Export
           </Button>

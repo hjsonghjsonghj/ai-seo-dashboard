@@ -77,7 +77,7 @@ export function TrendsChart() {
 
   return (
     <Card className="border-border/50 bg-v0-slate-900/60 transition-colors duration-150 ">
-      <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-4 px-6 pt-6 pb-2">
+      <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-4 px-5 pt-5 pb-1.5">
         <div>
           <CardTitle className="text-lg font-semibold tracking-normal text-v0-white">
             Search Visibility Trends
@@ -101,7 +101,7 @@ export function TrendsChart() {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="px-6 pb-6 pt-4">
+      <CardContent className="px-5 pb-5 pt-3.5">
         <div className="h-[320px] w-full" role="img" aria-label="Area chart showing search visibility trends over 12 months with AI event markers">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart

@@ -45,13 +45,13 @@ const typeStyles = {
   critical: {
     bg: "bg-v0-slate-900/60 hover:bg-v0-slate-800/80",
     badge: "bg-v0-red-500/15 text-v0-red-400",
-    button: "bg-v0-red-500 hover:bg-v0-red-600 text-v0-white focus-visible:ring-v0-red-500",
+    button: "bg-v0-red-500 hover:bg-v0-red-600 text-v0-slate-300 focus-visible:ring-v0-red-500",
     icon: "bg-v0-red-500/15 text-v0-red-400",
   },
   opportunity: {
     bg: "bg-v0-slate-900/60 hover:bg-v0-slate-800/80",
     badge: "bg-v0-violet-500/15 text-v0-violet-400",
-    button: "bg-v0-violet-500 hover:bg-v0-violet-600 text-v0-white focus-visible:ring-v0-violet-500",
+    button: "bg-v0-violet-500 hover:bg-v0-violet-600 text-v0-slate-300 focus-visible:ring-v0-violet-500",
     icon: "bg-v0-violet-500/15 text-v0-violet-400",
   },
   optimization: {
@@ -72,7 +72,7 @@ export function StrategicInsights() {
         <div>
           <h2
             id="insights-heading"
-            className="text-lg font-semibold tracking-normal text-v0-white"
+            className="text-lg font-semibold tracking-normal text-v0-slate-300"
           >
             AI-Generated Strategic Insights
           </h2>
@@ -97,7 +97,7 @@ export function StrategicInsights() {
               role="article"
               aria-labelledby={`insight-${insight.id}-headline`}
             >
-              <CardHeader className="pb-3 shrink-0 px-6 pt-6">
+              <CardHeader className="pb-0 shrink-0 px-5 pt-5">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", styles.icon)} aria-hidden="true">
@@ -119,11 +119,11 @@ export function StrategicInsights() {
                   </span>
                 </div>
               </CardHeader>
-              <CardContent className="flex flex-col flex-1 px-6 pb-6">
+              <CardContent className="flex flex-col flex-1 px-5 pb-5 pt-0">
                 <div className="flex-1">
                   <h3
                     id={`insight-${insight.id}-headline`}
-                    className="mb-2 text-base font-semibold tracking-normal text-v0-white"
+                    className="mb-0 text-base font-semibold tracking-normal text-v0-slate-300"
                   >
                     {insight.headline}
                   </h3>
