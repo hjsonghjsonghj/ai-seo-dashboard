@@ -5,9 +5,27 @@ import { Header } from "@/components/dashboard/header"
 import { StatCards } from "@/components/dashboard/stat-cards"
 import { StrategicInsights } from "@/components/dashboard/strategic-insights"
 import { TrendsChart } from "@/components/dashboard/trends-chart"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { CitationDetailsDrawer } from "@/components/dashboard/citation-details-drawer"
 import { toast } from "sonner"
+
+function TableSkeleton({ rows = 5, cols = 7 }: { rows?: number; cols?: number }) {
+  return (
+    <div className="rounded-xl border border-border/50 bg-card p-6">
+      <div className="mb-4 h-6 w-56 animate-pulse rounded bg-v0-slate-800/70" />
+      <div className="overflow-hidden rounded-lg border border-border/50">
+        <div className="grid" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
+          {Array.from({ length: cols }).map((_, i) => (
+            <div key={`h-${i}`} className="h-11 animate-pulse border-b border-border/50 bg-v0-slate-800/55" />
+          ))}
+          {Array.from({ length: rows * cols }).map((_, i) => (
+            <div key={`c-${i}`} className="h-14 animate-pulse border-b border-border/30 bg-v0-slate-900/45" />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function DashboardPage() {
   const [citations, setCitations] = useState<any[]>(
@@ -16,6 +34,12 @@ export default function DashboardPage() {
   const [selectedCitation, setSelectedCitation] = useState<any | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [highlightedId, setHighlightedId] = useState<number | null>(null)
+  const [isTableLoading, setIsTableLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsTableLoading(false), 800)
+    return () => clearTimeout(timer)
+  }, [])
 
   function handleResolve(citation: any) {
     setCitations(prev => prev.map(c =>
@@ -35,10 +59,10 @@ export default function DashboardPage() {
       <Sidebar />
 
       {/* Main Content */}
-      <div className="pb-20 md:ml-16 md:pb-0 flex flex-col gap-14">
+      <div className="pb-20 md:ml-16 md:pb-0 flex flex-col gap-4 md:gap-6">
         <Header />
 
-        <main className="p-4 md:p-6">
+        <main className="px-4 pt-4 pb-4 md:px-6 md:pt-6 md:pb-6">
           <div className="mx-auto max-w-[1600px] space-y-4 md:space-y-6">
             {/* Stats Row */}
             <StatCards />
@@ -50,14 +74,18 @@ export default function DashboardPage() {
             <TrendsChart />
 
             {/* Desktop table & Mobile card view */}
-            <CitationsTableComponent
-              data={citations}
-              highlightedId={highlightedId}
-              onReview={(citation) => {
-                setSelectedCitation(citation)
-                setIsDrawerOpen(true)
-              }}
-            />
+            {isTableLoading ? (
+              <TableSkeleton rows={5} cols={7} />
+            ) : (
+              <CitationsTableComponent
+                data={citations}
+                highlightedId={highlightedId}
+                onReview={(citation) => {
+                  setSelectedCitation(citation)
+                  setIsDrawerOpen(true)
+                }}
+              />
+            )}
 
             {/* Side Drawer */}
             <CitationDetailsDrawer

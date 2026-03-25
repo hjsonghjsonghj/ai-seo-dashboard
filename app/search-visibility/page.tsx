@@ -1,7 +1,7 @@
 "use client"
 import { CitationDetailsDrawer } from "@/components/dashboard/citation-details-drawer"
 import CitationsTable, { citationsData } from "@/components/dashboard/citations-table"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { ArrowLeft, Search, Calendar, Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -23,6 +23,24 @@ type SortDirection = "asc" | "desc"
 
 const RESOLVED_AI_CONTEXT =
   "All optimization tasks completed. Content is now fully optimized for AI search visibility with comprehensive structured data, clear examples, and proper schema implementation."
+
+function TableSkeleton({ rows = 25, cols = 8 }: { rows?: number; cols?: number }) {
+  return (
+    <div className="rounded-xl border border-border/50 bg-card p-6">
+      <div className="mb-4 h-6 w-56 animate-pulse rounded bg-v0-slate-800/70" />
+      <div className="overflow-hidden rounded-lg border border-border/50">
+        <div className="grid" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
+          {Array.from({ length: cols }).map((_, i) => (
+            <div key={`h-${i}`} className="h-11 animate-pulse border-b border-border/50 bg-v0-slate-800/55" />
+          ))}
+          {Array.from({ length: rows * cols }).map((_, i) => (
+            <div key={`c-${i}`} className="h-14 animate-pulse border-b border-border/30 bg-v0-slate-900/45" />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function lastSeenToSeconds(lastSeen: string): number {
   const raw = lastSeen.trim().toLowerCase()
@@ -61,6 +79,12 @@ export default function SearchVisibilityPage() {
   const [sortBy, setSortBy] = useState<SortKey>("mentions")
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc")
   const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set())
+  const [isTableLoading, setIsTableLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsTableLoading(false), 800)
+    return () => clearTimeout(timer)
+  }, [])
 
   const filteredCitations = useMemo(
     () =>
@@ -217,7 +241,7 @@ export default function SearchVisibilityPage() {
     <div className="min-h-screen bg-background">
       <Sidebar />
 
-      <div className="pb-20 md:ml-16 md:pb-0 flex flex-col gap-14">
+      <div className="pb-20 md:ml-16 md:pb-0 flex flex-col gap-4 md:gap-6">
         {/* Header with Back Button */}
         <header className="flex h-16 items-center justify-between border-b border-border/50 bg-background/80 px-4 md:px-6 backdrop-blur-sm">
           <div className="flex items-center gap-4">
@@ -228,18 +252,15 @@ export default function SearchVisibilityPage() {
               </Link>
             </Button>
           </div>
-          <h1 className="text-[16px] font-semibold tracking-normal text-white">
-            All AI Search Citations
-          </h1>
         </header>
 
-        <main className="px-4 md:px-6">
+        <main className="px-4 pt-4 md:px-6 md:pt-6">
           <div className="mx-auto max-w-[1600px] flex flex-col gap-6">
             {/* Filter Bar */}
             <Card className="border-border/50 bg-slate-900/60">
               <CardHeader className="pb-4 px-6 pt-6">
                 <CardTitle className="text-[16px] font-semibold tracking-normal text-white">
-                  Filters
+                  All AI Search Citations
                 </CardTitle>
               </CardHeader>
               <CardContent className="px-6 pb-6">
@@ -294,37 +315,40 @@ export default function SearchVisibilityPage() {
             </Card>
 
             {/* Desktop table & Mobile card view */}
-            <div className="detail-table-three-state">
-              <CitationsTable
-                data={filteredCitations}
-                highlightedIds={highlightedIds}
-                stickyHeader
-                showSelectionColumn
-                title="AI Search Citations"
-                sortBy={sortBy}
-                sortDirection={sortDirection}
-                onSortToggle={handleSortToggle}
-                selectedRowIds={selectedRows}
-                onToggleRow={handleToggleRow}
-                onToggleAllVisible={handleToggleAllVisible}
-                onReview={(citation) => {
-                  setSelectedCitation(citation);
-                  setIsDrawerOpen(true);
-                }}
-                headerAction={
-                  <div className="flex items-center gap-3">
-                    <span className="text-[14px] font-medium tabular-nums text-slate-300">
-                      {`${filteredCitations.length} citations`}
-                    </span>
-                    {selectedRows.size > 0 && (
-                      <span className="text-[13px] font-medium text-v0-emerald-400">
-                        {selectedRows.size} items selected
+            {isTableLoading ? (
+              <TableSkeleton rows={25} cols={8} />
+            ) : (
+              <div className="detail-table-three-state">
+                <CitationsTable
+                  data={filteredCitations}
+                  highlightedIds={highlightedIds}
+                  showSelectionColumn
+                  title="AI Search Citations"
+                  sortBy={sortBy}
+                  sortDirection={sortDirection}
+                  onSortToggle={handleSortToggle}
+                  selectedRowIds={selectedRows}
+                  onToggleRow={handleToggleRow}
+                  onToggleAllVisible={handleToggleAllVisible}
+                  onReview={(citation) => {
+                    setSelectedCitation(citation);
+                    setIsDrawerOpen(true);
+                  }}
+                  headerAction={
+                    <div className="flex items-center gap-3">
+                      <span className="text-[14px] font-medium tabular-nums text-slate-300">
+                        {`${filteredCitations.length} citations`}
                       </span>
-                    )}
-                  </div>
-                }
-              />
-            </div>
+                      {selectedRows.size > 0 && (
+                        <span className="text-[13px] font-medium text-v0-emerald-400">
+                          {selectedRows.size} items selected
+                        </span>
+                      )}
+                    </div>
+                  }
+                />
+              </div>
+            )}
 
             {/* Side Drawer */}
             <CitationDetailsDrawer
