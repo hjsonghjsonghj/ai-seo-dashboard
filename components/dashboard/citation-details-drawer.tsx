@@ -81,7 +81,11 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
     return (
         <>
             {/* Print-only report — hidden in browser, visible only during window.print() */}
-            <div className="print-report" style={{ display: "none" }}>
+            <div className="print-report" style={{
+                display: "block",
+                position: "relative",
+                border: "2px solid red"  // 빨간 테두리로 확인
+            }}>
                 <div style={{ fontFamily: "Georgia, 'Times New Roman', serif", color: "#111", background: "#fff" }}>
                     {/* Header */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "2rem", borderBottom: "2px solid #111", paddingBottom: "1rem" }}>
@@ -95,10 +99,16 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
                     </div>
 
                     {/* Status Card */}
-                    <div style={{ border: "1px solid #ddd", borderRadius: "8px", padding: "1.5rem", marginBottom: "2rem", background: "#f9f9f9" }}>
-                        <p style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#666", margin: "0 0 0.5rem", fontFamily: "system-ui, sans-serif" }}>Optimization Score</p>
-                        <p style={{ fontSize: "52px", fontWeight: "bold", margin: 0, lineHeight: 1, fontFamily: "system-ui, sans-serif" }}>{selectedCitation.optimizationProgress}%</p>
-                        <p style={{ fontSize: "16px", fontWeight: 600, margin: "0.5rem 0 0", fontFamily: "system-ui, sans-serif" }}>{severity}: {selectedCitation.optimizationProgress}%</p>
+                    <div style={{ display: "flex", gap: "1rem", marginBottom: "2rem" }}>
+                        <div style={{ flex: 1, border: "1px solid #ddd", borderRadius: "8px", padding: "1.5rem", background: "#f9f9f9" }}>
+                            <p style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#666", margin: "0 0 0.5rem", fontFamily: "system-ui, sans-serif" }}>Optimization Score</p>
+                            <p style={{ fontSize: "36px", fontWeight: "bold", margin: 0, lineHeight: 1, fontFamily: "system-ui, sans-serif" }}>{selectedCitation.optimizationProgress}%</p>
+                            <p style={{ fontSize: "16px", fontWeight: 600, margin: "0.5rem 0 0", fontFamily: "system-ui, sans-serif" }}>{severity}: {selectedCitation.optimizationProgress}%</p>
+                        </div>
+                        <div style={{ flex: 1, border: "1px solid #ddd", borderRadius: "8px", padding: "1.5rem", background: "#f9f9f9" }}>
+                            <p style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#666", margin: "0 0 0.5rem", fontFamily: "system-ui, sans-serif" }}>Mentions</p>
+                            <p style={{ fontSize: "36px", fontWeight: "bold", margin: 0, lineHeight: 1, fontFamily: "system-ui, sans-serif" }}>{selectedCitation.mentions.toLocaleString()}</p>
+                        </div>
                     </div>
 
                     {/* Source */}

@@ -204,3 +204,26 @@
 
 
 }
+
+@page {
+  margin: 0;
+  size: A4;
+}
+
+@media print {
+  body * {
+    display: none !important;
+  }
+  .print-report, .print-report * {
+    display: block !important;
+  }
+  .print-report {
+    display: block !important;
+    position: fixed !important;
+    inset: 0 !important;
+    background: white !important;
+    padding: 2cm !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+}
