@@ -75,70 +75,11 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
     }
 
     function handlePrint() {
-        window.print()
+        toast.info('Export functionality coming soon')
     }
 
     return (
         <>
-            {/* Print-only report — hidden in browser, visible only during window.print() */}
-            <div className="print-report" style={{
-                display: "block",
-                position: "relative",
-                border: "2px solid red"  // 빨간 테두리로 확인
-            }}>
-                <div style={{ fontFamily: "Georgia, 'Times New Roman', serif", color: "#111", background: "#fff" }}>
-                    {/* Header */}
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "2rem", borderBottom: "2px solid #111", paddingBottom: "1rem" }}>
-                        <div>
-                            <h1 style={{ fontSize: "24px", fontWeight: "bold", margin: 0, fontFamily: "system-ui, sans-serif" }}>AI Diagnostic Report</h1>
-                            <p style={{ fontSize: "12px", color: "#666", margin: "4px 0 0", wordBreak: "break-all" }}>{currentUrl}</p>
-                        </div>
-                        <p style={{ fontSize: "12px", color: "#666", textAlign: "right", whiteSpace: "nowrap", marginLeft: "1rem" }}>
-                            {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-                        </p>
-                    </div>
-
-                    {/* Status Card */}
-                    <div style={{ display: "flex", gap: "1rem", marginBottom: "2rem" }}>
-                        <div style={{ flex: 1, border: "1px solid #ddd", borderRadius: "8px", padding: "1.5rem", background: "#f9f9f9" }}>
-                            <p style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#666", margin: "0 0 0.5rem", fontFamily: "system-ui, sans-serif" }}>Optimization Score</p>
-                            <p style={{ fontSize: "36px", fontWeight: "bold", margin: 0, lineHeight: 1, fontFamily: "system-ui, sans-serif" }}>{selectedCitation.optimizationProgress}%</p>
-                            <p style={{ fontSize: "16px", fontWeight: 600, margin: "0.5rem 0 0", fontFamily: "system-ui, sans-serif" }}>{severity}: {selectedCitation.optimizationProgress}%</p>
-                        </div>
-                        <div style={{ flex: 1, border: "1px solid #ddd", borderRadius: "8px", padding: "1.5rem", background: "#f9f9f9" }}>
-                            <p style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#666", margin: "0 0 0.5rem", fontFamily: "system-ui, sans-serif" }}>Mentions</p>
-                            <p style={{ fontSize: "36px", fontWeight: "bold", margin: 0, lineHeight: 1, fontFamily: "system-ui, sans-serif" }}>{selectedCitation.mentions.toLocaleString()}</p>
-                        </div>
-                    </div>
-
-                    {/* Source */}
-                    <div style={{ marginBottom: "2rem" }}>
-                        <h2 style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#666", margin: "0 0 0.5rem", fontFamily: "system-ui, sans-serif" }}>Source</h2>
-                        <p style={{ fontSize: "16px", fontWeight: 600, margin: 0, fontFamily: "system-ui, sans-serif" }}>{selectedCitation.source}</p>
-                        <p style={{ fontSize: "13px", color: "#666", margin: "4px 0 0", fontFamily: "system-ui, sans-serif" }}>{selectedCitation.page}</p>
-                    </div>
-
-                    {/* AI Analysis */}
-                    <div style={{ marginBottom: "2rem" }}>
-                        <h2 style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#666", margin: "0 0 0.75rem", fontFamily: "system-ui, sans-serif" }}>AI Analysis</h2>
-                        <p style={{ fontSize: "14px", lineHeight: 1.7, color: "#333", margin: 0, fontFamily: "Georgia, serif" }}>{selectedCitation.aiContext}</p>
-                    </div>
-
-                    {/* Action Checklist */}
-                    <div>
-                        <h2 style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#666", margin: "0 0 0.75rem", fontFamily: "system-ui, sans-serif" }}>Action Checklist</h2>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                            {checklist.map((item, i) => (
-                                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem" }}>
-                                    <span style={{ fontSize: "16px", lineHeight: 1, marginTop: "2px", flexShrink: 0 }}>{item.done ? "☑" : "☐"}</span>
-                                    <span style={{ fontSize: "14px", color: item.done ? "#333" : "#777", fontFamily: "Georgia, serif" }}>{item.text}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <Sheet open={open} onOpenChange={onOpenChange}>
                 <SheetContent className="w-full sm:max-w-md bg-slate-900 border-slate-800 overflow-y-auto">
                     {/* Share icon button — positioned next to the built-in X close button */}
