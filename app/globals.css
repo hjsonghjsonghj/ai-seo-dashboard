@@ -44,9 +44,9 @@
 
   /* Chart colors - indigo spectrum with cyan accent */
   --chart-1: oklch(0.65 0.25 275);
-  --chart-2: oklch(0.7 0.18 220);
+  --chart-2: oklch(0.68 0.17 165);
   --chart-3: oklch(0.6 0.2 285);
-  --chart-4: oklch(0.75 0.15 200);
+  --chart-4: oklch(0.70 0.14 235);
   --chart-5: oklch(0.55 0.18 300);
 
   --radius: 0.5rem;
@@ -96,6 +96,12 @@
   --v0-amber-600: #d97706;
   --v0-amber-500: #f59e0b;
   --v0-amber-400: #fbbf24;
+
+  /* Chart UI colors */
+  --v0-grid-line: oklch(0.25 0.01 285);
+  --v0-axis-text: oklch(0.6 0.01 285);
+  --v0-chart-ref-line: oklch(0.5 0.15 285);
+  --v0-chart-label: oklch(0.7 0.15 285);
 }
 
 @theme inline {
@@ -164,6 +170,11 @@
   --color-v0-amber-600: var(--v0-amber-600);
   --color-v0-amber-500: var(--v0-amber-500);
   --color-v0-amber-400: var(--v0-amber-400);
+
+  --color-v0-grid-line: var(--v0-grid-line);
+  --color-v0-axis-text: var(--v0-axis-text);
+  --color-v0-chart-ref-line: var(--v0-chart-ref-line);
+  --color-v0-chart-label: var(--v0-chart-label);
 }
 
 @layer base {
@@ -192,25 +203,4 @@
   /* Numeric data should use tabular-nums for alignment */
 
 
-}
-
-/* ─── Print report: hide all UI, show only .print-report ─── */
-@media print {
-  body * {
-    visibility: hidden;
-  }
-
-  .print-report,
-  .print-report * {
-    visibility: visible;
-  }
-
-  .print-report {
-    display: block !important;
-    position: fixed;
-    inset: 0;
-    background: #ffffff;
-    padding: 2cm;
-    box-sizing: border-box;
-  }
 }

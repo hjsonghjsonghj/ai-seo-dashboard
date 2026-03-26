@@ -12,6 +12,7 @@ import {
   ReferenceLine,
   Label,
 } from "recharts"
+import { useState, useEffect } from "react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 
 const data = [
@@ -75,6 +76,29 @@ function CustomTooltip({
 export function TrendsChart() {
   const isMobile = useMediaQuery("(max-width: 768px)")
 
+  const [chartColors, setChartColors] = useState({
+    aiDiscovery: 'oklch(0.65 0.25 275)',
+    organicSearch: 'oklch(0.68 0.17 165)',
+    citations: 'oklch(0.70 0.14 235)',
+  })
+  const [gridLine, setGridLine] = useState('oklch(0.25 0.01 285)')
+  const [axisText, setAxisText] = useState('oklch(0.6 0.01 285)')
+  const [refLine, setRefLine] = useState('oklch(0.5 0.15 285)')
+  const [chartLabel, setChartLabel] = useState('oklch(0.7 0.15 285)')
+
+  useEffect(() => {
+    const rootStyles = getComputedStyle(document.documentElement)
+    setChartColors({
+      aiDiscovery: rootStyles.getPropertyValue('--chart-1').trim(),
+      organicSearch: rootStyles.getPropertyValue('--chart-2').trim(),
+      citations: rootStyles.getPropertyValue('--chart-4').trim(),
+    })
+    setGridLine(rootStyles.getPropertyValue('--v0-grid-line').trim())
+    setAxisText(rootStyles.getPropertyValue('--v0-axis-text').trim())
+    setRefLine(rootStyles.getPropertyValue('--v0-chart-ref-line').trim())
+    setChartLabel(rootStyles.getPropertyValue('--v0-chart-label').trim())
+  }, [])
+
   return (
     <Card className="border-border/50 bg-v0-slate-900/60 transition-colors duration-150 ">
       <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-4 px-5 pt-5 pb-1.5">
@@ -92,11 +116,11 @@ export function TrendsChart() {
             <span className="text-[13px] font-medium tracking-normal text-v0-slate-300">AI Discovery</span>
           </div>
           <div className="flex items-center gap-2" role="listitem">
-            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: "oklch(0.7 0.18 220)" }} aria-hidden="true" />
+            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: chartColors.organicSearch }} aria-hidden="true" />
             <span className="text-[13px] font-medium tracking-normal text-v0-slate-300">Organic Search</span>
           </div>
           <div className="flex items-center gap-2" role="listitem">
-            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: "oklch(0.75 0.15 200)" }} aria-hidden="true" />
+            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: chartColors.citations }} aria-hidden="true" />
             <span className="text-[13px] font-medium tracking-normal text-v0-slate-300">Citations</span>
           </div>
         </div>
@@ -110,34 +134,34 @@ export function TrendsChart() {
             >
               <defs>
                 <linearGradient id="aiDiscovery" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="oklch(0.65 0.22 285)" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="oklch(0.65 0.22 285)" stopOpacity={0} />
+                  <stop offset="5%" stopColor={chartColors.aiDiscovery} stopOpacity={0.4} />
+                  <stop offset="95%" stopColor={chartColors.aiDiscovery} stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="organicSearch" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="oklch(0.7 0.18 220)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="oklch(0.7 0.18 220)" stopOpacity={0} />
+                  <stop offset="5%" stopColor={chartColors.organicSearch} stopOpacity={0.3} />
+                  <stop offset="95%" stopColor={chartColors.organicSearch} stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="citations" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="oklch(0.75 0.15 200)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="oklch(0.75 0.15 200)" stopOpacity={0} />
+                  <stop offset="5%" stopColor={chartColors.citations} stopOpacity={0.3} />
+                  <stop offset="95%" stopColor={chartColors.citations} stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="oklch(0.25 0.01 285)"
+                stroke={gridLine}
               />
               <XAxis
                 dataKey="date"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "oklch(0.6 0.01 285)", fontSize: 12 }}
+                tick={{ fill: axisText, fontSize: 12 }}
                 dy={10}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "oklch(0.6 0.01 285)", fontSize: 12 }}
+                tick={{ fill: axisText, fontSize: 12 }}
                 tickFormatter={(value) => `${value / 1000}K`}
                 dx={-10}
               />
@@ -146,14 +170,14 @@ export function TrendsChart() {
                 <ReferenceLine
                   key={e.date}
                   x={e.date}
-                  stroke="oklch(0.5 0.15 285)"
+                  stroke={refLine}
                   strokeDasharray="3 3"
                   strokeWidth={1}
                 >
                   <Label
                     value={e.event}
                     position="top"
-                    fill="oklch(0.7 0.15 285)"
+                    fill={chartLabel}
                     fontSize={12}
                     fontWeight={500}
                     offset={10}
@@ -166,7 +190,7 @@ export function TrendsChart() {
                 type="monotone"
                 dataKey="aiDiscovery"
                 name="AI Discovery"
-                stroke="oklch(0.65 0.22 285)"
+                stroke={chartColors.aiDiscovery}
                 strokeWidth={2}
                 fillOpacity={1}
                 fill="url(#aiDiscovery)"
@@ -175,7 +199,7 @@ export function TrendsChart() {
                 type="monotone"
                 dataKey="organicSearch"
                 name="Organic Search"
-                stroke="oklch(0.7 0.18 220)"
+                stroke={chartColors.organicSearch}
                 strokeWidth={2}
                 fillOpacity={1}
                 fill="url(#organicSearch)"
@@ -184,7 +208,7 @@ export function TrendsChart() {
                 type="monotone"
                 dataKey="citations"
                 name="Citations"
-                stroke="oklch(0.75 0.15 200)"
+                stroke={chartColors.citations}
                 strokeWidth={2}
                 fillOpacity={1}
                 fill="url(#citations)"
