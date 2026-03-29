@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Peec AI - Dark mode Berlin startup aesthetic */
+/* Dark mode Berlin startup aesthetic */
 :root {
   /* Deep charcoal/black background */
   --background: oklch(0.12 0.005 285);
