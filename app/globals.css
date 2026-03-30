@@ -4,9 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================================
-   SEMANTIC TOKENS — defined in bare :root (not @layer)
-   so that @theme inline can resolve var() references
-   at build time, enabling opacity modifiers like /60.
+   SEMANTIC TOKENS in :root
+   Used by components that reference var(--xxx) directly.
    ============================================================ */
 :root {
   /* Background */
@@ -31,28 +30,28 @@
   --border-input: #1e293b;
 
   /* Brand */
-  --brand-primary: #a78bfa;   /* violet-400 */
-  --brand-accent: #8b5cf6;    /* violet-500 */
+  --brand-primary: #a78bfa;
+  --brand-accent: #8b5cf6;
 
   /* Feedback */
-  --feedback-destructive: #f87171;           /* red-400 */
+  --feedback-destructive: #f87171;
   --feedback-destructive-foreground: #f8fafc;
-  --feedback-warning: #f59e0b;               /* amber-500 */
+  --feedback-warning: #f59e0b;
   --feedback-warning-foreground: #f8fafc;
-  --feedback-success: #6ee7b7;               /* emerald-300 */
+  --feedback-success: #6ee7b7;
   --feedback-success-foreground: #f8fafc;
 
   /* Focus */
   --focus-ring: #a78bfa;
 
-  /* Chart — vibrant Tailwind scale colors */
-  --chart-1: #8b5cf6;    /* violet-500, replaces violet-400 for vibrancy */
-  --chart-2: #10b981;    /* emerald-500, replaces emerald-300 for vibrancy */
-  --chart-4: #60a5fa;    /* blue-400, replaces blue-300 for vibrancy */
+  /* Chart */
+  --chart-1: #8b5cf6;
+  --chart-2: #10b981;
+  --chart-4: #60a5fa;
   --chart-grid-line: #334155;
   --chart-axis-text: #94a3b8;
-  --chart-reference-line: #7c3aed;  /* violet-600 */
-  --chart-label: #a78bfa;           /* violet-400 */
+  --chart-reference-line: #7c3aed;
+  --chart-label: #a78bfa;
 
   /* Sidebar */
   --sidebar-background: #0f172a;
@@ -69,138 +68,105 @@
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-xl: 12px;
-
-  /* ----------------------------------------------------------
-     V0 PALETTE COMPATIBILITY LAYER
-     Each v0 variable points to a semantic token so existing
-     Tailwind utility classes (bg-v0-*, text-v0-*) and their
-     opacity modifiers (e.g. /60) keep working correctly.
-     ---------------------------------------------------------- */
-  --v0-slate-900: var(--background-default);       /* #0f172a */
-  --v0-slate-800: var(--background-card);           /* #1e293b */
-  --v0-slate-700: var(--border-default);            /* #334155 */
-  --v0-slate-500: #64748b;
-  --v0-slate-400: var(--foreground-muted);          /* #94a3b8 */
-  --v0-slate-300: var(--foreground-subtle);         /* #cbd5e1 */
-  --v0-white: #ffffff;
-  --v0-violet-600: var(--chart-reference-line);     /* #7c3aed */
-  --v0-violet-500: var(--brand-accent);             /* #8b5cf6 */
-  --v0-violet-400: var(--brand-primary);            /* #a78bfa */
-  --v0-violet-300: #c4b5fd;
-  --v0-violet-200: #ddd6fe;
-  --v0-emerald-500: #10b981;
-  --v0-emerald-400: #34d399;
-  --v0-rose-400: #fb7185;
-  --v0-red-600: #dc2626;
-  --v0-red-500: #ef4444;
-  --v0-red-400: var(--feedback-destructive);        /* #f87171 */
-  --v0-amber-600: #d97706;
-  --v0-amber-500: var(--feedback-warning);          /* #f59e0b */
-  --v0-amber-400: #fbbf24;
-  --v0-grid-line: var(--chart-grid-line);
-  --v0-axis-text: var(--chart-axis-text);
-  --v0-chart-ref-line: var(--chart-reference-line);
-  --v0-chart-label: var(--chart-label);
 }
 
 /* ============================================================
-   TAILWIND UTILITY MAPPINGS
-   Uses @theme inline so opacity modifiers (/60 etc) work.
-   All var() references point to bare :root vars above,
-   which @theme inline can resolve at build time.
+   TAILWIND THEME — direct hex values (no var() chains)
+   This guarantees opacity modifiers (/60, /80 etc.) and
+   @apply all work correctly at build time.
    ============================================================ */
-@theme inline {
+@theme {
   --font-sans: var(--font-sans), 'Geist', system-ui, sans-serif;
   --font-mono: var(--font-mono), 'Geist Mono', ui-monospace, monospace;
 
-  /* Core semantic colors */
-  --color-background: var(--background-default);
-  --color-foreground: var(--foreground-default);
+  /* Core colors */
+  --color-background: #0f172a;
+  --color-foreground: #f1f5f9;
 
-  --color-card: var(--background-card);
-  --color-card-foreground: var(--foreground-on-card);
+  --color-card: #1e293b;
+  --color-card-foreground: #f1f5f9;
 
-  --color-popover: var(--background-popover);
-  --color-popover-foreground: var(--foreground-default);
+  --color-popover: #0f172a;
+  --color-popover-foreground: #f1f5f9;
 
-  --color-primary: var(--brand-primary);
-  --color-primary-foreground: var(--foreground-on-primary);
+  --color-primary: #a78bfa;
+  --color-primary-foreground: #f8fafc;
 
-  --color-secondary: var(--background-secondary);
-  --color-secondary-foreground: var(--foreground-secondary);
+  --color-secondary: #334155;
+  --color-secondary-foreground: #e2e8f0;
 
-  --color-muted: var(--background-muted);
-  --color-muted-foreground: var(--foreground-muted);
+  --color-muted: #1e293b;
+  --color-muted-foreground: #94a3b8;
 
-  --color-accent: var(--brand-accent);
-  --color-accent-foreground: var(--foreground-on-accent);
+  --color-accent: #8b5cf6;
+  --color-accent-foreground: #f8fafc;
 
-  --color-destructive: var(--feedback-destructive);
-  --color-destructive-foreground: var(--feedback-destructive-foreground);
+  --color-destructive: #f87171;
+  --color-destructive-foreground: #f8fafc;
 
-  --color-border: var(--border-default);
-  --color-input: var(--border-input);
-  --color-ring: var(--focus-ring);
+  --color-border: #334155;
+  --color-input: #1e293b;
+  --color-ring: #a78bfa;
 
   /* Chart */
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-4: var(--chart-4);
+  --color-chart-1: #8b5cf6;
+  --color-chart-2: #10b981;
+  --color-chart-4: #60a5fa;
 
-  /* Feedback utilities */
-  --color-warning: var(--feedback-warning);
-  --color-warning-foreground: var(--feedback-warning-foreground);
-  --color-success: var(--feedback-success);
-  --color-success-foreground: var(--feedback-success-foreground);
+  /* Feedback */
+  --color-warning: #f59e0b;
+  --color-warning-foreground: #f8fafc;
+  --color-success: #6ee7b7;
+  --color-success-foreground: #f8fafc;
 
-  /* Extra utilities */
-  --color-foreground-subtle: var(--foreground-subtle);
-  --color-border-strong: var(--border-strong);
+  /* Extra */
+  --color-foreground-subtle: #cbd5e1;
+  --color-border-strong: #334155;
 
   /* Border radius */
-  --radius: var(--radius-lg);
-  --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-md);
-  --radius-lg: var(--radius-lg);
-  --radius-xl: var(--radius-xl);
+  --radius: 8px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
 
   /* Sidebar */
-  --color-sidebar: var(--sidebar-background);
-  --color-sidebar-background: var(--sidebar-background);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primaryForeground);
-  --color-sidebar-accent: var(--sidebar-accentBackground);
-  --color-sidebar-accent-foreground: var(--sidebar-accentForeground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar: #0f172a;
+  --color-sidebar-background: #0f172a;
+  --color-sidebar-foreground: #e2e8f0;
+  --color-sidebar-primary: #a78bfa;
+  --color-sidebar-primary-foreground: #f8fafc;
+  --color-sidebar-accent: #1e293b;
+  --color-sidebar-accent-foreground: #f1f5f9;
+  --color-sidebar-border: #334155;
+  --color-sidebar-ring: #a78bfa;
 
-  /* V0 palette */
-  --color-v0-slate-900: var(--v0-slate-900);
-  --color-v0-slate-800: var(--v0-slate-800);
-  --color-v0-slate-700: var(--v0-slate-700);
-  --color-v0-slate-500: var(--v0-slate-500);
-  --color-v0-slate-400: var(--v0-slate-400);
-  --color-v0-slate-300: var(--v0-slate-300);
-  --color-v0-white: var(--v0-white);
-  --color-v0-violet-600: var(--v0-violet-600);
-  --color-v0-violet-500: var(--v0-violet-500);
-  --color-v0-violet-400: var(--v0-violet-400);
-  --color-v0-violet-300: var(--v0-violet-300);
-  --color-v0-violet-200: var(--v0-violet-200);
-  --color-v0-emerald-500: var(--v0-emerald-500);
-  --color-v0-emerald-400: var(--v0-emerald-400);
-  --color-v0-rose-400: var(--v0-rose-400);
-  --color-v0-red-600: var(--v0-red-600);
-  --color-v0-red-500: var(--v0-red-500);
-  --color-v0-red-400: var(--v0-red-400);
-  --color-v0-amber-600: var(--v0-amber-600);
-  --color-v0-amber-500: var(--v0-amber-500);
-  --color-v0-amber-400: var(--v0-amber-400);
-  --color-v0-grid-line: var(--v0-grid-line);
-  --color-v0-axis-text: var(--v0-axis-text);
-  --color-v0-chart-ref-line: var(--v0-chart-ref-line);
-  --color-v0-chart-label: var(--v0-chart-label);
+  /* V0 palette — direct hex so opacity modifiers (/60, /80) work */
+  --color-v0-slate-900: #0f172a;
+  --color-v0-slate-800: #1e293b;
+  --color-v0-slate-700: #334155;
+  --color-v0-slate-500: #64748b;
+  --color-v0-slate-400: #94a3b8;
+  --color-v0-slate-300: #cbd5e1;
+  --color-v0-white: #ffffff;
+  --color-v0-violet-600: #7c3aed;
+  --color-v0-violet-500: #8b5cf6;
+  --color-v0-violet-400: #a78bfa;
+  --color-v0-violet-300: #c4b5fd;
+  --color-v0-violet-200: #ddd6fe;
+  --color-v0-emerald-500: #10b981;
+  --color-v0-emerald-400: #34d399;
+  --color-v0-rose-400: #fb7185;
+  --color-v0-red-600: #dc2626;
+  --color-v0-red-500: #ef4444;
+  --color-v0-red-400: #f87171;
+  --color-v0-amber-600: #d97706;
+  --color-v0-amber-500: #f59e0b;
+  --color-v0-amber-400: #fbbf24;
+  --color-v0-grid-line: #334155;
+  --color-v0-axis-text: #94a3b8;
+  --color-v0-chart-ref-line: #7c3aed;
+  --color-v0-chart-label: #a78bfa;
 }
 
 /* ============================================================
