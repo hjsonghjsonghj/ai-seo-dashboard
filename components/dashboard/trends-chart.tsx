@@ -77,14 +77,14 @@ export function TrendsChart() {
   const isMobile = useMediaQuery("(max-width: 768px)")
 
   const [chartColors, setChartColors] = useState({
-    aiDiscovery: 'oklch(0.65 0.25 275)',
-    organicSearch: 'oklch(0.68 0.17 165)',
-    citations: 'oklch(0.70 0.14 235)',
+    aiDiscovery: '#a78bfa',   /* --chart-1 */
+    organicSearch: '#6ee7b7', /* --chart-2 */
+    citations: '#93c5fd',     /* --chart-4 */
   })
-  const [gridLine, setGridLine] = useState('oklch(0.25 0.01 285)')
-  const [axisText, setAxisText] = useState('oklch(0.6 0.01 285)')
-  const [refLine, setRefLine] = useState('oklch(0.5 0.15 285)')
-  const [chartLabel, setChartLabel] = useState('oklch(0.7 0.15 285)')
+  const [gridLine, setGridLine] = useState('#334155')   /* --chart-grid-line */
+  const [axisText, setAxisText] = useState('#94a3b8')   /* --chart-axis-text */
+  const [refLine, setRefLine] = useState('#7c3aed')     /* --chart-reference-line */
+  const [chartLabel, setChartLabel] = useState('#a78bfa') /* --chart-label */
 
   useEffect(() => {
     const rootStyles = getComputedStyle(document.documentElement)
@@ -93,10 +93,10 @@ export function TrendsChart() {
       organicSearch: rootStyles.getPropertyValue('--chart-2').trim(),
       citations: rootStyles.getPropertyValue('--chart-4').trim(),
     })
-    setGridLine(rootStyles.getPropertyValue('--v0-grid-line').trim())
-    setAxisText(rootStyles.getPropertyValue('--v0-axis-text').trim())
-    setRefLine(rootStyles.getPropertyValue('--v0-chart-ref-line').trim())
-    setChartLabel(rootStyles.getPropertyValue('--v0-chart-label').trim())
+    setGridLine(rootStyles.getPropertyValue('--chart-grid-line').trim())
+    setAxisText(rootStyles.getPropertyValue('--chart-axis-text').trim())
+    setRefLine(rootStyles.getPropertyValue('--chart-reference-line').trim())
+    setChartLabel(rootStyles.getPropertyValue('--chart-label').trim())
   }, [])
 
   return (
