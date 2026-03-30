@@ -3,156 +3,187 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Peec AI - Dark mode Berlin startup aesthetic */
-:root {
-  /* Deep charcoal/black background */
-  --background: oklch(0.12 0.005 285);
-  --foreground: oklch(0.95 0 0);
+/* ============================================================
+   DESIGN TOKEN SYSTEM — 3-Layer Architecture
+   Primitives → Semantics → Components
+   ============================================================ */
 
-  /* Card styling - slightly lighter than background */
-  --card: oklch(0.15 0.008 285);
-  --card-foreground: oklch(0.95 0 0);
+@layer base {
+  :root {
+    /* ----------------------------------------------------------
+       SEMANTIC TOKENS (Layer 2)
+       ---------------------------------------------------------- */
 
-  /* Popover */
-  --popover: oklch(0.13 0.006 285);
-  --popover-foreground: oklch(0.95 0 0);
+    /* Background */
+    --background-default: #0f172a;
+    --background-card: #1e293b;
+    --background-popover: #0f172a;
+    --background-muted: #1e293b;
+    --background-secondary: #334155;
 
-  /* Primary - Neon indigo accent */
-  --primary: oklch(0.65 0.25 275);
-  --primary-foreground: oklch(0.98 0 0);
+    /* Foreground */
+    --foreground-default: #f1f5f9;
+    --foreground-muted: #94a3b8;
+    --foreground-secondary: #e2e8f0;
+    --foreground-subtle: #cbd5e1;
+    --foreground-on-primary: #f8fafc;
+    --foreground-on-card: #f1f5f9;
+    --foreground-on-accent: #f8fafc;
 
-  /* Secondary */
-  --secondary: oklch(0.30 0.01 285);
-  --secondary-foreground: oklch(0.9 0 0);
+    /* Border */
+    --border-default: #334155;
+    --border-strong: #334155;
+    --border-input: #1e293b;
 
-  /* Muted */
-  --muted: oklch(0.2 0.008 285);
-  --muted-foreground: oklch(0.6 0.01 285);
+    /* Brand */
+    --brand-primary: #a78bfa;
+    --brand-accent: #8b5cf6;
 
-  /* Accent - bright indigo */
-  --accent: #8b5cf6;
-  --accent-foreground: oklch(0.98 0 0);
+    /* Feedback */
+    --feedback-destructive: #f87171;
+    --feedback-destructive-foreground: #f8fafc;
+    --feedback-warning: #f59e0b;
+    --feedback-warning-foreground: #f8fafc;
+    --feedback-success: #6ee7b7;
+    --feedback-success-foreground: #f8fafc;
 
-  /* Destructive */
-  --destructive: oklch(0.628 0.257 29.23);
-  --destructive-foreground: oklch(0.98 0 0);
+    /* Focus */
+    --focus-ring: #a78bfa;
 
-  /* Borders - subtle */
-  --border: oklch(0.25 0.01 285);
-  --input: oklch(0.2 0.008 285);
-  --ring: oklch(0.65 0.25 275);
+    /* Chart */
+    --chart-1: #a78bfa;
+    --chart-2: #6ee7b7;
+    --chart-4: #93c5fd;
+    --chart-grid-line: #334155;
+    --chart-axis-text: #94a3b8;
+    --chart-reference-line: #7c3aed;
+    --chart-label: #a78bfa;
 
-  /* Chart colors - indigo spectrum with cyan accent */
-  --chart-1: oklch(0.65 0.25 275);
-  --chart-2: oklch(0.68 0.17 165);
-  --chart-3: oklch(0.6 0.2 285);
-  --chart-4: oklch(0.70 0.14 235);
-  --chart-5: oklch(0.55 0.18 300);
+    /* Sidebar */
+    --sidebar-background: #0f172a;
+    --sidebar-foreground: #e2e8f0;
+    --sidebar-border: #334155;
+    --sidebar-accentBackground: #1e293b;
+    --sidebar-accentForeground: #f1f5f9;
+    --sidebar-primary: #a78bfa;
+    --sidebar-primaryForeground: #f8fafc;
+    --sidebar-ring: #a78bfa;
 
-  --radius: 0.5rem;
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
 
-  /* Sidebar */
-  --sidebar: oklch(0.1 0.004 285);
-  --sidebar-foreground: oklch(0.9 0 0);
-  --sidebar-primary: oklch(0.65 0.25 275);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.18 0.01 285);
-  --sidebar-accent-foreground: oklch(0.95 0 0);
-  --sidebar-border: oklch(0.22 0.008 285);
-  --sidebar-ring: oklch(0.65 0.25 275);
-
-  /* warning - Tailwind amber-500(#f59e0b)  */
-  --warning: lab(72.7183 31.8672 97.9407);
-  --warning-foreground: oklch(0.98 0 0);
-
-  /* success - Tailwind emerald-500(#10b981) */
-  --success: oklch(0.696 0.170 162.48);
-  --success-foreground: oklch(0.98 0 0);
-
-  /* foreground-subtle - Tailwind slate-300(#cbd5e1)  */
-  --foreground-subtle: oklch(0.869 0.022 264.05);
-
-  /* border-strong - Tailwind slate-700(#334155)  */
-  --border-strong: oklch(0.372 0.044 264.05);
-
-  /* v0 palette — Tailwind  */
-  --v0-slate-900: #0f172a;
-  --v0-slate-800: #1e293b;
-  --v0-slate-700: #334155;
-  --v0-slate-400: #94a3b8;
-  --v0-slate-300: #cbd5e1;
-  --v0-white: #ffffff;
-  --v0-violet-600: #7c3aed;
-  --v0-violet-500: #8b5cf6;
-  --v0-violet-400: #a78bfa;
-  --v0-violet-300: #c4b5fd;
-  --v0-violet-200: #ddd6fe;
-  --v0-emerald-500: #10b981;
-  --v0-emerald-400: #34d399;
-  --v0-rose-400: #fb7185;
-  --v0-red-600: #dc2626;
-  --v0-red-500: #ef4444;
-  --v0-red-400: #f87171;
-  --v0-amber-600: #d97706;
-  --v0-amber-500: #f59e0b;
-  --v0-amber-400: #fbbf24;
-
-  /* Chart UI colors */
-  --v0-grid-line: oklch(0.25 0.01 285);
-  --v0-axis-text: oklch(0.6 0.01 285);
-  --v0-chart-ref-line: oklch(0.5 0.15 285);
-  --v0-chart-label: oklch(0.7 0.15 285);
+    /* ----------------------------------------------------------
+       V0 PALETTE COMPATIBILITY LAYER
+       Each v0 variable points to a semantic token so existing
+       Tailwind utility classes (bg-v0-*, text-v0-*) keep working
+       while the codebase migrates to semantic tokens over time.
+       ---------------------------------------------------------- */
+    --v0-slate-900: var(--background-default);       /* #0f172a */
+    --v0-slate-800: var(--background-card);           /* #1e293b */
+    --v0-slate-700: var(--border-default);            /* #334155 */
+    --v0-slate-500: #64748b;
+    --v0-slate-400: var(--foreground-muted);          /* #94a3b8 */
+    --v0-slate-300: var(--foreground-subtle);         /* #cbd5e1 */
+    --v0-white: #ffffff;
+    --v0-violet-600: var(--chart-reference-line);     /* #7c3aed */
+    --v0-violet-500: var(--brand-accent);             /* #8b5cf6 */
+    --v0-violet-400: var(--brand-primary);            /* #a78bfa */
+    --v0-violet-300: #c4b5fd;
+    --v0-violet-200: #ddd6fe;
+    --v0-emerald-500: #10b981;
+    --v0-emerald-400: #34d399;
+    --v0-rose-400: #fb7185;
+    --v0-red-600: #dc2626;
+    --v0-red-500: #ef4444;
+    --v0-red-400: var(--feedback-destructive);        /* #f87171 */
+    --v0-amber-600: #d97706;
+    --v0-amber-500: var(--feedback-warning);          /* #f59e0b */
+    --v0-amber-400: #fbbf24;
+    --v0-grid-line: var(--chart-grid-line);
+    --v0-axis-text: var(--chart-axis-text);
+    --v0-chart-ref-line: var(--chart-reference-line);
+    --v0-chart-label: var(--chart-label);
+  }
 }
 
+/* ============================================================
+   TAILWIND UTILITY MAPPINGS
+   Maps --color-* → Tailwind bg/text/border utilities
+   ============================================================ */
 @theme inline {
   --font-sans: var(--font-sans), 'Geist', system-ui, sans-serif;
   --font-mono: var(--font-mono), 'Geist Mono', ui-monospace, monospace;
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+
+  /* Core semantic colors */
+  --color-background: var(--background-default);
+  --color-foreground: var(--foreground-default);
+
+  --color-card: var(--background-card);
+  --color-card-foreground: var(--foreground-on-card);
+
+  --color-popover: var(--background-popover);
+  --color-popover-foreground: var(--foreground-default);
+
+  --color-primary: var(--brand-primary);
+  --color-primary-foreground: var(--foreground-on-primary);
+
+  --color-secondary: var(--background-secondary);
+  --color-secondary-foreground: var(--foreground-secondary);
+
+  --color-muted: var(--background-muted);
+  --color-muted-foreground: var(--foreground-muted);
+
+  --color-accent: var(--brand-accent);
+  --color-accent-foreground: var(--foreground-on-accent);
+
+  --color-destructive: var(--feedback-destructive);
+  --color-destructive-foreground: var(--feedback-destructive-foreground);
+
+  --color-border: var(--border-default);
+  --color-input: var(--border-input);
+  --color-ring: var(--focus-ring);
+
+  /* Chart */
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-warning: var(--warning);
-  --color-warning-foreground: var(--warning-foreground);
-  --color-success: var(--success);
-  --color-success-foreground: var(--success-foreground);
+
+  /* Feedback utilities (text-warning, text-success, etc.) */
+  --color-warning: var(--feedback-warning);
+  --color-warning-foreground: var(--feedback-warning-foreground);
+  --color-success: var(--feedback-success);
+  --color-success-foreground: var(--feedback-success-foreground);
+
+  /* Extra utilities */
   --color-foreground-subtle: var(--foreground-subtle);
   --color-border-strong: var(--border-strong);
 
+  /* Border radius */
+  --radius: var(--radius-lg);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+
+  /* Sidebar — --color-sidebar needed for bg-sidebar Tailwind class */
+  --color-sidebar: var(--sidebar-background);
+  --color-sidebar-background: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primaryForeground);
+  --color-sidebar-accent: var(--sidebar-accentBackground);
+  --color-sidebar-accent-foreground: var(--sidebar-accentForeground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* V0 palette — keeps existing Tailwind utility classes working */
   --color-v0-slate-900: var(--v0-slate-900);
   --color-v0-slate-800: var(--v0-slate-800);
   --color-v0-slate-700: var(--v0-slate-700);
+  --color-v0-slate-500: var(--v0-slate-500);
   --color-v0-slate-400: var(--v0-slate-400);
   --color-v0-slate-300: var(--v0-slate-300);
   --color-v0-white: var(--v0-white);
@@ -170,13 +201,15 @@
   --color-v0-amber-600: var(--v0-amber-600);
   --color-v0-amber-500: var(--v0-amber-500);
   --color-v0-amber-400: var(--v0-amber-400);
-
   --color-v0-grid-line: var(--v0-grid-line);
   --color-v0-axis-text: var(--v0-axis-text);
   --color-v0-chart-ref-line: var(--v0-chart-ref-line);
   --color-v0-chart-label: var(--v0-chart-label);
 }
 
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -188,22 +221,7 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Headings - SemiBold with normal tracking for dark theme readability */
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-normal;
   }
-
-  /* WCAG Accessibility: Ensure minimum readable font sizes */
-  /* Labels and metadata should use text-[13px] minimum */
-  /* Numeric data should use tabular-nums for alignment */
-
-
 }
-
-
-
