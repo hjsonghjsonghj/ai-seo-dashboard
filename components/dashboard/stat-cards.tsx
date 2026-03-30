@@ -21,7 +21,7 @@ function StatCard({ title, value, change, changeLabel, targetValue, currentValue
 
   return (
     <Card
-      className="cursor-pointer border-border/50 bg-v0-slate-900/60 transition-colors duration-150 hover:bg-v0-slate-800/80"
+      className="cursor-pointer bg-v0-slate-900/60 transition-colors duration-150 hover:bg-v0-slate-800/80"
       role="article"
       aria-label={`${title}: ${value}, ${isPositive ? 'up' : 'down'} ${Math.abs(change)}% ${changeLabel}`}
     >

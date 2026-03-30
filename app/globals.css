@@ -9,9 +9,9 @@
    ============================================================ */
 :root {
   /* Background */
-  --background-default: #020617;   /* slate-950 */
+  --background-default: #030712;   /* gray-950 */
   --background-card: #0f172a;      /* slate-900 */
-  --background-popover: #020617;   /* slate-950 */
+  --background-popover: #030712;   /* gray-950 */
   --background-muted: #0f172a;     /* slate-900 */
   --background-secondary: #1e293b; /* slate-800 */
 
@@ -80,13 +80,13 @@
   --font-mono: var(--font-mono), 'Geist Mono', ui-monospace, monospace;
 
   /* Core colors */
-  --color-background: #020617;     /* slate-950 */
+  --color-background: #030712;     /* gray-950 */
   --color-foreground: #f1f5f9;
 
   --color-card: #0f172a;           /* slate-900 */
   --color-card-foreground: #f1f5f9;
 
-  --color-popover: #020617;        /* slate-950 */
+  --color-popover: #030712;        /* gray-950 */
   --color-popover-foreground: #f1f5f9;
 
   --color-primary: #a78bfa;

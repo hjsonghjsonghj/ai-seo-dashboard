@@ -173,7 +173,7 @@ function CitationCard({ citation, onReview }: { citation: any; onReview?: (c: an
 
   return (
     <div
-      className="flex items-center justify-between rounded-lg border border-border/50 bg-v0-slate-900/40 p-5 transition-colors hover:bg-v0-slate-800/50 cursor-pointer"
+      className="flex items-center justify-between rounded-lg bg-v0-slate-900/40 p-5 transition-colors hover:bg-v0-slate-800/50 cursor-pointer"
       onClick={() => onReview?.(citation)}
     >
       <div className="flex items-center gap-4">
@@ -255,7 +255,7 @@ export function CitationsTableComponent({
   }
 
   return (
-    <Card className="border-border/50 bg-v0-slate-900/60 transition-colors duration-150">
+    <Card className="bg-v0-slate-900/60 transition-colors duration-150">
       <CardHeader className="pb-3 px-5 pt-5">
         <div className="flex items-center justify-between">
           <div>

@@ -100,7 +100,7 @@ export function TrendsChart() {
   }, [])
 
   return (
-    <Card className="border-border/50 bg-v0-slate-900/60 transition-colors duration-150 ">
+    <Card className="bg-v0-slate-900/60 transition-colors duration-150">
       <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-4 px-5 pt-5 pb-1.5">
         <div>
           <CardTitle className="text-lg font-semibold tracking-normal text-v0-white">

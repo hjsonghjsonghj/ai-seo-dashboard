@@ -237,7 +237,7 @@ export default function SearchVisibilityPage() {
 
           <div className="mx-auto max-w-[1600px] flex flex-col gap-6">
             {/* Filter Bar */}
-            <Card className="border-border/50 bg-slate-900/60">
+            <Card className="bg-slate-900/60">
               <CardHeader className="pb-3 px-5 pt-5">
                 <CardTitle className="text-[16px] font-semibold tracking-normal text-v0-slate-300">
                   Filters

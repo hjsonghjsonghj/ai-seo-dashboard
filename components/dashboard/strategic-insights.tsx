@@ -91,7 +91,7 @@ export function StrategicInsights() {
             <Card
               key={insight.id}
               className={cn(
-                "cursor-pointer border-border/50 transition-colors duration-150 flex flex-col h-full",
+                "cursor-pointer transition-colors duration-150 flex flex-col h-full",
                 styles.bg
               )}
               role="article"
