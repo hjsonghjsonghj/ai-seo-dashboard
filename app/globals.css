@@ -4,114 +4,110 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================================
-   DESIGN TOKEN SYSTEM — 3-Layer Architecture
-   Primitives → Semantics → Components
+   SEMANTIC TOKENS — defined in bare :root (not @layer)
+   so that @theme inline can resolve var() references
+   at build time, enabling opacity modifiers like /60.
    ============================================================ */
+:root {
+  /* Background */
+  --background-default: #0f172a;
+  --background-card: #1e293b;
+  --background-popover: #0f172a;
+  --background-muted: #1e293b;
+  --background-secondary: #334155;
 
-@layer base {
-  :root {
-    /* ----------------------------------------------------------
-       SEMANTIC TOKENS (Layer 2)
-       ---------------------------------------------------------- */
+  /* Foreground */
+  --foreground-default: #f1f5f9;
+  --foreground-muted: #94a3b8;
+  --foreground-secondary: #e2e8f0;
+  --foreground-subtle: #cbd5e1;
+  --foreground-on-primary: #f8fafc;
+  --foreground-on-card: #f1f5f9;
+  --foreground-on-accent: #f8fafc;
 
-    /* Background */
-    --background-default: #0f172a;
-    --background-card: #1e293b;
-    --background-popover: #0f172a;
-    --background-muted: #1e293b;
-    --background-secondary: #334155;
+  /* Border */
+  --border-default: #334155;
+  --border-strong: #334155;
+  --border-input: #1e293b;
 
-    /* Foreground */
-    --foreground-default: #f1f5f9;
-    --foreground-muted: #94a3b8;
-    --foreground-secondary: #e2e8f0;
-    --foreground-subtle: #cbd5e1;
-    --foreground-on-primary: #f8fafc;
-    --foreground-on-card: #f1f5f9;
-    --foreground-on-accent: #f8fafc;
+  /* Brand */
+  --brand-primary: #a78bfa;   /* violet-400 */
+  --brand-accent: #8b5cf6;    /* violet-500 */
 
-    /* Border */
-    --border-default: #334155;
-    --border-strong: #334155;
-    --border-input: #1e293b;
+  /* Feedback */
+  --feedback-destructive: #f87171;           /* red-400 */
+  --feedback-destructive-foreground: #f8fafc;
+  --feedback-warning: #f59e0b;               /* amber-500 */
+  --feedback-warning-foreground: #f8fafc;
+  --feedback-success: #6ee7b7;               /* emerald-300 */
+  --feedback-success-foreground: #f8fafc;
 
-    /* Brand */
-    --brand-primary: #a78bfa;
-    --brand-accent: #8b5cf6;
+  /* Focus */
+  --focus-ring: #a78bfa;
 
-    /* Feedback */
-    --feedback-destructive: #f87171;
-    --feedback-destructive-foreground: #f8fafc;
-    --feedback-warning: #f59e0b;
-    --feedback-warning-foreground: #f8fafc;
-    --feedback-success: #6ee7b7;
-    --feedback-success-foreground: #f8fafc;
+  /* Chart — vibrant Tailwind scale colors */
+  --chart-1: #8b5cf6;    /* violet-500, replaces violet-400 for vibrancy */
+  --chart-2: #10b981;    /* emerald-500, replaces emerald-300 for vibrancy */
+  --chart-4: #60a5fa;    /* blue-400, replaces blue-300 for vibrancy */
+  --chart-grid-line: #334155;
+  --chart-axis-text: #94a3b8;
+  --chart-reference-line: #7c3aed;  /* violet-600 */
+  --chart-label: #a78bfa;           /* violet-400 */
 
-    /* Focus */
-    --focus-ring: #a78bfa;
+  /* Sidebar */
+  --sidebar-background: #0f172a;
+  --sidebar-foreground: #e2e8f0;
+  --sidebar-border: #334155;
+  --sidebar-accentBackground: #1e293b;
+  --sidebar-accentForeground: #f1f5f9;
+  --sidebar-primary: #a78bfa;
+  --sidebar-primaryForeground: #f8fafc;
+  --sidebar-ring: #a78bfa;
 
-    /* Chart */
-    --chart-1: #a78bfa;
-    --chart-2: #6ee7b7;
-    --chart-4: #93c5fd;
-    --chart-grid-line: #334155;
-    --chart-axis-text: #94a3b8;
-    --chart-reference-line: #7c3aed;
-    --chart-label: #a78bfa;
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
 
-    /* Sidebar */
-    --sidebar-background: #0f172a;
-    --sidebar-foreground: #e2e8f0;
-    --sidebar-border: #334155;
-    --sidebar-accentBackground: #1e293b;
-    --sidebar-accentForeground: #f1f5f9;
-    --sidebar-primary: #a78bfa;
-    --sidebar-primaryForeground: #f8fafc;
-    --sidebar-ring: #a78bfa;
-
-    /* Border Radius */
-    --radius-sm: 4px;
-    --radius-md: 6px;
-    --radius-lg: 8px;
-    --radius-xl: 12px;
-
-    /* ----------------------------------------------------------
-       V0 PALETTE COMPATIBILITY LAYER
-       Each v0 variable points to a semantic token so existing
-       Tailwind utility classes (bg-v0-*, text-v0-*) keep working
-       while the codebase migrates to semantic tokens over time.
-       ---------------------------------------------------------- */
-    --v0-slate-900: var(--background-default);       /* #0f172a */
-    --v0-slate-800: var(--background-card);           /* #1e293b */
-    --v0-slate-700: var(--border-default);            /* #334155 */
-    --v0-slate-500: #64748b;
-    --v0-slate-400: var(--foreground-muted);          /* #94a3b8 */
-    --v0-slate-300: var(--foreground-subtle);         /* #cbd5e1 */
-    --v0-white: #ffffff;
-    --v0-violet-600: var(--chart-reference-line);     /* #7c3aed */
-    --v0-violet-500: var(--brand-accent);             /* #8b5cf6 */
-    --v0-violet-400: var(--brand-primary);            /* #a78bfa */
-    --v0-violet-300: #c4b5fd;
-    --v0-violet-200: #ddd6fe;
-    --v0-emerald-500: #10b981;
-    --v0-emerald-400: #34d399;
-    --v0-rose-400: #fb7185;
-    --v0-red-600: #dc2626;
-    --v0-red-500: #ef4444;
-    --v0-red-400: var(--feedback-destructive);        /* #f87171 */
-    --v0-amber-600: #d97706;
-    --v0-amber-500: var(--feedback-warning);          /* #f59e0b */
-    --v0-amber-400: #fbbf24;
-    --v0-grid-line: var(--chart-grid-line);
-    --v0-axis-text: var(--chart-axis-text);
-    --v0-chart-ref-line: var(--chart-reference-line);
-    --v0-chart-label: var(--chart-label);
-  }
+  /* ----------------------------------------------------------
+     V0 PALETTE COMPATIBILITY LAYER
+     Each v0 variable points to a semantic token so existing
+     Tailwind utility classes (bg-v0-*, text-v0-*) and their
+     opacity modifiers (e.g. /60) keep working correctly.
+     ---------------------------------------------------------- */
+  --v0-slate-900: var(--background-default);       /* #0f172a */
+  --v0-slate-800: var(--background-card);           /* #1e293b */
+  --v0-slate-700: var(--border-default);            /* #334155 */
+  --v0-slate-500: #64748b;
+  --v0-slate-400: var(--foreground-muted);          /* #94a3b8 */
+  --v0-slate-300: var(--foreground-subtle);         /* #cbd5e1 */
+  --v0-white: #ffffff;
+  --v0-violet-600: var(--chart-reference-line);     /* #7c3aed */
+  --v0-violet-500: var(--brand-accent);             /* #8b5cf6 */
+  --v0-violet-400: var(--brand-primary);            /* #a78bfa */
+  --v0-violet-300: #c4b5fd;
+  --v0-violet-200: #ddd6fe;
+  --v0-emerald-500: #10b981;
+  --v0-emerald-400: #34d399;
+  --v0-rose-400: #fb7185;
+  --v0-red-600: #dc2626;
+  --v0-red-500: #ef4444;
+  --v0-red-400: var(--feedback-destructive);        /* #f87171 */
+  --v0-amber-600: #d97706;
+  --v0-amber-500: var(--feedback-warning);          /* #f59e0b */
+  --v0-amber-400: #fbbf24;
+  --v0-grid-line: var(--chart-grid-line);
+  --v0-axis-text: var(--chart-axis-text);
+  --v0-chart-ref-line: var(--chart-reference-line);
+  --v0-chart-label: var(--chart-label);
 }
 
 /* ============================================================
    TAILWIND UTILITY MAPPINGS
-   Maps --color-* → Tailwind bg/text/border utilities
+   Uses @theme inline so opacity modifiers (/60 etc) work.
+   All var() references point to bare :root vars above,
+   which @theme inline can resolve at build time.
    ============================================================ */
 @theme inline {
   --font-sans: var(--font-sans), 'Geist', system-ui, sans-serif;
@@ -151,7 +147,7 @@
   --color-chart-2: var(--chart-2);
   --color-chart-4: var(--chart-4);
 
-  /* Feedback utilities (text-warning, text-success, etc.) */
+  /* Feedback utilities */
   --color-warning: var(--feedback-warning);
   --color-warning-foreground: var(--feedback-warning-foreground);
   --color-success: var(--feedback-success);
@@ -168,7 +164,7 @@
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
 
-  /* Sidebar — --color-sidebar needed for bg-sidebar Tailwind class */
+  /* Sidebar */
   --color-sidebar: var(--sidebar-background);
   --color-sidebar-background: var(--sidebar-background);
   --color-sidebar-foreground: var(--sidebar-foreground);
@@ -179,7 +175,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* V0 palette — keeps existing Tailwind utility classes working */
+  /* V0 palette */
   --color-v0-slate-900: var(--v0-slate-900);
   --color-v0-slate-800: var(--v0-slate-800);
   --color-v0-slate-700: var(--v0-slate-700);

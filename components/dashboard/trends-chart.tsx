@@ -77,9 +77,9 @@ export function TrendsChart() {
   const isMobile = useMediaQuery("(max-width: 768px)")
 
   const [chartColors, setChartColors] = useState({
-    aiDiscovery: '#a78bfa',   /* --chart-1 */
-    organicSearch: '#6ee7b7', /* --chart-2 */
-    citations: '#93c5fd',     /* --chart-4 */
+    aiDiscovery: '#8b5cf6',   /* --chart-1: violet-500 */
+    organicSearch: '#10b981', /* --chart-2: emerald-500 */
+    citations: '#60a5fa',     /* --chart-4: blue-400 */
   })
   const [gridLine, setGridLine] = useState('#334155')   /* --chart-grid-line */
   const [axisText, setAxisText] = useState('#94a3b8')   /* --chart-axis-text */
