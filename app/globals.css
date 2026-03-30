@@ -8,12 +8,12 @@
    Used by components that reference var(--xxx) directly.
    ============================================================ */
 :root {
-  /* Background — converted from original OKLCH values */
-  --background-default: #060607;   /* oklch(0.12 0.005 285) */
-  --background-card: #0b0b0e;      /* oklch(0.15 0.008 285) */
-  --background-popover: #070709;   /* oklch(0.13 0.006 285) */
-  --background-muted: #16161a;     /* oklch(0.20 0.008 285) */
-  --background-secondary: #2d2d33; /* oklch(0.30 0.010 285) */
+  /* Background */
+  --background-default: #020617;   /* slate-950 */
+  --background-card: #0f172a;      /* slate-900 */
+  --background-popover: #020617;   /* slate-950 */
+  --background-muted: #0f172a;     /* slate-900 */
+  --background-secondary: #1e293b; /* slate-800 */
 
   /* Foreground */
   --foreground-default: #f1f5f9;
@@ -54,7 +54,7 @@
   --chart-label: #a78bfa;
 
   /* Sidebar */
-  --sidebar-background: #030304;   /* oklch(0.10 0.004 285) */
+  --sidebar-background: #030712;   /* gray-950 */
   --sidebar-foreground: #e2e8f0;
   --sidebar-border: #334155;
   --sidebar-accentBackground: #1e293b;
@@ -80,22 +80,22 @@
   --font-mono: var(--font-mono), 'Geist Mono', ui-monospace, monospace;
 
   /* Core colors */
-  --color-background: #060607;
+  --color-background: #020617;     /* slate-950 */
   --color-foreground: #f1f5f9;
 
-  --color-card: #0b0b0e;
+  --color-card: #0f172a;           /* slate-900 */
   --color-card-foreground: #f1f5f9;
 
-  --color-popover: #070709;
+  --color-popover: #020617;        /* slate-950 */
   --color-popover-foreground: #f1f5f9;
 
   --color-primary: #a78bfa;
   --color-primary-foreground: #f8fafc;
 
-  --color-secondary: #2d2d33;
+  --color-secondary: #1e293b;      /* slate-800 */
   --color-secondary-foreground: #e2e8f0;
 
-  --color-muted: #16161a;
+  --color-muted: #0f172a;          /* slate-900 */
   --color-muted-foreground: #94a3b8;
 
   --color-accent: #8b5cf6;
@@ -131,8 +131,8 @@
   --radius-xl: 12px;
 
   /* Sidebar */
-  --color-sidebar: #030304;
-  --color-sidebar-background: #030304;
+  --color-sidebar: #030712;        /* gray-950 */
+  --color-sidebar-background: #030712;
   --color-sidebar-foreground: #e2e8f0;
   --color-sidebar-primary: #a78bfa;
   --color-sidebar-primary-foreground: #f8fafc;
