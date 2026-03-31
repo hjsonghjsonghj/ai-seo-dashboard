@@ -54,12 +54,12 @@ function StatCard({ title, value, change, changeLabel, targetValue, currentValue
             {isPositive ? (
               <TrendingUp className="h-3.5 w-3.5 text-v0-emerald-400" />
             ) : (
-              <TrendingDown className="h-3.5 w-3.5 text-v0-rose-400" />
+              <TrendingDown className="h-3.5 w-3.5 text-destructive" />
             )}
-            <span className={cn("text-[13px] font-bold tabular-nums", isPositive ? "text-v0-emerald-400" : "text-v0-rose-400")}>
+            <span className={cn("text-[13px] font-bold tabular-nums", isPositive ? "text-v0-emerald-400" : "text-destructive")}>
               {isPositive ? "+" : ""}{change}%
             </span>
-            <span className="text-[13px] font-medium tracking-normal text-v0-slate-400">{changeLabel}</span>
+            <span className="text-[13px] font-medium tracking-normal text-v0-white">{changeLabel}</span>
           </div>
         </div>
       </CardContent>

@@ -126,7 +126,7 @@ const trendIcons: any = {
 
 const trendColors: any = {
   up: "text-v0-emerald-400",
-  down: "text-v0-rose-400",
+  down: "text-destructive",
   stable: "text-muted-foreground",
 }
 
