@@ -141,31 +141,73 @@
   --color-sidebar-border: #334155;                /* slate-700 */
   --color-sidebar-ring: #7c3aed;                  /* violet-600 */
 
-  /* V0 palette — direct hex so opacity modifiers (/60, /80) work */
-  --color-v0-slate-900: #0f172a;    /* slate-900 */
-  --color-v0-slate-800: #1e293b;    /* slate-800 */
-  --color-v0-slate-700: #334155;    /* slate-700 */
-  --color-v0-slate-500: #64748b;    /* slate-500 */
-  --color-v0-slate-400: #94a3b8;    /* slate-400 */
-  --color-v0-slate-300: #cbd5e1;    /* slate-300 */
-  --color-v0-white: #ffffff;        /* white */
-  --color-v0-violet-600: #7c3aed;   /* violet-600 */
-  --color-v0-violet-500: #8b5cf6;   /* violet-500 */
-  --color-v0-violet-400: #a78bfa;   /* violet-400 */
-  --color-v0-violet-300: #c4b5fd;   /* violet-300 */
-  --color-v0-violet-200: #ddd6fe;   /* violet-200 */
-  --color-v0-emerald-500: #10b981;  /* emerald-500 */
-  --color-v0-emerald-400: #34d399;  /* emerald-400 */
-  --color-v0-red-600: #dc2626;      /* red-600 */
-  --color-v0-red-500: #ef4444;      /* red-500 */
-  --color-v0-red-400: #f87171;      /* red-400 */
-  --color-v0-amber-600: #d97706;    /* amber-600 */
-  --color-v0-amber-500: #f59e0b;    /* amber-500 */
-  --color-v0-amber-400: #fbbf24;    /* amber-400 */
-  --color-v0-grid-line: #334155;    /* slate-700 */
-  --color-v0-axis-text: #94a3b8;    /* slate-400 */
-  --color-v0-chart-ref-line: #7c3aed; /* violet-600 */
-  --color-v0-chart-label: #a78bfa;  /* violet-400 */
+  /* ── Semantic token palette ──────────────────────────────────────
+     Direct hex values so Tailwind opacity modifiers (/40, /60, /80 …)
+     work correctly. All names reflect role, not Tailwind scale name.
+
+     Rename log (old → new):
+       v0-slate-900      → surface          card/panel base bg
+       v0-slate-800      → surface-hover    hover / elevated bg
+       v0-slate-700      → surface-track    track, shimmer, SVG stroke
+       v0-slate-500      → frame            checkbox / input edge
+       v0-slate-400      → dim              muted caption / meta text
+       v0-slate-300      → subdued          secondary titles / labels
+       v0-white          → removed          use Tailwind built-in `white`
+       v0-violet-600     → brand-deep       button hover, pressed state
+       v0-violet-500     → brand            filled brand elements, chart
+       v0-violet-400     → brand-soft       icon color, focus dot
+       v0-violet-300     → brand-faint      secondary brand text
+       v0-violet-200     → brand-ghost      reserved / lightest brand
+       v0-emerald-500    → positive         good perf ring / row highlight
+       v0-emerald-400    → positive-soft    up-trend text / gain labels
+       v0-red-600        → danger-deep      urgent button hover
+       v0-red-500        → danger           urgent badge / button / ring
+       v0-red-400        → danger-soft      poor-perf text
+       v0-amber-600      → caution-deep     reserved
+       v0-amber-500      → caution          medium-perf ring
+       v0-amber-400      → caution-soft     medium-perf text
+       v0-grid-line      → chart-grid       chart grid lines
+       v0-axis-text      → chart-axis       chart axis text
+       v0-chart-ref-line → chart-ref        chart reference line
+       v0-chart-label    → chart-callout    chart callout labels
+  ─────────────────────────────────────────────────────────────── */
+
+  /* Surface */
+  --color-surface: #0f172a;          /* was v0-slate-900 */
+  --color-surface-hover: #1e293b;    /* was v0-slate-800 */
+  --color-surface-track: #334155;    /* was v0-slate-700 */
+  --color-frame: #64748b;            /* was v0-slate-500 */
+
+  /* Content */
+  --color-subdued: #cbd5e1;          /* was v0-slate-300 */
+  --color-dim: #94a3b8;              /* was v0-slate-400 */
+
+  /* Brand */
+  --color-brand-deep: #7c3aed;       /* was v0-violet-600 */
+  --color-brand: #8b5cf6;            /* was v0-violet-500 */
+  --color-brand-soft: #a78bfa;       /* was v0-violet-400 */
+  --color-brand-faint: #c4b5fd;      /* was v0-violet-300 */
+  --color-brand-ghost: #ddd6fe;      /* was v0-violet-200 */
+
+  /* Positive */
+  --color-positive: #10b981;         /* was v0-emerald-500 */
+  --color-positive-soft: #34d399;    /* was v0-emerald-400 */
+
+  /* Danger */
+  --color-danger-deep: #dc2626;      /* was v0-red-600 */
+  --color-danger: #ef4444;           /* was v0-red-500 */
+  --color-danger-soft: #f87171;      /* was v0-red-400 */
+
+  /* Caution */
+  --color-caution-deep: #d97706;     /* was v0-amber-600 */
+  --color-caution: #f59e0b;          /* was v0-amber-500 */
+  --color-caution-soft: #fbbf24;     /* was v0-amber-400 */
+
+  /* Chart (used via var() in chart config; Tailwind utilities generated as bonus) */
+  --color-chart-grid: #334155;       /* was v0-grid-line */
+  --color-chart-axis: #94a3b8;       /* was v0-axis-text */
+  --color-chart-ref: #7c3aed;        /* was v0-chart-ref-line */
+  --color-chart-callout: #a78bfa;    /* was v0-chart-label */
 }
 
 /* ============================================================

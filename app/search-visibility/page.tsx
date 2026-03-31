@@ -224,7 +224,7 @@ export default function SearchVisibilityPage() {
         {/* Header with Back Button */}
         <header className="flex h-16 items-center justify-between border-b border-border/50 bg-background/80 px-4 md:px-6 backdrop-blur-sm">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" asChild className="gap-2 text-v0-white hover:text-white">
+            <Button variant="ghost" size="sm" asChild className="gap-2 text-white hover:text-white">
               <Link href="/">
                 <ArrowLeft className="h-4 w-4" />
                 <span className="text-[14px] font-medium">Back to Dashboard</span>
@@ -239,7 +239,7 @@ export default function SearchVisibilityPage() {
             {/* Filter Bar */}
             <Card className="bg-slate-900/60">
               <CardHeader className="pb-3 px-5 pt-5">
-                <CardTitle className="text-[16px] font-semibold tracking-normal text-v0-slate-300">
+                <CardTitle className="text-[16px] font-semibold tracking-normal text-subdued">
                   Filters
                 </CardTitle>
               </CardHeader>
@@ -320,7 +320,7 @@ export default function SearchVisibilityPage() {
                         {`${filteredCitations.length} citations`}
                       </span>
                       {selectedRows.size > 0 && (
-                        <span className="text-[13px] font-medium text-v0-emerald-400">
+                        <span className="text-[13px] font-medium text-positive-soft">
                           {selectedRows.size} items selected
                         </span>
                       )}
@@ -342,7 +342,7 @@ export default function SearchVisibilityPage() {
       </div>
       {selectedRows.size > 0 && (
         <div className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-border bg-background/95 px-4 py-3 shadow-lg backdrop-blur">
-          <span className="text-sm font-medium text-v0-slate-300">{selectedRows.size} citations selected</span>
+          <span className="text-sm font-medium text-subdued">{selectedRows.size} citations selected</span>
           <Button size="sm" variant="outline" onClick={handleExportSelected}>
             Export
           </Button>
@@ -364,27 +364,27 @@ export default function SearchVisibilityPage() {
         .detail-table-three-state thead th button[aria-label^="Sort by"] {
           cursor: pointer;
           background: transparent;
-          color: var(--v0-violet-300);
+          color: var(--brand-faint);
           box-shadow: none;
         }
         .detail-table-three-state thead th button[aria-label^="Sort by"] svg {
-          color: var(--v0-violet-300);
+          color: var(--brand-faint);
         }
         .detail-table-three-state thead th button[aria-label^="Sort by"]:hover {
-          color: var(--v0-white);
+          color: var(--white);
         }
         .detail-table-three-state thead th button[aria-label^="Sort by"]:hover svg {
-          color: var(--v0-white);
+          color: var(--white);
         }
 
         /* State 1: currently selected sort column */
         .detail-table-three-state thead th button[aria-label*="currently"] {
           background: transparent;
-          color: var(--v0-white);
+          color: var(--white);
           box-shadow: none;
         }
         .detail-table-three-state thead th button[aria-label*="currently"] svg {
-          color: var(--v0-white);
+          color: var(--white);
         }
       `}</style>
     </div>

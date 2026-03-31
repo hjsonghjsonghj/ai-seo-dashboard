@@ -86,7 +86,7 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
                     <button
                         type="button"
                         onClick={handleShare}
-                        className="absolute top-4 right-10 rounded-sm opacity-70 transition-opacity hover:opacity-100 text-v0-violet-300 hover:text-v0-white"
+                        className="absolute top-4 right-10 rounded-sm opacity-70 transition-opacity hover:opacity-100 text-brand-faint hover:text-white"
                         aria-label="Share link"
                     >
                         <Share2 className="size-4" />
