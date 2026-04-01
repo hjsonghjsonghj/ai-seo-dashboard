@@ -179,7 +179,8 @@
   --color-frame: #64748b;            /* was v0-slate-500 */
 
   /* Content */
-  --color-subdued: #cbd5e1;          /* was v0-slate-300 */
+  --color-white: #ffffff;            /* explicit Figma token — generates text-white, bg-white etc. */
+  --color-subdued: #e2e8f0;          /* was v0-slate-300 → updated to slate-200 */
   --color-dim: #94a3b8;              /* was v0-slate-400 */
 
   /* Brand */
