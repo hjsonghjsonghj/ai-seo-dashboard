@@ -364,27 +364,27 @@ export default function SearchVisibilityPage() {
         .detail-table-three-state thead th button[aria-label^="Sort by"] {
           cursor: pointer;
           background: transparent;
-          color: var(--brand-faint);
+          color: var(--color-brand-faint);
           box-shadow: none;
         }
         .detail-table-three-state thead th button[aria-label^="Sort by"] svg {
-          color: var(--brand-faint);
+          color: var(--color-brand-faint);
         }
         .detail-table-three-state thead th button[aria-label^="Sort by"]:hover {
-          color: var(--white);
+          color: var(--color-white);
         }
         .detail-table-three-state thead th button[aria-label^="Sort by"]:hover svg {
-          color: var(--white);
+          color: var(--color-white);
         }
 
         /* State 1: currently selected sort column */
         .detail-table-three-state thead th button[aria-label*="currently"] {
           background: transparent;
-          color: var(--white);
+          color: var(--color-white);
           box-shadow: none;
         }
         .detail-table-three-state thead th button[aria-label*="currently"] svg {
-          color: var(--white);
+          color: var(--color-white);
         }
       `}</style>
     </div>
