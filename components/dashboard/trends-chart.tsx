@@ -46,10 +46,10 @@ function CustomTooltip({
   const eventItem = data.find(d => d.date === label)
 
   return (
-    <div className="rounded-lg border border-border bg-surface/95 p-4 shadow-xl" role="tooltip">
+    <div className="rounded-lg border border-surface-track bg-surface-default/95 p-4 shadow-xl" role="tooltip">
       <p className="mb-2 text-[14px] font-semibold tracking-normal text-white">{label}</p>
       {eventItem?.event && (
-        <div className="mb-2 flex items-center gap-1.5 rounded bg-brand/15 px-2 py-1">
+        <div className="mb-2 flex items-center gap-1.5 rounded bg-brand-default/15 px-2 py-1">
           <div className="h-1.5 w-1.5 rounded-full bg-brand-soft" aria-hidden="true" />
           <span className="text-[13px] font-medium tracking-normal text-brand-faint">{eventItem.event}</span>
         </div>
@@ -100,7 +100,7 @@ export function TrendsChart() {
   }, [])
 
   return (
-    <Card className="bg-surface/60 transition-colors duration-150">
+    <Card className="bg-surface-default/60 transition-colors duration-150">
       <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-4 px-5 pt-5 pb-1.5">
         <div>
           <CardTitle className="text-lg font-semibold tracking-normal text-white">
@@ -112,7 +112,7 @@ export function TrendsChart() {
         </div>
         <div className="flex flex-wrap items-center gap-4" role="list" aria-label="Chart legend">
           <div className="flex items-center gap-2" role="listitem">
-            <div className="h-2 w-2 rounded-full bg-brand" aria-hidden="true" />
+            <div className="h-2 w-2 rounded-full bg-brand-default" aria-hidden="true" />
             <span className="text-[13px] font-medium tracking-normal text-subdued">AI Discovery</span>
           </div>
           <div className="flex items-center gap-2" role="listitem">

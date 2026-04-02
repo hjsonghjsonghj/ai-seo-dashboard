@@ -5,210 +5,110 @@
 
 /* ============================================================
    SEMANTIC TOKENS in :root
-   Used by components that reference var(--xxx) directly.
+   Used by components that reference var(--xxx) directly via JS.
    ============================================================ */
 :root {
-  /* Background */
-  --background-default: #030712;   /* gray-950 */
-  --background-card: #0f172a;      /* slate-900 */
-  --background-popover: #030712;   /* gray-950 */
-  --background-muted: #0f172a;     /* slate-900 */
-  --background-secondary: #1e293b; /* slate-800 */
-
-  /* Foreground */
-  --foreground-default: #f1f5f9;           /* slate-100 */
-  --foreground-muted: #94a3b8;             /* slate-400 */
-  --foreground-secondary: #e2e8f0;         /* slate-200 */
-  --foreground-subtle: #cbd5e1;            /* slate-300 */
-  --foreground-on-primary: #f8fafc;        /* slate-50 */
-  --foreground-on-card: #f1f5f9;           /* slate-100 */
-  --foreground-on-accent: #f8fafc;         /* slate-50 */
-
-  /* Border */
-  --border-default: #334155;    /* slate-700 */
-  --border-strong: #334155;     /* slate-700 */
-  --border-input: #1e293b;      /* slate-800 */
-
-  /* Brand */
-  --brand-primary: #7c3aed;     /* violet-600 */
-  --brand-accent: #8b5cf6;      /* violet-500 */
-
-  /* Feedback */
-  --feedback-destructive: #f87171;             /* red-400 */
-  --feedback-destructive-foreground: #f8fafc;  /* slate-50 */
-  --feedback-warning: #f59e0b;                 /* amber-500 */
-  --feedback-warning-foreground: #f8fafc;      /* slate-50 */
-  --feedback-success: #6ee7b7;                 /* emerald-300 */
-  --feedback-success-foreground: #f8fafc;      /* slate-50 */
-
-  /* Focus */
-  --focus-ring: #7c3aed;        /* violet-600 */
-
-  /* Chart */
-  --chart-1: #8b5cf6;           /* violet-500 */
-  --chart-2: #10b981;           /* emerald-500 */
-  --chart-4: #60a5fa;           /* blue-400 */
-  --chart-grid-line: #334155;   /* slate-700 */
-  --chart-axis-text: #94a3b8;   /* slate-400 */
-  --chart-reference-line: #7c3aed; /* violet-600 */
-  --chart-label: #a78bfa;       /* violet-400 */
-
-  /* Sidebar */
-  --sidebar-background: #030712;         /* gray-950 */
-  --sidebar-foreground: #e2e8f0;         /* slate-200 */
-  --sidebar-border: #334155;             /* slate-700 */
-  --sidebar-accentBackground: #1e293b;   /* slate-800 */
-  --sidebar-accentForeground: #f1f5f9;   /* slate-100 */
-  --sidebar-primary: #7c3aed;            /* violet-600 */
-  --sidebar-primaryForeground: #f8fafc;  /* slate-50 */
-  --sidebar-ring: #7c3aed;               /* violet-600 */
-
-  /* Border Radius */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
+  /* Chart — accessed via JS getPropertyValue() in trends-chart.tsx */
+  --chart-1: #8b5cf6;
+  /* violet-500 */
+  --chart-2: #10b981;
+  /* emerald-500 */
+  --chart-4: #60a5fa;
+  /* blue-400 */
+  --chart-grid-line: #334155;
+  /* slate-700 */
+  --chart-axis-text: #94a3b8;
+  /* slate-400 */
+  --chart-reference-line: #7c3aed;
+  /* violet-600 */
+  --chart-label: #a78bfa;
+  /* violet-400 */
 }
 
 /* ============================================================
-   TAILWIND THEME — direct hex values (no var() chains)
-   This guarantees opacity modifiers (/60, /80 etc.) and
-   @apply all work correctly at build time.
+   TAILWIND THEME — fully semantic, direct hex values.
+   No var() chains — ensures opacity modifiers (/60, /80 etc.)
+   and @apply work correctly at build time.
    ============================================================ */
 @theme {
   --font-sans: var(--font-sans), 'Geist', system-ui, sans-serif;
   --font-mono: var(--font-mono), 'Geist Mono', ui-monospace, monospace;
 
-  /* Core colors */
-  --color-background: #030712;     /* gray-950 */
-  --color-foreground: #f1f5f9;     /* slate-100 */
+  /* ── Base ─────────────────────────────────────────────────── */
+  --color-background: #020617;
+  /* slate-950 — page / popover / sidebar background */
+  --color-foreground: #f1f5f9;
+  /* slate-100 — primary text */
 
-  --color-card: #0f172a;           /* slate-900 */
-  --color-card-foreground: #f1f5f9; /* slate-100 */
+  /* ── Primary action (blue) ───────────────────────────────── */
+  --color-primary-default: #3b82f6;
+  /* blue-500 */
+  --color-primary-foreground: #f8fafc;
+  /* slate-50 — text on primary */
 
-  --color-popover: #030712;        /* gray-950 */
-  --color-popover-foreground: #f1f5f9; /* slate-100 */
+  /* ── Muted text ──────────────────────────────────────────── */
+  --color-muted-foreground: #94a3b8;
+  /* slate-400 — placeholder / caption text */
 
-  --color-primary: #7c3aed;            /* violet-600 */
-  --color-primary-foreground: #f8fafc; /* slate-50 */
+  /* ── Form inputs ─────────────────────────────────────────── */
+  --color-input: #1e293b;
+  /* slate-800 — input / textarea background */
 
-  --color-secondary: #1e293b;      /* slate-800 */
-  --color-secondary-foreground: #e2e8f0; /* slate-200 */
-
-  --color-muted: #0f172a;          /* slate-900 */
-  --color-muted-foreground: #94a3b8; /* slate-400 */
-
-  --color-accent: #8b5cf6;             /* violet-500 */
-  --color-accent-foreground: #f8fafc;  /* slate-50 */
-
-  --color-destructive: #f87171;             /* red-400 */
-  --color-destructive-foreground: #f8fafc;  /* slate-50 */
-
-  --color-border: #334155;  /* slate-700 */
-  --color-input: #1e293b;   /* slate-800 */
-  --color-ring: #7c3aed;    /* violet-600 */
-
-  /* Chart */
-  --color-chart-1: #8b5cf6; /* violet-500 */
-  --color-chart-2: #10b981; /* emerald-500 */
-  --color-chart-4: #60a5fa; /* blue-400 */
-
-  /* Feedback */
-  --color-warning: #f59e0b;              /* amber-500 */
-  --color-warning-foreground: #f8fafc;   /* slate-50 */
-  --color-success: #6ee7b7;              /* emerald-300 */
-  --color-success-foreground: #f8fafc;   /* slate-50 */
-
-  /* Extra */
-  --color-foreground-subtle: #cbd5e1;  /* slate-300 */
-  --color-border-strong: #334155;      /* slate-700 */
-
-  /* Border radius */
+  /* ── Border radius ───────────────────────────────────────── */
   --radius: 8px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
 
-  /* Sidebar */
-  --color-sidebar: #030712;                       /* gray-950 */
-  --color-sidebar-background: #030712;            /* gray-950 */
-  --color-sidebar-foreground: #e2e8f0;            /* slate-200 */
-  --color-sidebar-primary: #7c3aed;               /* violet-600 */
-  --color-sidebar-primary-foreground: #f8fafc;    /* slate-50 */
-  --color-sidebar-accent: #1e293b;                /* slate-800 */
-  --color-sidebar-accent-foreground: #f1f5f9;     /* slate-100 */
-  --color-sidebar-border: #334155;                /* slate-700 */
-  --color-sidebar-ring: #7c3aed;                  /* violet-600 */
+  /* ── Surface scale ───────────────────────────────────────── */
+  --color-surface-default: #0f172a;
+  /* slate-900 — card / panel / muted bg */
+  --color-surface-hover: #1e293b;
+  /* slate-800 — hover / elevated / secondary bg */
+  --color-surface-track: #334155;
+  /* slate-700 — border / divider / SVG stroke */
+  --color-frame: #64748b;
+  /* slate-500 — checkbox / input edge */
 
-  /* ── Semantic token palette ──────────────────────────────────────
-     Direct hex values so Tailwind opacity modifiers (/40, /60, /80 …)
-     work correctly. All names reflect role, not Tailwind scale name.
+  /* ── Text content scale ──────────────────────────────────── */
+  --color-white: #ffffff;
+  --color-subdued: #e2e8f0;
+  /* slate-200 — secondary text / sidebar labels */
+  --color-dim: #CBD5E1;
+  /* slate-300 — tertiary / meta text */
 
-     Rename log (old → new):
-       v0-slate-900      → surface          card/panel base bg
-       v0-slate-800      → surface-hover    hover / elevated bg
-       v0-slate-700      → surface-track    track, shimmer, SVG stroke
-       v0-slate-500      → frame            checkbox / input edge
-       v0-slate-400      → dim              muted caption / meta text
-       v0-slate-300      → subdued          secondary titles / labels
-       v0-white          → removed          use Tailwind built-in `white`
-       v0-violet-600     → brand-deep       button hover, pressed state
-       v0-violet-500     → brand            filled brand elements, chart
-       v0-violet-400     → brand-soft       icon color, focus dot
-       v0-violet-300     → brand-faint      secondary brand text
-       v0-violet-200     → brand-ghost      reserved / lightest brand
-       v0-emerald-500    → positive         good perf ring / row highlight
-       v0-emerald-400    → positive-soft    up-trend text / gain labels
-       v0-red-600        → danger-deep      urgent button hover
-       v0-red-500        → danger           urgent badge / button / ring
-       v0-red-400        → danger-soft      poor-perf text
-       v0-amber-600      → caution-deep     reserved
-       v0-amber-500      → caution          medium-perf ring
-       v0-amber-400      → caution-soft     medium-perf text
-       v0-grid-line      → chart-grid       chart grid lines
-       v0-axis-text      → chart-axis       chart axis text
-       v0-chart-ref-line → chart-ref        chart reference line
-       v0-chart-label    → chart-callout    chart callout labels
-  ─────────────────────────────────────────────────────────────── */
+  /* ── Brand (violet) ──────────────────────────────────────── */
+  --color-brand-deep: #7c3aed;
+  /* violet-600 — ring / hover / pressed */
+  --color-brand-default: #8b5cf6;
+  /* violet-500 — filled elements / accent */
+  --color-brand-soft: #a78bfa;
+  /* violet-400 — icon / focus dot */
+  --color-brand-faint: #c4b5fd;
+  /* violet-300 — secondary brand text */
+  --color-brand-foreground: #f8fafc;
+  /* slate-50 — text on brand backgrounds */
 
-  /* Surface */
-  --color-surface: #0f172a;          /* was v0-slate-900 */
-  --color-surface-hover: #1e293b;    /* was v0-slate-800 */
-  --color-surface-track: #334155;    /* was v0-slate-700 */
-  --color-frame: #64748b;            /* was v0-slate-500 */
+  /* ── Positive (green) ────────────────────────────────────── */
+  --color-positive-default: #10b981;
+  /* emerald-500 */
+  --color-positive-soft: #34d399;
+  /* emerald-400 */
 
-  /* Content */
-  --color-white: #ffffff;            /* explicit Figma token — generates text-white, bg-white etc. */
-  --color-subdued: #e2e8f0;          /* was v0-slate-300 → updated to slate-200 */
-  --color-dim: #94a3b8;              /* was v0-slate-400 */
+  /* ── Danger (red) ────────────────────────────────────────── */
+  --color-danger-deep: #dc2626;
+  /* red-600 */
+  --color-danger-default: #ef4444;
+  /* red-500 */
+  --color-danger-soft: #f87171;
+  /* red-400 */
+  --color-danger-foreground: #f8fafc;
+  /* slate-50 — text on danger backgrounds */
 
-  /* Brand */
-  --color-brand-deep: #7c3aed;       /* was v0-violet-600 */
-  --color-brand: #8b5cf6;            /* was v0-violet-500 */
-  --color-brand-soft: #a78bfa;       /* was v0-violet-400 */
-  --color-brand-faint: #c4b5fd;      /* was v0-violet-300 */
-  --color-brand-ghost: #ddd6fe;      /* was v0-violet-200 */
-
-  /* Positive */
-  --color-positive: #10b981;         /* was v0-emerald-500 */
-  --color-positive-soft: #34d399;    /* was v0-emerald-400 */
-
-  /* Danger */
-  --color-danger-deep: #dc2626;      /* was v0-red-600 */
-  --color-danger: #ef4444;           /* was v0-red-500 */
-  --color-danger-soft: #f87171;      /* was v0-red-400 */
-
-  /* Caution */
-  --color-caution-deep: #d97706;     /* was v0-amber-600 */
-  --color-caution: #f59e0b;          /* was v0-amber-500 */
-  --color-caution-soft: #fbbf24;     /* was v0-amber-400 */
-
-  /* Chart (used via var() in chart config; Tailwind utilities generated as bonus) */
-  --color-chart-grid: #334155;       /* was v0-grid-line */
-  --color-chart-axis: #94a3b8;       /* was v0-axis-text */
-  --color-chart-ref: #7c3aed;        /* was v0-chart-ref-line */
-  --color-chart-callout: #a78bfa;    /* was v0-chart-label */
+  /* ── Caution (amber) ─────────────────────────────────────── */
+  --color-caution-default: #f59e0b;
+  /* amber-500 */
+  --color-caution-soft: #fbbf24;
+  /* amber-400 */
+  --color-caution-foreground: #f8fafc;
+  /* slate-50 — text on caution backgrounds */
 }
 
 /* ============================================================
@@ -216,7 +116,7 @@
    ============================================================ */
 @layer base {
   * {
-    @apply outline-ring/50;
+    @apply outline-brand-deep/50;
   }
 
   body {
@@ -225,7 +125,12 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-semibold tracking-normal;
   }
 }

@@ -21,7 +21,7 @@ function StatCard({ title, value, change, changeLabel, targetValue, currentValue
 
   return (
     <Card
-      className="cursor-pointer bg-surface/60 transition-colors duration-150 hover:bg-surface-hover/80"
+      className="cursor-pointer bg-surface-default/60 transition-colors duration-150 hover:bg-surface-hover/80"
       role="article"
       aria-label={`${title}: ${value}, ${isPositive ? 'up' : 'down'} ${Math.abs(change)}% ${changeLabel}`}
     >
@@ -31,7 +31,7 @@ function StatCard({ title, value, change, changeLabel, targetValue, currentValue
             <p className="text-[13px] font-medium tracking-normal text-subdued">{title}</p>
             <p className="text-3xl font-bold tracking-normal tabular-nums text-white">{value}</p>
           </div>
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand/15">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-default/15">
             <Icon className="h-5 w-5 text-brand-soft" />
           </div>
         </div>
@@ -45,7 +45,7 @@ function StatCard({ title, value, change, changeLabel, targetValue, currentValue
 
           <div className="h-2 w-full rounded-full bg-surface-track ring-1 ring-white/10 overflow-hidden">
             <div
-              className="h-full rounded-full bg-brand shadow-[0_0_8px_rgba(139,92,246,0.3)] transition-all duration-500"
+              className="h-full rounded-full bg-brand-default shadow-[0_0_8px_rgba(139,92,246,0.3)] transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -54,9 +54,9 @@ function StatCard({ title, value, change, changeLabel, targetValue, currentValue
             {isPositive ? (
               <TrendingUp className="h-3.5 w-3.5 text-positive-soft" />
             ) : (
-              <TrendingDown className="h-3.5 w-3.5 text-destructive" />
+              <TrendingDown className="h-3.5 w-3.5 text-danger-soft" />
             )}
-            <span className={cn("text-[13px] font-bold tabular-nums", isPositive ? "text-positive-soft" : "text-destructive")}>
+            <span className={cn("text-[13px] font-bold tabular-nums", isPositive ? "text-positive-soft" : "text-danger-soft")}>
               {isPositive ? "+" : ""}{change}%
             </span>
             <span className="text-[13px] font-medium tracking-normal text-dim">{changeLabel}</span>

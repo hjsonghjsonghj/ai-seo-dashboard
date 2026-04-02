@@ -126,14 +126,14 @@ const trendIcons: any = {
 
 const trendColors: any = {
   up: "text-positive-soft",
-  down: "text-destructive",
+  down: "text-danger-soft",
   stable: "text-muted-foreground",
 }
 
 function getProgressColor(progress: number): string {
-  if (progress < 40) return "stroke-danger"
-  if (progress < 75) return "stroke-caution"
-  return "stroke-positive"
+  if (progress < 40) return "stroke-danger-default"
+  if (progress < 75) return "stroke-caution-default"
+  return "stroke-positive-default"
 }
 
 function getProgressTextColor(progress: number): string {
@@ -173,7 +173,7 @@ function CitationCard({ citation, onReview }: { citation: any; onReview?: (c: an
 
   return (
     <div
-      className="flex items-center justify-between rounded-lg bg-surface/40 p-5 transition-colors hover:bg-surface-hover/50 cursor-pointer"
+      className="flex items-center justify-between rounded-lg bg-surface-default/40 p-5 transition-colors hover:bg-surface-hover/50 cursor-pointer"
       onClick={() => onReview?.(citation)}
     >
       <div className="flex items-center gap-4">
@@ -255,7 +255,7 @@ export function CitationsTableComponent({
   }
 
   return (
-    <Card className="bg-surface/60 transition-colors duration-150">
+    <Card className="bg-surface-default/60 transition-colors duration-150">
       <CardHeader className="pb-3 px-5 pt-5">
         <div className="flex items-center justify-between">
           <div>
@@ -265,7 +265,7 @@ export function CitationsTableComponent({
           <div className="flex items-center">
             {headerAction ? headerAction : (
               <Link href="/search-visibility">
-                <button className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-[13px] font-medium tracking-normal text-subdued transition-colors hover:bg-secondary">
+                <button className="flex items-center gap-1.5 rounded-lg border border-surface-track bg-surface-hover/50 px-3 py-1.5 text-[13px] font-medium tracking-normal text-subdued transition-colors hover:bg-surface-hover">
                   View all <ExternalLink className="h-3 w-3" />
                 </button>
               </Link>
@@ -274,10 +274,10 @@ export function CitationsTableComponent({
         </div>
       </CardHeader>
       <CardContent className="px-5 pb-5">
-        <div className="hidden md:block overflow-hidden rounded-lg border border-border/50">
+        <div className="hidden md:block overflow-hidden rounded-lg border border-surface-track/50">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-border/50 bg-muted/30">
+              <tr className="border-b border-surface-track/50 bg-surface-default/30">
                 {showSelectionColumn && (
                   <th className="w-10 px-3 py-3 text-center">
                     <Checkbox
@@ -353,7 +353,7 @@ export function CitationsTableComponent({
                 <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-dim">Quick Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border/30">
+            <tbody className="divide-y divide-surface-track/30">
               {displayData.map((citation: any) => {
                 const TrendIcon = trendIcons[citation.trend]
                 const isSelected = selectedRowIds?.has(citation.id) ?? false
@@ -363,7 +363,7 @@ export function CitationsTableComponent({
                     key={citation.id}
                     className={cn(
                       "transition-colors duration-700",
-                      isHighlighted ? "bg-positive/10" : isSelected ? "bg-muted/20" : "hover:bg-muted/20"
+                      isHighlighted ? "bg-positive-default/10" : isSelected ? "bg-surface-default/20" : "hover:bg-surface-default/20"
                     )}
                   >
                     {showSelectionColumn && (
@@ -385,7 +385,7 @@ export function CitationsTableComponent({
                       <div className="flex justify-center">
                         <Button
                           size="sm" variant="outline"
-                          className="h-6 gap-1.5 border-brand/30 bg-brand/10 px-2.5 text-[13px] font-semibold text-brand-faint hover:bg-brand/20"
+                          className="h-6 gap-1.5 border-brand/30 bg-brand-default/10 px-2.5 text-[13px] font-semibold text-brand-faint hover:bg-brand-default/20"
                           onClick={() => onReview?.(citation)}
                         >
                           <Eye className="h-3 w-3" /> Review

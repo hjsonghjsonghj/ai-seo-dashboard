@@ -222,7 +222,7 @@ export default function SearchVisibilityPage() {
 
       <div className="pb-20 md:ml-16 md:pb-0 flex flex-col gap-2 md:gap-3">
         {/* Header with Back Button */}
-        <header className="flex h-16 items-center justify-between border-b border-border/50 bg-background/80 px-4 md:px-6 backdrop-blur-sm">
+        <header className="flex h-16 items-center justify-between border-b border-surface-track/50 bg-background/80 px-4 md:px-6 backdrop-blur-sm">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" asChild className="gap-2 text-white hover:text-white">
               <Link href="/">
@@ -341,7 +341,7 @@ export default function SearchVisibilityPage() {
         </main>
       </div>
       {selectedRows.size > 0 && (
-        <div className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-border bg-background/95 px-4 py-3 shadow-lg backdrop-blur">
+        <div className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-surface-track bg-background/95 px-4 py-3 shadow-lg backdrop-blur">
           <span className="text-sm font-medium text-subdued">{selectedRows.size} citations selected</span>
           <Button size="sm" variant="outline" onClick={handleExportSelected}>
             Export

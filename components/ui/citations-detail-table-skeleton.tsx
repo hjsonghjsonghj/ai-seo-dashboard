@@ -10,13 +10,13 @@ function ShimmerBlock({ className }: { className: string }) {
 
 export function CitationsDetailTableSkeleton({ rows = 25 }: { rows?: number }) {
   return (
-    <div className="rounded-xl border border-border/50 bg-card p-5">
+    <div className="rounded-xl border border-surface-track/50 bg-surface-default p-5">
       <div className="mb-3 h-6 w-56 animate-pulse rounded bg-surface-hover/70" />
 
-      <div className="overflow-hidden rounded-lg border border-border/50">
+      <div className="overflow-hidden rounded-lg border border-surface-track/50">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-border/50 bg-muted/30">
+            <tr className="border-b border-surface-track/50 bg-surface-default/30">
               <th className="w-10 px-3 py-3 text-center">
                 <ShimmerBlock className="mx-auto h-4 w-4 rounded border border-frame bg-surface-hover/30" />
               </th>

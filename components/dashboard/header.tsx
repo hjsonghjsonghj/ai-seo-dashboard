@@ -5,7 +5,7 @@ import { Calendar, ChevronDown, Bell, Search } from "lucide-react"
 
 export function Header() {
   return (
-    <header className="flex h-16 items-center justify-between border-b border-border/50 bg-background/80 px-4 md:px-6 backdrop-blur-sm">
+    <header className="flex h-16 items-center justify-between border-b border-surface-track/50 bg-background/80 px-4 md:px-6 backdrop-blur-sm">
       <div>
         <h1 className="text-lg md:text-xl font-semibold tracking-normal text-white">
           Dashboard Overview
@@ -21,7 +21,7 @@ export function Header() {
           <input
             type="text"
             placeholder="Search metrics..."
-            className="h-9 w-64 rounded-lg border border-border bg-muted/30 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="h-9 w-64 rounded-lg border border-surface-track bg-surface-default/30 pl-9 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary-default focus:outline-none focus:ring-1 focus:ring-primary-default"
           />
         </div>
 
@@ -29,7 +29,7 @@ export function Header() {
         <Button
           variant="outline"
           size="sm"
-          className="gap-1.5 md:gap-2 border-border bg-muted/30 text-foreground hover:bg-muted/50"
+          className="gap-1.5 md:gap-2 border-surface-track bg-surface-default/30 text-foreground hover:bg-surface-default/50"
         >
           <Calendar className="h-4 w-4" />
           <span className="hidden sm:inline text-xs md:text-sm">Last 30 days</span>
@@ -40,10 +40,10 @@ export function Header() {
         <Button
           variant="outline"
           size="icon"
-          className="relative h-8 w-8 md:h-9 md:w-9 border-border bg-muted/30 text-foreground hover:bg-muted/50"
+          className="relative h-8 w-8 md:h-9 md:w-9 border-surface-track bg-surface-default/30 text-foreground hover:bg-surface-default/50"
         >
           <Bell className="h-4 w-4" />
-          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary-default text-[10px] font-medium text-primary-foreground">
             3
           </span>
         </Button>

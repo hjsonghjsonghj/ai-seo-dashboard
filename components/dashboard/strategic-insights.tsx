@@ -43,22 +43,22 @@ const insights = [
 
 const typeStyles = {
   critical: {
-    bg: "bg-surface/60 hover:bg-surface-hover/80",
-    badge: "bg-danger/15 text-danger-soft",
-    button: "bg-danger hover:bg-danger-deep text-white focus-visible:ring-danger",
-    icon: "bg-danger/15 text-danger-soft",
+    bg: "bg-surface-default/60 hover:bg-surface-hover/80",
+    badge: "bg-danger-default/15 text-danger-soft",
+    button: "bg-danger-default hover:bg-danger-deep text-white focus-visible:ring-danger-default",
+    icon: "bg-danger-default/15 text-danger-soft",
   },
   opportunity: {
-    bg: "bg-surface/60 hover:bg-surface-hover/80",
-    badge: "bg-brand/15 text-brand-soft",
-    button: "bg-brand hover:bg-brand-deep text-white focus-visible:ring-brand",
-    icon: "bg-brand/15 text-brand-soft",
+    bg: "bg-surface-default/60 hover:bg-surface-hover/80",
+    badge: "bg-brand-default/15 text-brand-soft",
+    button: "bg-brand-default hover:bg-brand-deep text-white focus-visible:ring-brand",
+    icon: "bg-brand-default/15 text-brand-soft",
   },
   optimization: {
-    bg: "bg-surface/60 hover:bg-surface-hover/80",
-    badge: "bg-warning/15 text-warning",
-    button: "bg-warning hover:bg-warning/90 text-warning-foreground focus-visible:ring-warning",
-    icon: "bg-warning/15 text-warning",
+    bg: "bg-surface-default/60 hover:bg-surface-hover/80",
+    badge: "bg-caution-default/15 text-caution-default",
+    button: "bg-caution-default hover:bg-caution-default/90 text-caution-foreground focus-visible:ring-caution-default",
+    icon: "bg-caution-default/15 text-caution-default",
   },
 }
 
@@ -66,7 +66,7 @@ export function StrategicInsights() {
   return (
     <section className="space-y-4" aria-labelledby="insights-heading">
       <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand/15" aria-hidden="true">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-default/15" aria-hidden="true">
           <Sparkles className="h-4 w-4 text-brand-soft" />
         </div>
         <div>

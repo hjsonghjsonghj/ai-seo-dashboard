@@ -112,7 +112,7 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
                                         <CheckCircle2
                                             className={cn(
                                                 "h-5 w-5 mt-0.5 shrink-0",
-                                                item.done ? "text-success" : "text-slate-600"
+                                                item.done ? "text-positive-default" : "text-slate-600"
                                             )}
                                         />
                                         <span className={cn(
@@ -142,7 +142,7 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
                                 Current Stats
                             </h3>
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="rounded-lg border border-border/50 bg-slate-800/50 p-4">
+                                <div className="rounded-lg border border-surface-track/50 bg-slate-800/50 p-4">
                                     <p className="text-[12px] font-medium uppercase tracking-wide text-slate-500" style={{ letterSpacing: '0.01em' }}>
                                         Mentions
                                     </p>
@@ -150,14 +150,14 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
                                         {selectedCitation.mentions.toLocaleString()}
                                     </p>
                                 </div>
-                                <div className="rounded-lg border border-border/50 bg-slate-800/50 p-4">
+                                <div className="rounded-lg border border-surface-track/50 bg-slate-800/50 p-4">
                                     <p className="text-[12px] font-medium uppercase tracking-wide text-slate-500" style={{ letterSpacing: '0.01em' }}>
                                         Optimization
                                     </p>
                                     <p className={cn(
                                         "text-[16px] font-semibold tabular-nums mt-1",
-                                        selectedCitation.optimizationProgress >= 75 ? "text-success" :
-                                            selectedCitation.optimizationProgress >= 40 ? "text-warning" : "text-red-400"
+                                        selectedCitation.optimizationProgress >= 75 ? "text-positive-default" :
+                                            selectedCitation.optimizationProgress >= 40 ? "text-caution-default" : "text-red-400"
                                     )}>
                                         {selectedCitation.optimizationProgress}%
                                     </p>
