@@ -8,7 +8,7 @@ const alertVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-surface-default text-foreground',
+        default: 'bg-surface-default text-foreground-primary',
         destructive:
           'text-danger-soft bg-surface-default [&>svg]:text-current *:data-[slot=alert-description]:text-danger-soft/90',
       },
@@ -55,7 +55,7 @@ function AlertDescription({
     <div
       data-slot="alert-description"
       className={cn(
-        'text-muted-foreground col-start-2 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed',
+        'text-foreground-muted col-start-2 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed',
         className,
       )}
       {...props}

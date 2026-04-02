@@ -28,8 +28,8 @@ function StatCard({ title, value, change, changeLabel, targetValue, currentValue
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 space-y-1.5">
-            <p className="text-[13px] font-medium tracking-normal text-subdued">{title}</p>
-            <p className="text-3xl font-bold tracking-normal tabular-nums text-white">{value}</p>
+            <p className="text-[13px] font-medium tracking-normal text-foreground-secondary">{title}</p>
+            <p className="text-3xl font-bold tracking-normal tabular-nums text-foreground-strong">{value}</p>
           </div>
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-default/15">
             <Icon className="h-5 w-5 text-brand-soft" />
@@ -38,12 +38,12 @@ function StatCard({ title, value, change, changeLabel, targetValue, currentValue
 
         <div className="mt-5 space-y-3">
           <div className="flex items-center gap-1.5 text-[13px]">
-            <span className="font-medium tracking-normal text-dim">Goal:</span>
+            <span className="font-medium tracking-normal text-foreground-tertiary">Goal:</span>
             <span className="font-semibold tabular-nums text-brand-faint">{targetValue}{unit}</span>
-            <span className="font-medium tabular-nums text-dim">({Math.round(progressPercent)}%)</span>
+            <span className="font-medium tabular-nums text-foreground-tertiary">({Math.round(progressPercent)}%)</span>
           </div>
 
-          <div className="h-2 w-full rounded-full bg-surface-track ring-1 ring-white/10 overflow-hidden">
+          <div className="h-2 w-full rounded-full bg-border-secondary ring-1 ring-white/10 overflow-hidden">
             <div
               className="h-full rounded-full bg-brand-default shadow-[0_0_8px_rgba(139,92,246,0.3)] transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
@@ -59,7 +59,7 @@ function StatCard({ title, value, change, changeLabel, targetValue, currentValue
             <span className={cn("text-[13px] font-bold tabular-nums", isPositive ? "text-positive-soft" : "text-danger-soft")}>
               {isPositive ? "+" : ""}{change}%
             </span>
-            <span className="text-[13px] font-medium tracking-normal text-dim">{changeLabel}</span>
+            <span className="text-[13px] font-medium tracking-normal text-foreground-tertiary">{changeLabel}</span>
           </div>
         </div>
       </CardContent>

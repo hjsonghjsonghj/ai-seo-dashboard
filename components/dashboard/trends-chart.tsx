@@ -46,8 +46,8 @@ function CustomTooltip({
   const eventItem = data.find(d => d.date === label)
 
   return (
-    <div className="rounded-lg border border-surface-track bg-surface-default/95 p-4 shadow-xl" role="tooltip">
-      <p className="mb-2 text-[14px] font-semibold tracking-normal text-white">{label}</p>
+    <div className="rounded-lg border border-border-secondary bg-surface-default/95 p-4 shadow-xl" role="tooltip">
+      <p className="mb-2 text-[14px] font-semibold tracking-normal text-foreground-strong">{label}</p>
       {eventItem?.event && (
         <div className="mb-2 flex items-center gap-1.5 rounded bg-brand-default/15 px-2 py-1">
           <div className="h-1.5 w-1.5 rounded-full bg-brand-soft" aria-hidden="true" />
@@ -62,8 +62,8 @@ function CustomTooltip({
               style={{ backgroundColor: entry.color }}
               aria-hidden="true"
             />
-            <span className="font-medium tracking-normal text-dim">{entry.name}:</span>
-            <span className="font-semibold tabular-nums text-white">
+            <span className="font-medium tracking-normal text-foreground-tertiary">{entry.name}:</span>
+            <span className="font-semibold tabular-nums text-foreground-strong">
               {entry.value.toLocaleString()}
             </span>
           </div>
@@ -103,25 +103,25 @@ export function TrendsChart() {
     <Card className="bg-surface-default/60 transition-colors duration-150">
       <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-4 px-5 pt-5 pb-1.5">
         <div>
-          <CardTitle className="text-lg font-semibold tracking-normal text-white">
+          <CardTitle className="text-lg font-semibold tracking-normal text-foreground-strong">
             Search Visibility Trends
           </CardTitle>
-          <p className="text-[13px] font-medium tracking-normal text-dim mt-1">
+          <p className="text-[13px] font-medium tracking-normal text-foreground-tertiary mt-1">
             Monthly performance with AI event markers
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-4" role="list" aria-label="Chart legend">
           <div className="flex items-center gap-2" role="listitem">
             <div className="h-2 w-2 rounded-full bg-brand-default" aria-hidden="true" />
-            <span className="text-[13px] font-medium tracking-normal text-subdued">AI Discovery</span>
+            <span className="text-[13px] font-medium tracking-normal text-foreground-secondary">AI Discovery</span>
           </div>
           <div className="flex items-center gap-2" role="listitem">
             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: chartColors.organicSearch }} aria-hidden="true" />
-            <span className="text-[13px] font-medium tracking-normal text-subdued">Organic Search</span>
+            <span className="text-[13px] font-medium tracking-normal text-foreground-secondary">Organic Search</span>
           </div>
           <div className="flex items-center gap-2" role="listitem">
             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: chartColors.citations }} aria-hidden="true" />
-            <span className="text-[13px] font-medium tracking-normal text-subdued">Citations</span>
+            <span className="text-[13px] font-medium tracking-normal text-foreground-secondary">Citations</span>
           </div>
         </div>
       </CardHeader>

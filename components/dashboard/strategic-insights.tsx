@@ -45,19 +45,19 @@ const typeStyles = {
   critical: {
     bg: "bg-surface-default/60 hover:bg-surface-hover/80",
     badge: "bg-danger-default/15 text-danger-soft",
-    button: "bg-danger-default hover:bg-danger-deep text-white focus-visible:ring-danger-default",
+    button: "bg-danger-default hover:bg-danger-deep text-foreground-strong focus-visible:ring-danger-default",
     icon: "bg-danger-default/15 text-danger-soft",
   },
   opportunity: {
     bg: "bg-surface-default/60 hover:bg-surface-hover/80",
     badge: "bg-brand-default/15 text-brand-soft",
-    button: "bg-brand-default hover:bg-brand-deep text-white focus-visible:ring-brand",
+    button: "bg-brand-default hover:bg-brand-deep text-foreground-strong focus-visible:ring-brand",
     icon: "bg-brand-default/15 text-brand-soft",
   },
   optimization: {
     bg: "bg-surface-default/60 hover:bg-surface-hover/80",
     badge: "bg-caution-default/15 text-caution-default",
-    button: "bg-caution-default hover:bg-caution-default/90 text-caution-foreground focus-visible:ring-caution-default",
+    button: "bg-caution-default hover:bg-caution-default/90 text-foreground-strong focus-visible:ring-caution-default",
     icon: "bg-caution-default/15 text-caution-default",
   },
 }
@@ -72,11 +72,11 @@ export function StrategicInsights() {
         <div>
           <h2
             id="insights-heading"
-            className="text-lg font-semibold tracking-normal text-subdued"
+            className="text-lg font-semibold tracking-normal text-foreground-secondary"
           >
             AI-Generated Strategic Insights
           </h2>
-          <p className="text-[13px] font-medium tracking-normal text-dim">
+          <p className="text-[13px] font-medium tracking-normal text-foreground-tertiary">
             Actionable recommendations powered by Intelligence
           </p>
         </div>
@@ -104,7 +104,7 @@ export function StrategicInsights() {
                       <Icon className="h-4 w-4" />
                     </div>
                     <div>
-                      <CardTitle className="text-[13px] font-semibold uppercase tracking-wide text-dim">
+                      <CardTitle className="text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
                         {insight.title}
                       </CardTitle>
                     </div>
@@ -123,11 +123,11 @@ export function StrategicInsights() {
                 <div className="flex-1">
                   <h3
                     id={`insight-${insight.id}-headline`}
-                    className="mb-0 text-base font-semibold tracking-normal text-subdued"
+                    className="mb-0 text-base font-semibold tracking-normal text-foreground-secondary"
                   >
                     {insight.headline}
                   </h3>
-                  <p className="text-[13px] font-medium leading-relaxed tracking-normal text-dim">
+                  <p className="text-[13px] font-medium leading-relaxed tracking-normal text-foreground-tertiary">
                     {insight.description}
                   </p>
                 </div>

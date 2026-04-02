@@ -1,0 +1,1257 @@
+{
+  "$schema": "figma-design-spec/v1.0",
+  "meta": {
+    "generator": "Claude Design Engineer — AI SEO Dashboard",
+    "generatedAt": "2026-04-02",
+    "targetCanvas": "1440px",
+    "tokenSource": "app/globals.css (@theme + :root)",
+    "pluginCompatibility": ["Tokens Studio for Figma", "Builder.io"],
+    "atomicDesignVersion": "Brad Frost Atomic Design v1"
+  },
+
+  "designTokens": {
+    "$type": "group",
+    "name": "semantics",
+    "description": "Figma-compatible token set. Map these to your Figma Variable Collection named 'semantics'.",
+
+    "color": {
+      "background": {
+        "$type": "color",
+        "$value": "var(--color-background)",
+        "$rawHex": "#020617",
+        "figmaVariableName": "color/background",
+        "description": "slate-950 — page / popover / sidebar background"
+      },
+      "foreground": {
+        "primary":   { "$type": "color", "$value": "var(--color-foreground-primary)",   "$rawHex": "#f1f5f9", "figmaVariableName": "color/foreground/primary" },
+        "secondary": { "$type": "color", "$value": "var(--color-foreground-secondary)", "$rawHex": "#e2e8f0", "figmaVariableName": "color/foreground/secondary" },
+        "tertiary":  { "$type": "color", "$value": "var(--color-foreground-tertiary)",  "$rawHex": "#CBD5E1", "figmaVariableName": "color/foreground/tertiary" },
+        "strong":    { "$type": "color", "$value": "var(--color-foreground-strong)",    "$rawHex": "#f8fafc", "figmaVariableName": "color/foreground/strong" },
+        "muted":     { "$type": "color", "$value": "var(--color-foreground-muted)",     "$rawHex": "#94a3b8", "figmaVariableName": "color/foreground/muted" }
+      },
+      "surface": {
+        "default": { "$type": "color", "$value": "var(--color-surface-default)", "$rawHex": "#0f172a", "figmaVariableName": "color/surface/default" },
+        "hover":   { "$type": "color", "$value": "var(--color-surface-hover)",   "$rawHex": "#1e293b", "figmaVariableName": "color/surface/hover" }
+      },
+      "border": {
+        "primary":   { "$type": "color", "$value": "var(--color-border-primary)",   "$rawHex": "#475569", "figmaVariableName": "color/border/primary" },
+        "secondary": { "$type": "color", "$value": "var(--color-border-secondary)", "$rawHex": "#334155", "figmaVariableName": "color/border/secondary" }
+      },
+      "brand": {
+        "deep":    { "$type": "color", "$value": "var(--color-brand-deep)",    "$rawHex": "#7c3aed", "figmaVariableName": "color/brand/deep" },
+        "default": { "$type": "color", "$value": "var(--color-brand-default)", "$rawHex": "#8b5cf6", "figmaVariableName": "color/brand/default" },
+        "soft":    { "$type": "color", "$value": "var(--color-brand-soft)",    "$rawHex": "#a78bfa", "figmaVariableName": "color/brand/soft" },
+        "faint":   { "$type": "color", "$value": "var(--color-brand-faint)",   "$rawHex": "#c4b5fd", "figmaVariableName": "color/brand/faint" }
+      },
+      "primary": {
+        "default": { "$type": "color", "$value": "var(--color-primary-default)", "$rawHex": "#3b82f6", "figmaVariableName": "color/primary/default" }
+      },
+      "positive": {
+        "default": { "$type": "color", "$value": "var(--color-positive-default)", "$rawHex": "#10b981", "figmaVariableName": "color/positive/default" },
+        "soft":    { "$type": "color", "$value": "var(--color-positive-soft)",    "$rawHex": "#34d399", "figmaVariableName": "color/positive/soft" }
+      },
+      "danger": {
+        "deep":    { "$type": "color", "$value": "var(--color-danger-deep)",    "$rawHex": "#dc2626", "figmaVariableName": "color/danger/deep" },
+        "default": { "$type": "color", "$value": "var(--color-danger-default)", "$rawHex": "#ef4444", "figmaVariableName": "color/danger/default" },
+        "soft":    { "$type": "color", "$value": "var(--color-danger-soft)",    "$rawHex": "#f87171", "figmaVariableName": "color/danger/soft" }
+      },
+      "caution": {
+        "default": { "$type": "color", "$value": "var(--color-caution-default)", "$rawHex": "#f59e0b", "figmaVariableName": "color/caution/default" },
+        "soft":    { "$type": "color", "$value": "var(--color-caution-soft)",    "$rawHex": "#fbbf24", "figmaVariableName": "color/caution/soft" }
+      },
+      "input": { "$type": "color", "$value": "var(--color-input)", "$rawHex": "#1e293b", "figmaVariableName": "color/input" },
+      "chart": {
+        "1":             { "$type": "color", "$value": "var(--chart-1)",             "$rawHex": "#8b5cf6" },
+        "2":             { "$type": "color", "$value": "var(--chart-2)",             "$rawHex": "#10b981" },
+        "4":             { "$type": "color", "$value": "var(--chart-4)",             "$rawHex": "#60a5fa" },
+        "gridLine":      { "$type": "color", "$value": "var(--chart-grid-line)",     "$rawHex": "#334155" },
+        "axisText":      { "$type": "color", "$value": "var(--chart-axis-text)",     "$rawHex": "#94a3b8" },
+        "referenceLine": { "$type": "color", "$value": "var(--chart-reference-line)","$rawHex": "#7c3aed" },
+        "label":         { "$type": "color", "$value": "var(--chart-label)",         "$rawHex": "#a78bfa" }
+      }
+    },
+
+    "typography": {
+      "fontFamily": {
+        "sans": { "$type": "fontFamily", "$value": "Geist, system-ui, sans-serif" },
+        "mono": { "$type": "fontFamily", "$value": "Geist Mono, ui-monospace, monospace" }
+      },
+      "scale": {
+        "xs":   { "$type": "dimension", "$value": "11px" },
+        "sm":   { "$type": "dimension", "$value": "13px" },
+        "base": { "$type": "dimension", "$value": "14px" },
+        "md":   { "$type": "dimension", "$value": "16px" },
+        "lg":   { "$type": "dimension", "$value": "18px" },
+        "xl":   { "$type": "dimension", "$value": "20px" },
+        "3xl":  { "$type": "dimension", "$value": "30px" }
+      }
+    },
+
+    "spacing": {
+      "1":  { "$type": "dimension", "$value": "4px" },
+      "1.5":{ "$type": "dimension", "$value": "6px" },
+      "2":  { "$type": "dimension", "$value": "8px" },
+      "2.5":{ "$type": "dimension", "$value": "10px" },
+      "3":  { "$type": "dimension", "$value": "12px" },
+      "3.5":{ "$type": "dimension", "$value": "14px" },
+      "4":  { "$type": "dimension", "$value": "16px" },
+      "5":  { "$type": "dimension", "$value": "20px" },
+      "6":  { "$type": "dimension", "$value": "24px" },
+      "9":  { "$type": "dimension", "$value": "36px" },
+      "10": { "$type": "dimension", "$value": "40px" },
+      "16": { "$type": "dimension", "$value": "64px" }
+    },
+
+    "borderRadius": {
+      "sm":   { "$type": "dimension", "$value": "6px" },
+      "base": { "$type": "dimension", "$value": "8px",  "figmaVariable": "radius", "cssVar": "var(--radius)" },
+      "md":   { "$type": "dimension", "$value": "8px" },
+      "lg":   { "$type": "dimension", "$value": "10px" },
+      "xl":   { "$type": "dimension", "$value": "12px" },
+      "full": { "$type": "dimension", "$value": "9999px" }
+    }
+  },
+
+  "components": {
+
+    "atoms": {
+
+      "Atom/Icon": {
+        "description": "Lucide icon wrapper. Used across all components.",
+        "sizes": {
+          "xs":   { "width": 12, "height": 12 },
+          "sm":   { "width": 14, "height": 14 },
+          "base": { "width": 16, "height": 16 },
+          "md":   { "width": 20, "height": 20 }
+        },
+        "colorTokens": [
+          "var(--color-foreground-muted)",
+          "var(--color-foreground-secondary)",
+          "var(--color-foreground-strong)",
+          "var(--color-brand-soft)",
+          "var(--color-positive-soft)",
+          "var(--color-danger-soft)"
+        ]
+      },
+
+      "Atom/Button": {
+        "description": "Interactive button element. Maps to components/ui/button.tsx",
+        "autoLayout": {
+          "layoutMode": "HORIZONTAL",
+          "counterAxisAlignItems": "CENTER",
+          "primaryAxisAlignItems": "CENTER",
+          "gap": 6
+        },
+        "variants": {
+          "default": {
+            "height": 36,
+            "paddingHorizontal": 16,
+            "paddingVertical": 8,
+            "borderRadius": "var(--radius)",
+            "fill": "var(--color-brand-default)",
+            "textColor": "var(--color-foreground-strong)",
+            "fontSize": 14,
+            "fontWeight": 600
+          },
+          "outline": {
+            "height": 36,
+            "paddingHorizontal": 16,
+            "paddingVertical": 8,
+            "borderRadius": "var(--radius)",
+            "fill": "transparent",
+            "stroke": "var(--color-border-secondary)",
+            "textColor": "var(--color-foreground-primary)",
+            "fontSize": 14,
+            "fontWeight": 500
+          },
+          "ghost": {
+            "height": 36,
+            "paddingHorizontal": 12,
+            "paddingVertical": 8,
+            "borderRadius": "var(--radius)",
+            "fill": "transparent",
+            "textColor": "var(--color-foreground-secondary)",
+            "fontSize": 14,
+            "fontWeight": 500
+          },
+          "icon": {
+            "width": 36,
+            "height": 36,
+            "borderRadius": "var(--radius)",
+            "fill": "transparent",
+            "stroke": "var(--color-border-secondary)"
+          },
+          "sm": {
+            "height": 28,
+            "paddingHorizontal": 10,
+            "paddingVertical": 6,
+            "borderRadius": "var(--radius)",
+            "fontSize": 13,
+            "fontWeight": 600
+          }
+        }
+      },
+
+      "Atom/Input": {
+        "description": "Text input field. Maps to components/ui/input.tsx",
+        "height": 36,
+        "paddingHorizontal": 16,
+        "paddingVertical": 8,
+        "borderRadius": "var(--radius)",
+        "fill": "var(--color-surface-hover)",
+        "stroke": "var(--color-border-secondary)",
+        "strokeWeight": 1,
+        "textColor": "var(--color-foreground-primary)",
+        "placeholderColor": "var(--color-foreground-muted)",
+        "fontSize": 14
+      },
+
+      "Atom/Badge": {
+        "description": "Priority/status label pill. Used in Molecule/InsightCard",
+        "paddingHorizontal": 8,
+        "paddingVertical": 2,
+        "borderRadius": "9999px",
+        "fontSize": 12,
+        "fontWeight": 600,
+        "letterSpacing": "0.05em",
+        "textTransform": "uppercase",
+        "variants": {
+          "danger":   { "fill": "rgba(239,68,68,0.15)",  "textColor": "var(--color-danger-soft)" },
+          "brand":    { "fill": "rgba(139,92,246,0.15)", "textColor": "var(--color-brand-soft)" },
+          "caution":  { "fill": "rgba(245,158,11,0.15)", "textColor": "var(--color-caution-default)" }
+        }
+      },
+
+      "Atom/Checkbox": {
+        "description": "Selection checkbox. Maps to components/ui/checkbox.tsx",
+        "width": 16,
+        "height": 16,
+        "borderRadius": 4,
+        "stroke": "var(--color-border-primary)",
+        "strokeWeight": 1,
+        "states": {
+          "unchecked": { "fill": "transparent" },
+          "checked":   { "fill": "var(--color-brand-default)", "iconColor": "var(--color-foreground-strong)" },
+          "indeterminate": { "fill": "var(--color-brand-default)", "iconColor": "var(--color-foreground-strong)" }
+        }
+      },
+
+      "Atom/ProgressBar": {
+        "description": "Linear progress bar used in Molecule/StatCard",
+        "height": 8,
+        "borderRadius": "9999px",
+        "trackFill": "var(--color-border-secondary)",
+        "trackStroke": "rgba(255,255,255,0.10)",
+        "fillColor": "var(--color-brand-default)",
+        "shadow": "0 0 8px rgba(139,92,246,0.3)"
+      },
+
+      "Atom/ProgressRing": {
+        "description": "Circular optimization score indicator used in Organism/CitationsTable",
+        "sizes": {
+          "sm": { "width": 40, "height": 40, "strokeWidth": 3 },
+          "md": { "width": 44, "height": 44, "strokeWidth": 3 }
+        },
+        "trackColor": "var(--color-border-secondary)",
+        "fillVariants": {
+          "critical":     { "threshold": "< 40%",  "stroke": "var(--color-danger-default)",  "textColor": "var(--color-danger-soft)" },
+          "caution":      { "threshold": "40–74%", "stroke": "var(--color-caution-default)", "textColor": "var(--color-caution-soft)" },
+          "positive":     { "threshold": "≥ 75%",  "stroke": "var(--color-positive-default)","textColor": "var(--color-positive-soft)" }
+        },
+        "labelFontSize": 11,
+        "labelFontWeight": 600
+      },
+
+      "Atom/NavItem": {
+        "description": "Sidebar navigation button (desktop icon variant)",
+        "width": 40,
+        "height": 40,
+        "borderRadius": "var(--radius)",
+        "autoLayout": {
+          "layoutMode": "HORIZONTAL",
+          "primaryAxisAlignItems": "CENTER",
+          "counterAxisAlignItems": "CENTER"
+        },
+        "states": {
+          "default": {
+            "fill": "transparent",
+            "iconColor": "var(--color-foreground-muted)"
+          },
+          "active": {
+            "fill": "var(--color-surface-hover)",
+            "iconColor": "var(--color-primary-default)",
+            "activeIndicator": {
+              "position": "left",
+              "width": 4,
+              "height": 20,
+              "borderRadius": "0 9999px 9999px 0",
+              "fill": "var(--color-primary-default)"
+            }
+          },
+          "hover": {
+            "fill": "var(--color-surface-hover)",
+            "iconColor": "var(--color-foreground-secondary)"
+          }
+        }
+      },
+
+      "Atom/LegendDot": {
+        "description": "Chart legend color indicator",
+        "width": 8,
+        "height": 8,
+        "borderRadius": "9999px",
+        "variants": {
+          "aiDiscovery":   { "fill": "var(--color-brand-default)" },
+          "organicSearch": { "fill": "var(--chart-2)" },
+          "citations":     { "fill": "var(--chart-4)" }
+        }
+      }
+    },
+
+    "molecules": {
+
+      "Molecule/LogoBadge": {
+        "description": "App logo area in sidebar header",
+        "width": 64,
+        "height": 64,
+        "autoLayout": {
+          "layoutMode": "HORIZONTAL",
+          "primaryAxisAlignItems": "CENTER",
+          "counterAxisAlignItems": "CENTER"
+        },
+        "children": [
+          {
+            "name": "Atom/IconContainer",
+            "width": 36,
+            "height": 36,
+            "borderRadius": "var(--radius)",
+            "fill": "var(--color-primary-default)",
+            "child": { "type": "Atom/Icon", "icon": "Sparkles", "size": 20, "color": "var(--color-foreground-strong)" }
+          }
+        ]
+      },
+
+      "Molecule/UserAvatar": {
+        "description": "User initials avatar at sidebar footer",
+        "width": 36,
+        "height": 36,
+        "borderRadius": "9999px",
+        "fill": "var(--color-surface-hover)",
+        "textColor": "var(--color-foreground-secondary)",
+        "fontSize": 14,
+        "fontWeight": 500,
+        "content": "PA"
+      },
+
+      "Molecule/SearchInput": {
+        "description": "Search field with left-aligned icon prefix",
+        "width": 256,
+        "height": 36,
+        "borderRadius": "var(--radius)",
+        "fill": "rgba(15,23,42,0.30)",
+        "stroke": "var(--color-border-secondary)",
+        "strokeWeight": 1,
+        "autoLayout": {
+          "layoutMode": "HORIZONTAL",
+          "counterAxisAlignItems": "CENTER",
+          "paddingLeft": 36,
+          "paddingRight": 16
+        },
+        "children": [
+          {
+            "name": "Atom/Icon",
+            "icon": "Search",
+            "size": 16,
+            "color": "var(--color-foreground-muted)",
+            "position": "absolute",
+            "left": 12,
+            "centerY": true
+          },
+          {
+            "name": "Atom/PlaceholderText",
+            "text": "Search metrics...",
+            "fontSize": 14,
+            "color": "var(--color-foreground-muted)"
+          }
+        ]
+      },
+
+      "Molecule/DateRangeButton": {
+        "description": "Date range selector button in Header",
+        "height": 36,
+        "paddingHorizontal": 16,
+        "paddingVertical": 8,
+        "borderRadius": "var(--radius)",
+        "fill": "rgba(15,23,42,0.30)",
+        "stroke": "var(--color-border-secondary)",
+        "strokeWeight": 1,
+        "autoLayout": {
+          "layoutMode": "HORIZONTAL",
+          "counterAxisAlignItems": "CENTER",
+          "gap": 8
+        },
+        "children": [
+          { "type": "Atom/Icon", "icon": "Calendar", "size": 16 },
+          { "type": "Atom/Text", "text": "Last 30 days", "fontSize": 14, "fontWeight": 500 },
+          { "type": "Atom/Icon", "icon": "ChevronDown", "size": 14 }
+        ]
+      },
+
+      "Molecule/NotificationBell": {
+        "description": "Bell icon button with badge count",
+        "width": 36,
+        "height": 36,
+        "borderRadius": "var(--radius)",
+        "fill": "rgba(15,23,42,0.30)",
+        "stroke": "var(--color-border-secondary)",
+        "children": [
+          { "type": "Atom/Icon", "icon": "Bell", "size": 16 },
+          {
+            "name": "Atom/NotificationBadge",
+            "width": 16,
+            "height": 16,
+            "borderRadius": "9999px",
+            "fill": "var(--color-primary-default)",
+            "text": "3",
+            "fontSize": 10,
+            "fontWeight": 500,
+            "textColor": "var(--color-foreground-strong)",
+            "position": "absolute",
+            "top": -4,
+            "right": -4
+          }
+        ]
+      },
+
+      "Molecule/StatCard": {
+        "description": "Single KPI metric card. 4 instances in a row on desktop.",
+        "width": "1/4 of grid (max ~380px)",
+        "borderRadius": "var(--radius)",
+        "fill": "rgba(15,23,42,0.60)",
+        "fillHover": "rgba(30,41,59,0.80)",
+        "padding": 20,
+        "autoLayout": {
+          "layoutMode": "VERTICAL",
+          "gap": 0,
+          "paddingTop": 20,
+          "paddingBottom": 20,
+          "paddingLeft": 20,
+          "paddingRight": 20
+        },
+        "children": [
+          {
+            "name": "Molecule/StatCard/TopRow",
+            "autoLayout": {
+              "layoutMode": "HORIZONTAL",
+              "primaryAxisAlignItems": "SPACE_BETWEEN",
+              "counterAxisAlignItems": "FLEX_START",
+              "gap": 12
+            },
+            "children": [
+              {
+                "name": "Molecule/StatCard/Labels",
+                "autoLayout": { "layoutMode": "VERTICAL", "gap": 6 },
+                "children": [
+                  { "type": "Atom/Text", "role": "title",  "fontSize": 13, "fontWeight": 500, "color": "var(--color-foreground-secondary)" },
+                  { "type": "Atom/Text", "role": "value",  "fontSize": 30, "fontWeight": 700, "color": "var(--color-foreground-strong)", "fontFeature": "tabular-nums" }
+                ]
+              },
+              {
+                "name": "Atom/IconContainer",
+                "width": 40, "height": 40,
+                "borderRadius": "var(--radius)",
+                "fill": "rgba(139,92,246,0.15)",
+                "child": { "type": "Atom/Icon", "size": 20, "color": "var(--color-brand-soft)" }
+              }
+            ]
+          },
+          {
+            "name": "Molecule/StatCard/ProgressSection",
+            "marginTop": 20,
+            "autoLayout": { "layoutMode": "VERTICAL", "gap": 12 },
+            "children": [
+              {
+                "name": "Atom/GoalLabel",
+                "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 6 },
+                "children": [
+                  { "type": "Atom/Text", "text": "Goal:", "fontSize": 13, "fontWeight": 500, "color": "var(--color-foreground-tertiary)" },
+                  { "type": "Atom/Text", "role": "target",  "fontSize": 13, "fontWeight": 600, "color": "var(--color-brand-faint)", "fontFeature": "tabular-nums" },
+                  { "type": "Atom/Text", "role": "percent", "fontSize": 13, "fontWeight": 500, "color": "var(--color-foreground-tertiary)", "fontFeature": "tabular-nums" }
+                ]
+              },
+              { "type": "Atom/ProgressBar", "width": "100%" },
+              {
+                "name": "Molecule/StatCard/TrendRow",
+                "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 6 },
+                "children": [
+                  { "type": "Atom/Icon", "size": 14, "variantRef": "trend-up|down" },
+                  { "type": "Atom/Text", "role": "changeValue", "fontSize": 13, "fontWeight": 700, "fontFeature": "tabular-nums" },
+                  { "type": "Atom/Text", "role": "changeLabel", "fontSize": 13, "fontWeight": 500, "color": "var(--color-foreground-tertiary)" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+
+      "Molecule/InsightCard": {
+        "description": "AI strategic insight card. 3 per row on desktop.",
+        "borderRadius": "var(--radius)",
+        "fill": "rgba(15,23,42,0.60)",
+        "fillHover": "rgba(30,41,59,0.80)",
+        "autoLayout": {
+          "layoutMode": "VERTICAL",
+          "primaryAxisSizingMode": "FIXED",
+          "counterAxisSizingMode": "AUTO",
+          "height": "auto (flex-1)"
+        },
+        "sections": {
+          "cardHeader": {
+            "paddingTop": 20,
+            "paddingHorizontal": 20,
+            "paddingBottom": 0,
+            "autoLayout": {
+              "layoutMode": "HORIZONTAL",
+              "primaryAxisAlignItems": "SPACE_BETWEEN",
+              "counterAxisAlignItems": "FLEX_START",
+              "gap": 8
+            },
+            "children": [
+              {
+                "name": "Molecule/InsightCard/TypeRow",
+                "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 8 },
+                "children": [
+                  {
+                    "name": "Atom/TypeIconContainer",
+                    "width": 36, "height": 36,
+                    "borderRadius": "var(--radius)",
+                    "fillVariant": "danger|brand|caution at 15% opacity",
+                    "child": { "type": "Atom/Icon", "size": 16 }
+                  },
+                  { "type": "Atom/Text", "role": "cardTitle", "fontSize": 13, "fontWeight": 600, "textTransform": "uppercase", "letterSpacing": "0.05em", "color": "var(--color-foreground-tertiary)" }
+                ]
+              },
+              { "type": "Atom/Badge", "role": "priority" }
+            ]
+          },
+          "cardContent": {
+            "paddingTop": 0,
+            "paddingHorizontal": 20,
+            "paddingBottom": 20,
+            "autoLayout": { "layoutMode": "VERTICAL", "gap": 0, "primaryAxisSizingMode": "AUTO" },
+            "children": [
+              {
+                "name": "Molecule/InsightCard/Body",
+                "autoLayout": { "layoutMode": "VERTICAL" },
+                "children": [
+                  { "type": "Atom/Text", "role": "headline", "fontSize": 16, "fontWeight": 600, "color": "var(--color-foreground-secondary)" },
+                  { "type": "Atom/Text", "role": "description", "fontSize": 13, "fontWeight": 500, "lineHeight": "1.6", "color": "var(--color-foreground-tertiary)" }
+                ]
+              },
+              { "type": "Atom/Button", "variant": "sm-full-width", "marginTop": 16 }
+            ]
+          }
+        }
+      },
+
+      "Molecule/ChartLegendItem": {
+        "description": "Single legend entry for TrendsChart",
+        "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 8 },
+        "children": [
+          { "type": "Atom/LegendDot" },
+          { "type": "Atom/Text", "fontSize": 13, "fontWeight": 500, "color": "var(--color-foreground-secondary)" }
+        ]
+      },
+
+      "Molecule/ChartTooltip": {
+        "description": "Hover tooltip for TrendsChart",
+        "borderRadius": "var(--radius)",
+        "fill": "rgba(15,23,42,0.95)",
+        "stroke": "var(--color-border-secondary)",
+        "strokeWeight": 1,
+        "shadow": "0 8px 24px rgba(0,0,0,0.4)",
+        "padding": 16,
+        "autoLayout": { "layoutMode": "VERTICAL", "gap": 6 },
+        "children": [
+          { "type": "Atom/Text", "role": "month",    "fontSize": 14, "fontWeight": 600, "color": "var(--color-foreground-strong)" },
+          {
+            "name": "Molecule/ChartTooltip/EventBadge",
+            "borderRadius": 4,
+            "fill": "rgba(139,92,246,0.15)",
+            "paddingHorizontal": 8, "paddingVertical": 4,
+            "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 6 },
+            "children": [
+              { "width": 6, "height": 6, "borderRadius": "9999px", "fill": "var(--color-brand-soft)" },
+              { "type": "Atom/Text", "fontSize": 13, "fontWeight": 500, "color": "var(--color-brand-faint)" }
+            ]
+          },
+          {
+            "name": "Molecule/ChartTooltip/MetricRow",
+            "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 8 },
+            "children": [
+              { "type": "Atom/LegendDot" },
+              { "type": "Atom/Text", "role": "metricName",  "fontSize": 13, "fontWeight": 500, "color": "var(--color-foreground-tertiary)" },
+              { "type": "Atom/Text", "role": "metricValue", "fontSize": 13, "fontWeight": 600, "color": "var(--color-foreground-strong)", "fontFeature": "tabular-nums" }
+            ]
+          }
+        ]
+      },
+
+      "Molecule/CitationRow": {
+        "description": "Desktop table row for citations. Inside Organism/CitationsTable.",
+        "height": 44,
+        "borderBottom": { "color": "rgba(51,65,85,0.30)", "weight": 1 },
+        "states": {
+          "default":     { "fill": "transparent" },
+          "hover":       { "fill": "rgba(15,23,42,0.20)" },
+          "selected":    { "fill": "rgba(15,23,42,0.20)" },
+          "highlighted": { "fill": "rgba(16,185,129,0.10)" }
+        },
+        "columns": [
+          { "name": "checkbox",     "width": 40, "align": "center" },
+          { "name": "source",       "minWidth": 100, "align": "center", "fontSize": 14, "fontWeight": 600, "color": "var(--color-foreground-secondary)" },
+          { "name": "page",         "minWidth": 180, "align": "center", "fontSize": 13, "fontWeight": 500, "color": "var(--color-foreground-tertiary)" },
+          { "name": "mentions",     "minWidth": 80,  "align": "center", "fontSize": 14, "fontWeight": 600, "color": "var(--color-foreground-secondary)", "fontFeature": "tabular-nums" },
+          { "name": "trend",        "width": 60,     "align": "center" },
+          { "name": "optimization", "width": 80,     "align": "center", "child": "Atom/ProgressRing" },
+          { "name": "lastSeen",     "minWidth": 100, "align": "center", "fontSize": 13, "fontWeight": 500, "color": "var(--color-foreground-tertiary)" },
+          { "name": "action",       "width": 100,    "align": "center", "child": "Atom/Button[variant=outline,sm]" }
+        ]
+      },
+
+      "Molecule/CitationCard": {
+        "description": "Mobile card variant of a citation row",
+        "borderRadius": "var(--radius)",
+        "fill": "rgba(15,23,42,0.40)",
+        "fillHover": "rgba(30,41,59,0.50)",
+        "padding": 20,
+        "autoLayout": {
+          "layoutMode": "HORIZONTAL",
+          "primaryAxisAlignItems": "SPACE_BETWEEN",
+          "counterAxisAlignItems": "CENTER"
+        },
+        "children": [
+          {
+            "name": "Molecule/CitationCard/Left",
+            "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 16 },
+            "children": [
+              { "type": "Atom/ProgressRing", "size": "md" },
+              {
+                "name": "Molecule/CitationCard/Info",
+                "autoLayout": { "layoutMode": "VERTICAL", "gap": 6 },
+                "children": [
+                  {
+                    "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 8 },
+                    "children": [
+                      { "type": "Atom/Text", "role": "source", "fontSize": 14, "fontWeight": 600, "color": "var(--color-foreground-secondary)" },
+                      { "type": "Atom/Icon", "size": 14, "variantRef": "trend" }
+                    ]
+                  },
+                  { "type": "Atom/Text", "role": "page",     "fontSize": 13, "fontWeight": 500, "color": "var(--color-foreground-tertiary)", "maxWidth": 140 },
+                  {
+                    "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 8 },
+                    "children": [
+                      { "type": "Atom/Text", "role": "mentions", "fontSize": 13, "fontWeight": 600, "color": "var(--color-foreground-secondary)", "fontFeature": "tabular-nums" },
+                      { "type": "Atom/Text", "text": "mentions", "fontSize": 13, "fontWeight": 500, "color": "var(--color-foreground-tertiary)" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          { "type": "Atom/Button", "variant": "ghost", "icon": "ChevronRight", "width": 32, "height": 32 }
+        ]
+      },
+
+      "Molecule/FilterSelect": {
+        "description": "Label + Select dropdown combo. Used in Organism/FilterBar",
+        "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 8 },
+        "children": [
+          { "type": "Atom/Icon", "size": 16, "color": "var(--color-foreground-muted)" },
+          {
+            "name": "Atom/SelectTrigger",
+            "height": 36,
+            "paddingHorizontal": 12,
+            "paddingVertical": 8,
+            "borderRadius": "var(--radius)",
+            "fill": "rgba(30,41,59,0.50)",
+            "stroke": "var(--color-border-secondary)",
+            "strokeWeight": 1,
+            "fontSize": 14
+          }
+        ]
+      },
+
+      "Molecule/TableSortHeader": {
+        "description": "Sortable column header button",
+        "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 4 },
+        "states": {
+          "inactive": {
+            "textColor": "var(--color-brand-faint)",
+            "iconColor": "var(--color-brand-faint)"
+          },
+          "active": {
+            "textColor": "var(--color-foreground-strong)",
+            "iconColor": "var(--color-foreground-strong)"
+          }
+        },
+        "fontSize": 13,
+        "fontWeight": 600,
+        "textTransform": "uppercase",
+        "letterSpacing": "0.05em"
+      },
+
+      "Molecule/BulkActionBar": {
+        "description": "Fixed floating bar shown when rows are selected (SearchVisibility page)",
+        "position": "fixed",
+        "bottom": 16,
+        "centerX": true,
+        "zIndex": 50,
+        "borderRadius": 12,
+        "fill": "rgba(2,6,23,0.95)",
+        "stroke": "var(--color-border-secondary)",
+        "strokeWeight": 1,
+        "shadow": "0 8px 24px rgba(0,0,0,0.5)",
+        "backdropBlur": true,
+        "paddingHorizontal": 16,
+        "paddingVertical": 12,
+        "autoLayout": {
+          "layoutMode": "HORIZONTAL",
+          "counterAxisAlignItems": "CENTER",
+          "gap": 12
+        },
+        "children": [
+          { "type": "Atom/Text", "role": "selectionCount", "fontSize": 14, "fontWeight": 500, "color": "var(--color-foreground-secondary)" },
+          { "type": "Atom/Button", "variant": "outline", "size": "sm", "label": "Export" },
+          { "type": "Atom/Button", "variant": "default", "size": "sm", "label": "Mark as Resolved" },
+          { "type": "Atom/Button", "variant": "ghost",   "size": "sm", "label": "Clear Selection" }
+        ]
+      }
+    },
+
+    "organisms": {
+
+      "Organism/Sidebar": {
+        "description": "Fixed left navigation rail (desktop) + bottom bar (mobile)",
+        "desktop": {
+          "name": "Organism/Sidebar/Desktop",
+          "position": "fixed",
+          "top": 0,
+          "left": 0,
+          "zIndex": 40,
+          "width": 64,
+          "height": "100vh",
+          "fill": "var(--color-background)",
+          "borderRight": { "color": "var(--color-border-secondary)", "weight": 1 },
+          "autoLayout": {
+            "layoutMode": "VERTICAL",
+            "primaryAxisAlignItems": "FLEX_START",
+            "counterAxisAlignItems": "CENTER"
+          },
+          "children": [
+            { "name": "Molecule/LogoBadge", "height": 64, "borderBottom": { "color": "var(--color-border-secondary)", "weight": 1 } },
+            {
+              "name": "Organism/Sidebar/Nav",
+              "autoLayout": { "layoutMode": "VERTICAL", "counterAxisAlignItems": "CENTER", "gap": 8, "paddingHorizontal": 8, "paddingVertical": 16 },
+              "layoutGrow": 1,
+              "children": [
+                { "type": "Atom/NavItem", "icon": "LayoutDashboard", "label": "Overview",     "state": "active" },
+                { "type": "Atom/NavItem", "icon": "Eye",             "label": "AI Visibility", "state": "default" },
+                { "type": "Atom/NavItem", "icon": "FileText",        "label": "Content Ops",   "state": "default" },
+                { "type": "Atom/NavItem", "icon": "Settings",        "label": "Settings",      "state": "default" }
+              ]
+            },
+            {
+              "name": "Organism/Sidebar/Footer",
+              "autoLayout": { "layoutMode": "VERTICAL", "counterAxisAlignItems": "CENTER", "gap": 8, "paddingHorizontal": 8, "paddingVertical": 16 },
+              "borderTop": { "color": "var(--color-border-secondary)", "weight": 1 },
+              "children": [ { "type": "Molecule/UserAvatar" } ]
+            }
+          ]
+        },
+        "mobile": {
+          "name": "Organism/Sidebar/MobileBottomBar",
+          "position": "fixed",
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "zIndex": 50,
+          "height": 64,
+          "fill": "rgba(2,6,23,0.95)",
+          "backdropBlur": true,
+          "borderTop": { "color": "var(--color-border-secondary)", "weight": 1 },
+          "autoLayout": {
+            "layoutMode": "HORIZONTAL",
+            "primaryAxisAlignItems": "SPACE_AROUND",
+            "counterAxisAlignItems": "CENTER"
+          },
+          "children": [
+            {
+              "name": "Atom/MobileNavItem",
+              "autoLayout": { "layoutMode": "VERTICAL", "counterAxisAlignItems": "CENTER", "gap": 4, "paddingHorizontal": 16, "paddingVertical": 8 },
+              "states": {
+                "active":  { "textColor": "var(--color-primary-default)", "activeBar": { "position": "top", "height": 2, "width": 32, "fill": "var(--color-primary-default)" } },
+                "default": { "textColor": "var(--color-foreground-muted)" }
+              }
+            }
+          ]
+        }
+      },
+
+      "Organism/Header": {
+        "description": "Top sticky header for the Dashboard page",
+        "width": "100% minus sidebar (1376px at 1440 canvas)",
+        "height": 64,
+        "fill": "rgba(2,6,23,0.80)",
+        "backdropBlur": true,
+        "borderBottom": { "color": "rgba(51,65,85,0.50)", "weight": 1 },
+        "paddingHorizontal": 24,
+        "autoLayout": {
+          "layoutMode": "HORIZONTAL",
+          "primaryAxisAlignItems": "SPACE_BETWEEN",
+          "counterAxisAlignItems": "CENTER"
+        },
+        "children": [
+          {
+            "name": "Organism/Header/TitleGroup",
+            "autoLayout": { "layoutMode": "VERTICAL", "gap": 0 },
+            "children": [
+              { "type": "Atom/Text", "role": "pageTitle",    "text": "Dashboard Overview",                          "fontSize": 20, "fontWeight": 600, "color": "var(--color-foreground-strong)" },
+              { "type": "Atom/Text", "role": "pageSubtitle", "text": "Track your AI search visibility and performance", "fontSize": 14, "fontWeight": 500, "color": "var(--color-foreground-tertiary)" }
+            ]
+          },
+          {
+            "name": "Organism/Header/Actions",
+            "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 12 },
+            "children": [
+              { "type": "Molecule/SearchInput",      "visibility": "desktop-only" },
+              { "type": "Molecule/DateRangeButton" },
+              { "type": "Molecule/NotificationBell" }
+            ]
+          }
+        ]
+      },
+
+      "Organism/SearchVisibilityHeader": {
+        "description": "Top sticky header for the Search Visibility page (back-nav variant)",
+        "width": "100% minus sidebar (1376px at 1440 canvas)",
+        "height": 64,
+        "fill": "rgba(2,6,23,0.80)",
+        "backdropBlur": true,
+        "borderBottom": { "color": "rgba(51,65,85,0.50)", "weight": 1 },
+        "paddingHorizontal": 24,
+        "autoLayout": {
+          "layoutMode": "HORIZONTAL",
+          "primaryAxisAlignItems": "SPACE_BETWEEN",
+          "counterAxisAlignItems": "CENTER"
+        },
+        "children": [
+          {
+            "name": "Atom/BackButton",
+            "type": "Atom/Button",
+            "variant": "ghost",
+            "size": "sm",
+            "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 8 },
+            "children": [
+              { "type": "Atom/Icon", "icon": "ArrowLeft", "size": 16, "color": "var(--color-foreground-strong)" },
+              { "type": "Atom/Text", "text": "Back to Dashboard", "fontSize": 14, "fontWeight": 500, "color": "var(--color-foreground-strong)" }
+            ]
+          }
+        ]
+      },
+
+      "Organism/StatCards": {
+        "description": "4-up KPI stat card grid",
+        "width": "100%",
+        "autoLayout": {
+          "layoutMode": "HORIZONTAL",
+          "primaryAxisAlignItems": "SPACE_BETWEEN",
+          "counterAxisAlignItems": "FLEX_START",
+          "gap": 16,
+          "figmaNote": "Use CSS Grid 4-column equivalent. On Figma: Auto Layout horizontal, each card set to Fill."
+        },
+        "children": [
+          { "type": "Molecule/StatCard", "label": "AI Share of Voice",   "value": "34.2%", "trend": "up",   "target": 40   },
+          { "type": "Molecule/StatCard", "label": "Content Health Score","value": "87",     "trend": "up",   "target": 95   },
+          { "type": "Molecule/StatCard", "label": "Citation Accuracy",   "value": "92.4%", "trend": "down", "target": 98   },
+          { "type": "Molecule/StatCard", "label": "Projected Growth",    "value": "+23.8%","trend": "up",   "target": 30   }
+        ]
+      },
+
+      "Organism/StrategicInsights": {
+        "description": "AI-generated insight cards section header + 3-column card grid",
+        "autoLayout": { "layoutMode": "VERTICAL", "gap": 16 },
+        "children": [
+          {
+            "name": "Organism/StrategicInsights/SectionHeader",
+            "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 12 },
+            "children": [
+              {
+                "name": "Atom/IconContainer",
+                "width": 32, "height": 32,
+                "borderRadius": "var(--radius)",
+                "fill": "rgba(139,92,246,0.15)",
+                "child": { "type": "Atom/Icon", "icon": "Sparkles", "size": 16, "color": "var(--color-brand-soft)" }
+              },
+              {
+                "autoLayout": { "layoutMode": "VERTICAL", "gap": 0 },
+                "children": [
+                  { "type": "Atom/Text", "text": "AI-Generated Strategic Insights", "fontSize": 18, "fontWeight": 600, "color": "var(--color-foreground-secondary)" },
+                  { "type": "Atom/Text", "text": "Actionable recommendations powered by Intelligence", "fontSize": 13, "fontWeight": 500, "color": "var(--color-foreground-tertiary)" }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Organism/StrategicInsights/Grid",
+            "autoLayout": {
+              "layoutMode": "HORIZONTAL",
+              "primaryAxisAlignItems": "SPACE_BETWEEN",
+              "counterAxisAlignItems": "FLEX_START",
+              "gap": 16,
+              "figmaNote": "3-column grid. Each card: Fill (horizontal), Hug (vertical)."
+            },
+            "children": [
+              { "type": "Molecule/InsightCard", "variant": "critical",     "priority": "Urgent",      "headline": "Citation Drop Detected" },
+              { "type": "Molecule/InsightCard", "variant": "opportunity",  "priority": "High Impact", "headline": "Emerging Topic Surge" },
+              { "type": "Molecule/InsightCard", "variant": "optimization", "priority": "Medium",      "headline": "Schema Enhancement" }
+            ]
+          }
+        ]
+      },
+
+      "Organism/TrendsChart": {
+        "description": "Area chart card showing 12-month visibility trends",
+        "borderRadius": "var(--radius)",
+        "fill": "rgba(15,23,42,0.60)",
+        "autoLayout": { "layoutMode": "VERTICAL" },
+        "children": [
+          {
+            "name": "Organism/TrendsChart/CardHeader",
+            "paddingTop": 20,
+            "paddingHorizontal": 20,
+            "paddingBottom": 6,
+            "autoLayout": {
+              "layoutMode": "HORIZONTAL",
+              "primaryAxisAlignItems": "SPACE_BETWEEN",
+              "counterAxisAlignItems": "FLEX_START",
+              "gap": 16
+            },
+            "children": [
+              {
+                "autoLayout": { "layoutMode": "VERTICAL", "gap": 4 },
+                "children": [
+                  { "type": "Atom/Text", "text": "Search Visibility Trends",            "fontSize": 18, "fontWeight": 600, "color": "var(--color-foreground-strong)" },
+                  { "type": "Atom/Text", "text": "Monthly performance with AI event markers", "fontSize": 13, "fontWeight": 500, "color": "var(--color-foreground-tertiary)" }
+                ]
+              },
+              {
+                "name": "Organism/TrendsChart/Legend",
+                "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 16 },
+                "children": [
+                  { "type": "Molecule/ChartLegendItem", "label": "AI Discovery",    "colorToken": "var(--color-brand-default)" },
+                  { "type": "Molecule/ChartLegendItem", "label": "Organic Search",  "colorToken": "var(--chart-2)" },
+                  { "type": "Molecule/ChartLegendItem", "label": "Citations",        "colorToken": "var(--chart-4)" }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Organism/TrendsChart/ChartArea",
+            "paddingHorizontal": 20,
+            "paddingBottom": 20,
+            "paddingTop": 14,
+            "width": "100%",
+            "height": 320,
+            "figmaNote": "Render as a static area chart frame. Use Recharts-style gradient fills: aiDiscovery=violet-500@40%→0%, organicSearch=emerald-500@30%→0%, citations=blue-400@30%→0%",
+            "chartConfig": {
+              "gridLines": { "style": "dashed 3 3", "color": "var(--chart-grid-line)", "vertical": false },
+              "axes": { "color": "var(--chart-axis-text)", "fontSize": 12, "tickLine": false, "axisLine": false },
+              "referenceLines": {
+                "color": "var(--chart-reference-line)",
+                "style": "dashed 3 3",
+                "labels": { "color": "var(--chart-label)", "fontSize": 12, "fontWeight": 500 },
+                "events": ["Google AI Update", "Competitor Launch", "Algorithm Shift", "ChatGPT Update"]
+              },
+              "series": [
+                { "key": "aiDiscovery",   "stroke": "var(--chart-1)", "strokeWidth": 2, "gradientId": "aiDiscovery"   },
+                { "key": "organicSearch", "stroke": "var(--chart-2)", "strokeWidth": 2, "gradientId": "organicSearch" },
+                { "key": "citations",     "stroke": "var(--chart-4)", "strokeWidth": 2, "gradientId": "citations"     }
+              ]
+            }
+          }
+        ]
+      },
+
+      "Organism/CitationsTable": {
+        "description": "AI citations data table with sorting, selection, and review actions",
+        "borderRadius": "var(--radius)",
+        "fill": "rgba(15,23,42,0.60)",
+        "autoLayout": { "layoutMode": "VERTICAL" },
+        "children": [
+          {
+            "name": "Organism/CitationsTable/CardHeader",
+            "paddingTop": 20,
+            "paddingHorizontal": 20,
+            "paddingBottom": 12,
+            "autoLayout": {
+              "layoutMode": "HORIZONTAL",
+              "primaryAxisAlignItems": "SPACE_BETWEEN",
+              "counterAxisAlignItems": "CENTER"
+            },
+            "children": [
+              {
+                "autoLayout": { "layoutMode": "VERTICAL", "gap": 4 },
+                "children": [
+                  { "type": "Atom/Text", "role": "tableTitle",       "fontSize": 18, "fontWeight": 600, "color": "var(--color-foreground-secondary)" },
+                  { "type": "Atom/Text", "role": "tableDescription", "fontSize": 13, "fontWeight": 500, "color": "var(--color-foreground-tertiary)" }
+                ]
+              },
+              {
+                "name": "Organism/CitationsTable/HeaderAction",
+                "variants": {
+                  "dashboard": {
+                    "type": "Atom/Button",
+                    "variant": "outline",
+                    "size": "sm",
+                    "label": "View all",
+                    "icon": "ExternalLink"
+                  },
+                  "searchVisibility": {
+                    "autoLayout": { "layoutMode": "HORIZONTAL", "counterAxisAlignItems": "CENTER", "gap": 12 },
+                    "children": [
+                      { "type": "Atom/Text", "role": "citationCount",  "fontSize": 14, "fontWeight": 500, "color": "var(--color-foreground-tertiary)" },
+                      { "type": "Atom/Text", "role": "selectedCount",  "fontSize": 13, "fontWeight": 500, "color": "var(--color-positive-soft)" }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Organism/CitationsTable/TableFrame",
+            "paddingHorizontal": 20,
+            "paddingBottom": 20,
+            "visibility": "desktop-only",
+            "borderRadius": "var(--radius)",
+            "stroke": "rgba(51,65,85,0.50)",
+            "strokeWeight": 1,
+            "children": [
+              {
+                "name": "Organism/CitationsTable/TableHead",
+                "height": 44,
+                "fill": "rgba(15,23,42,0.30)",
+                "borderBottom": { "color": "rgba(51,65,85,0.50)", "weight": 1 },
+                "autoLayout": {
+                  "layoutMode": "HORIZONTAL",
+                  "counterAxisAlignItems": "CENTER",
+                  "paddingHorizontal": 16,
+                  "paddingVertical": 12
+                },
+                "columns": [
+                  { "label": "—",           "width": 40,  "child": "Atom/Checkbox" },
+                  { "label": "SOURCE",      "minWidth": 100 },
+                  { "label": "PAGE",        "minWidth": 180 },
+                  { "label": "MENTIONS",    "minWidth": 80,  "sortable": true },
+                  { "label": "TREND",       "width": 60 },
+                  { "label": "OPTIMIZATION","width": 80,   "sortable": true },
+                  { "label": "LAST SEEN",   "minWidth": 100, "sortable": true },
+                  { "label": "QUICK ACTION","width": 100 }
+                ],
+                "columnStyle": {
+                  "fontSize": 13,
+                  "fontWeight": 600,
+                  "textTransform": "uppercase",
+                  "letterSpacing": "0.05em",
+                  "color": "var(--color-foreground-tertiary)"
+                }
+              },
+              {
+                "name": "Organism/CitationsTable/TableBody",
+                "children": [
+                  { "type": "Molecule/CitationRow", "state": "default", "figmaNote": "Repeat for each row" }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Organism/CitationsTable/MobileCardList",
+            "visibility": "mobile-only",
+            "autoLayout": { "layoutMode": "VERTICAL", "gap": 12 },
+            "children": [
+              { "type": "Molecule/CitationCard", "figmaNote": "Repeat for each citation" }
+            ]
+          }
+        ]
+      },
+
+      "Organism/FilterBar": {
+        "description": "Filter controls card on SearchVisibility page",
+        "borderRadius": "var(--radius)",
+        "fill": "rgba(15,23,42,0.60)",
+        "autoLayout": { "layoutMode": "VERTICAL" },
+        "children": [
+          {
+            "name": "Organism/FilterBar/CardHeader",
+            "paddingTop": 20,
+            "paddingHorizontal": 20,
+            "paddingBottom": 12,
+            "children": [
+              { "type": "Atom/Text", "text": "Filters", "fontSize": 16, "fontWeight": 600, "color": "var(--color-foreground-secondary)" }
+            ]
+          },
+          {
+            "name": "Organism/FilterBar/Controls",
+            "paddingHorizontal": 20,
+            "paddingBottom": 20,
+            "autoLayout": {
+              "layoutMode": "HORIZONTAL",
+              "counterAxisAlignItems": "CENTER",
+              "gap": 16,
+              "wrap": true
+            },
+            "children": [
+              { "type": "Molecule/FilterSelect", "icon": "Calendar", "label": "Date Range", "width": 160 },
+              { "type": "Molecule/FilterSelect", "icon": "Filter",   "label": "Source",     "width": 180 },
+              {
+                "name": "Molecule/SearchInput/Full",
+                "minWidth": 240,
+                "layoutGrow": 1,
+                "child": { "type": "Molecule/SearchInput", "placeholder": "Search by source or page..." }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+
+  "pages": {
+
+    "Dashboard": {
+      "name": "Page/Dashboard",
+      "url": "/",
+      "canvasWidth": 1440,
+      "backgroundColor": "var(--color-background)",
+      "autoLayout": {
+        "layoutMode": "HORIZONTAL",
+        "primaryAxisSizingMode": "FIXED",
+        "counterAxisSizingMode": "HUG"
+      },
+      "children": [
+        { "type": "Organism/Sidebar" },
+        {
+          "name": "Page/Dashboard/MainContent",
+          "marginLeft": 64,
+          "autoLayout": {
+            "layoutMode": "VERTICAL",
+            "gap": 0,
+            "paddingBottom": 0
+          },
+          "layoutGrow": 1,
+          "children": [
+            { "type": "Organism/Header" },
+            {
+              "name": "Page/Dashboard/Main",
+              "paddingHorizontal": 24,
+              "paddingTop": 8,
+              "paddingBottom": 24,
+              "autoLayout": { "layoutMode": "VERTICAL" },
+              "children": [
+                {
+                  "name": "Page/Dashboard/ContentWrapper",
+                  "maxWidth": 1600,
+                  "autoLayout": { "layoutMode": "VERTICAL", "gap": 24 },
+                  "children": [
+                    { "type": "Organism/StatCards",        "figmaNote": "Horizontal auto layout, 4 equal-width cards, gap 16px" },
+                    { "type": "Organism/StrategicInsights","figmaNote": "Vertical auto layout: section header + 3-col card grid" },
+                    { "type": "Organism/TrendsChart",      "figmaNote": "Full-width card, static chart representation" },
+                    { "type": "Organism/CitationsTable",   "variant": "dashboard", "figmaNote": "Top 5 rows only, no selection column, 'View all' header action" }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    "SearchVisibility": {
+      "name": "Page/SearchVisibility",
+      "url": "/search-visibility",
+      "canvasWidth": 1440,
+      "backgroundColor": "var(--color-background)",
+      "autoLayout": {
+        "layoutMode": "HORIZONTAL",
+        "primaryAxisSizingMode": "FIXED"
+      },
+      "children": [
+        { "type": "Organism/Sidebar" },
+        {
+          "name": "Page/SearchVisibility/MainContent",
+          "marginLeft": 64,
+          "autoLayout": { "layoutMode": "VERTICAL", "gap": 0 },
+          "layoutGrow": 1,
+          "children": [
+            { "type": "Organism/SearchVisibilityHeader" },
+            {
+              "name": "Page/SearchVisibility/Main",
+              "paddingHorizontal": 24,
+              "paddingTop": 8,
+              "autoLayout": { "layoutMode": "VERTICAL" },
+              "children": [
+                {
+                  "name": "Page/SearchVisibility/ContentWrapper",
+                  "maxWidth": 1600,
+                  "autoLayout": { "layoutMode": "VERTICAL", "gap": 24 },
+                  "children": [
+                    { "type": "Organism/FilterBar",      "figmaNote": "Full-width filter card" },
+                    { "type": "Organism/CitationsTable", "variant": "searchVisibility", "figmaNote": "All rows, selection column enabled, citation count + selected count in header action" }
+                  ]
+                }
+              ]
+            },
+            { "type": "Molecule/BulkActionBar", "figmaNote": "Fixed overlay — show as separate frame anchored to viewport bottom-center. Visible only when rows are selected." }
+          ]
+        }
+      ]
+    }
+  },
+
+  "figmaImplementationGuide": {
+    "step1_variables": {
+      "title": "Variables 설정",
+      "instructions": [
+        "Figma 좌측 패널 → Assets → Variables → Create new collection 이름을 'semantics'로 설정",
+        "designTokens.color 하위 모든 항목을 Color Variable로 등록",
+        "Tokens Studio 플러그인 사용 시: 이 JSON의 designTokens 섹션을 직접 Import 가능",
+        "Builder.io 사용 시: CSS Variable 이름(figmaVariableName 필드)이 자동 매핑됨"
+      ]
+    },
+    "step2_atoms": {
+      "title": "Atom 컴포넌트 제작",
+      "instructions": [
+        "각 Atom을 독립 Component로 제작 후 Variants로 상태 관리",
+        "색상값은 반드시 등록된 Variable에서 연결 (hex 직접 입력 금지)",
+        "Auto Layout 속성은 각 컴포넌트의 autoLayout 필드 참조"
+      ]
+    },
+    "step3_molecules": {
+      "title": "Molecule 조합",
+      "instructions": [
+        "Atom 컴포넌트를 Detach 없이 Instance로 배치",
+        "Auto Layout Gap/Padding 값은 spacing 토큰에서 참조",
+        "Interactive Component 기능으로 hover/active/selected 상태 연결"
+      ]
+    },
+    "step4_organisms": {
+      "title": "Organism 및 Page 조립",
+      "instructions": [
+        "1440px 프레임 기준으로 Page/Dashboard, Page/SearchVisibility 구성",
+        "Sidebar는 Fixed 포지션 컴포넌트로 별도 레이어에 배치",
+        "MainContent는 ml-16(64px) margin-left 적용",
+        "Organism 간 gap은 항상 spacing[6](24px) 사용"
+      ]
+    }
+  }
+}

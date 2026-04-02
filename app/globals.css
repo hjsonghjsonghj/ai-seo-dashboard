@@ -37,18 +37,24 @@
   /* ── Base ─────────────────────────────────────────────────── */
   --color-background: #020617;
   /* slate-950 — page / popover / sidebar background */
-  --color-foreground: #f1f5f9;
+
+  /* ── Text content scale ──────────────────────────────────── */
+  --color-foreground-primary: #f1f5f9;
   /* slate-100 — primary text */
+  --color-foreground-secondary: #e2e8f0;
+  /* slate-200 — secondary text / sidebar labels */
+  --color-foreground-tertiary: #CBD5E1;
+  /* slate-300 — tertiary / meta text */
+  --color-foreground-strong: #f8fafc;
+  /* slate-50 — text on any colored bg (primary / brand / danger / caution) */
+  --color-foreground-muted: #94a3b8;
+  /* slate-400 — placeholder / caption text */
+
 
   /* ── Primary action (blue) ───────────────────────────────── */
   --color-primary-default: #3b82f6;
   /* blue-500 */
-  --color-primary-foreground: #f8fafc;
-  /* slate-50 — text on primary */
 
-  /* ── Muted text ──────────────────────────────────────────── */
-  --color-muted-foreground: #94a3b8;
-  /* slate-400 — placeholder / caption text */
 
   /* ── Form inputs ─────────────────────────────────────────── */
   --color-input: #1e293b;
@@ -62,17 +68,13 @@
   /* slate-900 — card / panel / muted bg */
   --color-surface-hover: #1e293b;
   /* slate-800 — hover / elevated / secondary bg */
-  --color-surface-track: #334155;
-  /* slate-700 — border / divider / SVG stroke */
-  --color-frame: #64748b;
-  /* slate-500 — checkbox / input edge */
 
-  /* ── Text content scale ──────────────────────────────────── */
-  --color-white: #ffffff;
-  --color-subdued: #e2e8f0;
-  /* slate-200 — secondary text / sidebar labels */
-  --color-dim: #CBD5E1;
-  /* slate-300 — tertiary / meta text */
+
+  --color-border-primary: #475569;
+  /* slate-600 — checkbox / input edge */
+  --color-border-secondary: #334155;
+  /* slate-700 — border / divider / SVG stroke */
+
 
   /* ── Brand (violet) ──────────────────────────────────────── */
   --color-brand-deep: #7c3aed;
@@ -83,8 +85,6 @@
   /* violet-400 — icon / focus dot */
   --color-brand-faint: #c4b5fd;
   /* violet-300 — secondary brand text */
-  --color-brand-foreground: #f8fafc;
-  /* slate-50 — text on brand backgrounds */
 
   /* ── Positive (green) ────────────────────────────────────── */
   --color-positive-default: #10b981;
@@ -99,16 +99,12 @@
   /* red-500 */
   --color-danger-soft: #f87171;
   /* red-400 */
-  --color-danger-foreground: #f8fafc;
-  /* slate-50 — text on danger backgrounds */
 
   /* ── Caution (amber) ─────────────────────────────────────── */
   --color-caution-default: #f59e0b;
   /* amber-500 */
   --color-caution-soft: #fbbf24;
   /* amber-400 */
-  --color-caution-foreground: #f8fafc;
-  /* slate-50 — text on caution backgrounds */
 }
 
 /* ============================================================
@@ -120,7 +116,7 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground-primary antialiased;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

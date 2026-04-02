@@ -127,7 +127,7 @@ const trendIcons: any = {
 const trendColors: any = {
   up: "text-positive-soft",
   down: "text-danger-soft",
-  stable: "text-muted-foreground",
+  stable: "text-foreground-muted",
 }
 
 function getProgressColor(progress: number): string {
@@ -153,7 +153,7 @@ function ProgressRing({ progress, size = 40 }: { progress: number; size?: number
   return (
     <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" strokeWidth={strokeWidth} className="stroke-surface-track" />
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" strokeWidth={strokeWidth} className="stroke-border-secondary" />
         <circle
           cx={size / 2} cy={size / 2} r={radius} fill="none" strokeWidth={strokeWidth} strokeLinecap="round"
           className={colorClass}
@@ -180,19 +180,19 @@ function CitationCard({ citation, onReview }: { citation: any; onReview?: (c: an
         <ProgressRing progress={citation.optimizationProgress} size={44} />
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-[14px] font-semibold tracking-normal text-subdued">{citation.source}</span>
+            <span className="text-[14px] font-semibold tracking-normal text-foreground-secondary">{citation.source}</span>
             <TrendIcon className={cn("h-3.5 w-3.5", trendColors[citation.trend])} />
           </div>
-          <p className="text-[13px] font-medium tracking-normal text-dim truncate max-w-[140px]">{citation.page}</p>
+          <p className="text-[13px] font-medium tracking-normal text-foreground-tertiary truncate max-w-[140px]">{citation.page}</p>
           <div className="flex items-center gap-2 text-[13px] tracking-normal">
-            <span suppressHydrationWarning className="font-semibold tabular-nums text-subdued">
+            <span suppressHydrationWarning className="font-semibold tabular-nums text-foreground-secondary">
               {citation.mentions.toLocaleString()}
             </span>
-            <span className="font-medium text-dim">mentions</span>
+            <span className="font-medium text-foreground-tertiary">mentions</span>
           </div>
         </div>
       </div>
-      <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-dim hover:text-white">
+      <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-foreground-tertiary hover:text-foreground-strong">
         <ChevronRight className="h-4 w-4" />
       </Button>
     </div>
@@ -250,8 +250,8 @@ export function CitationsTableComponent({
   function SortIndicator({ column }: { column: "mentions" | "optimization" | "lastSeen" }) {
     if (sortBy !== column) return <ArrowUpDown className="h-3.5 w-3.5 text-brand-faint" />
     return sortDirection === "asc"
-      ? <ArrowUp className="h-3.5 w-3.5 text-white" />
-      : <ArrowDown className="h-3.5 w-3.5 text-white" />
+      ? <ArrowUp className="h-3.5 w-3.5 text-foreground-strong" />
+      : <ArrowDown className="h-3.5 w-3.5 text-foreground-strong" />
   }
 
   return (
@@ -259,13 +259,13 @@ export function CitationsTableComponent({
       <CardHeader className="pb-3 px-5 pt-5">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-lg font-semibold tracking-normal text-subdued">{title}</CardTitle>
-            <p className="text-[13px] font-medium tracking-normal text-dim mt-1">{description}</p>
+            <CardTitle className="text-lg font-semibold tracking-normal text-foreground-secondary">{title}</CardTitle>
+            <p className="text-[13px] font-medium tracking-normal text-foreground-tertiary mt-1">{description}</p>
           </div>
           <div className="flex items-center">
             {headerAction ? headerAction : (
               <Link href="/search-visibility">
-                <button className="flex items-center gap-1.5 rounded-lg border border-surface-track bg-surface-hover/50 px-3 py-1.5 text-[13px] font-medium tracking-normal text-subdued transition-colors hover:bg-surface-hover">
+                <button className="flex items-center gap-1.5 rounded-lg border border-border-secondary bg-surface-hover/50 px-3 py-1.5 text-[13px] font-medium tracking-normal text-foreground-secondary transition-colors hover:bg-surface-hover">
                   View all <ExternalLink className="h-3 w-3" />
                 </button>
               </Link>
@@ -274,10 +274,10 @@ export function CitationsTableComponent({
         </div>
       </CardHeader>
       <CardContent className="px-5 pb-5">
-        <div className="hidden md:block overflow-hidden rounded-lg border border-surface-track/50">
+        <div className="hidden md:block overflow-hidden rounded-lg border border-border-secondary/50">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-surface-track/50 bg-surface-default/30">
+              <tr className="border-b border-border-secondary/50 bg-surface-default/30">
                 {showSelectionColumn && (
                   <th className="w-10 px-3 py-3 text-center">
                     <Checkbox
@@ -287,9 +287,9 @@ export function CitationsTableComponent({
                     />
                   </th>
                 )}
-                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-dim">Source</th>
-                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-dim">Page</th>
-                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-dim">
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">Source</th>
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">Page</th>
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
                   {onSortToggle ? (
                     <button
                       type="button"
@@ -297,8 +297,8 @@ export function CitationsTableComponent({
                       className={cn(
                         "inline-flex items-center gap-1 transition-colors cursor-pointer",
                         sortBy === "mentions"
-                          ? "text-white"
-                          : "text-brand-faint hover:text-white"
+                          ? "text-foreground-strong"
+                          : "text-brand-faint hover:text-foreground-strong"
                       )}
                       aria-label={`Sort by mentions ${sortBy === "mentions" ? `currently ${sortDirection}` : ""}`}
                     >
@@ -306,11 +306,11 @@ export function CitationsTableComponent({
                       <SortIndicator column="mentions" />
                     </button>
                   ) : (
-                    <span className="text-dim">MENTIONS</span>
+                    <span className="text-foreground-tertiary">MENTIONS</span>
                   )}
                 </th>
-                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-dim">Trend</th>
-                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-dim">
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">Trend</th>
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
                   {onSortToggle ? (
                     <button
                       type="button"
@@ -318,8 +318,8 @@ export function CitationsTableComponent({
                       className={cn(
                         "inline-flex items-center gap-1 transition-colors cursor-pointer",
                         sortBy === "optimization"
-                          ? "text-white"
-                          : "text-brand-faint hover:text-white"
+                          ? "text-foreground-strong"
+                          : "text-brand-faint hover:text-foreground-strong"
                       )}
                       aria-label={`Sort by optimization score ${sortBy === "optimization" ? `currently ${sortDirection}` : ""}`}
                     >
@@ -327,10 +327,10 @@ export function CitationsTableComponent({
                       <SortIndicator column="optimization" />
                     </button>
                   ) : (
-                    <span className="text-dim">OPTIMIZATION</span>
+                    <span className="text-foreground-tertiary">OPTIMIZATION</span>
                   )}
                 </th>
-                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-dim">
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
                   {onSortToggle ? (
                     <button
                       type="button"
@@ -338,8 +338,8 @@ export function CitationsTableComponent({
                       className={cn(
                         "inline-flex items-center gap-1 transition-colors cursor-pointer",
                         sortBy === "lastSeen"
-                          ? "text-white"
-                          : "text-brand-faint hover:text-white"
+                          ? "text-foreground-strong"
+                          : "text-brand-faint hover:text-foreground-strong"
                       )}
                       aria-label={`Sort by last seen ${sortBy === "lastSeen" ? `currently ${sortDirection}` : ""}`}
                     >
@@ -347,13 +347,13 @@ export function CitationsTableComponent({
                       <SortIndicator column="lastSeen" />
                     </button>
                   ) : (
-                    <span className="text-dim">LAST SEEN</span>
+                    <span className="text-foreground-tertiary">LAST SEEN</span>
                   )}
                 </th>
-                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-dim">Quick Action</th>
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">Quick Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-track/30">
+            <tbody className="divide-y divide-border-secondary/30">
               {displayData.map((citation: any) => {
                 const TrendIcon = trendIcons[citation.trend]
                 const isSelected = selectedRowIds?.has(citation.id) ?? false
@@ -375,12 +375,12 @@ export function CitationsTableComponent({
                         />
                       </td>
                     )}
-                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span className="text-[14px] font-semibold text-subdued">{citation.source}</span></td>
-                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span className="text-[13px] font-medium text-dim">{citation.page}</span></td>
-                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span suppressHydrationWarning className="text-[14px] font-semibold tabular-nums text-subdued">{citation.mentions.toLocaleString()}</span></td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span className="text-[14px] font-semibold text-foreground-secondary">{citation.source}</span></td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span className="text-[13px] font-medium text-foreground-tertiary">{citation.page}</span></td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span suppressHydrationWarning className="text-[14px] font-semibold tabular-nums text-foreground-secondary">{citation.mentions.toLocaleString()}</span></td>
                     <td className="whitespace-nowrap px-4 py-2.5 text-center"><TrendIcon className={cn("h-4 w-4 inline-block", trendColors[citation.trend])} /></td>
                     <td className="whitespace-nowrap px-4 py-2.5"><div className="flex justify-center"><ProgressRing progress={citation.optimizationProgress} /></div></td>
-                    <td className="whitespace-nowrap px-4 py-2.5 text-center text-[13px] font-medium text-dim">{citation.lastSeen}</td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center text-[13px] font-medium text-foreground-tertiary">{citation.lastSeen}</td>
                     <td className="whitespace-nowrap px-4 py-2.5">
                       <div className="flex justify-center">
                         <Button
