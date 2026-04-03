@@ -44,7 +44,7 @@ export function CitationsDetailTableSkeleton({ rows = 25 }: { rows?: number }) {
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-border/30">
+          <tbody className="divide-y divide-surface-hover">
             {Array.from({ length: rows }).map((_, idx) => (
               <tr key={idx} className="transition-colors">
                 <td className="w-10 px-3 py-2.5 text-center">

@@ -224,7 +224,7 @@ export default function SearchVisibilityPage() {
         {/* Header with Back Button */}
         <header className="flex h-16 items-center justify-between border-b border-border-secondary/50 bg-background/80 px-4 md:px-6 backdrop-blur-sm">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" asChild className="gap-2 text-foreground-strong hover:text-foreground-strong">
+            <Button variant="ghost" size="sm" asChild className="gap-2 text-foreground-strong hover:bg-surface-hover/80 hover:text-foreground-strong">
               <Link href="/">
                 <ArrowLeft className="h-4 w-4" />
                 <span className="text-[14px] font-medium">Back to Dashboard</span>

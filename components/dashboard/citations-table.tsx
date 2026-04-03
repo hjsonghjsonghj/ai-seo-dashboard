@@ -353,7 +353,7 @@ export function CitationsTableComponent({
                 <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">Quick Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-secondary/30">
+            <tbody className="divide-y divide-surface-hover">
               {displayData.map((citation: any) => {
                 const TrendIcon = trendIcons[citation.trend]
                 const isSelected = selectedRowIds?.has(citation.id) ?? false
