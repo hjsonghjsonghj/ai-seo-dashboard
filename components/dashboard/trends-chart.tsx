@@ -46,12 +46,12 @@ function CustomTooltip({
   const eventItem = data.find(d => d.date === label)
 
   return (
-    <div className="rounded-lg border border-border bg-v0-slate-900/95 p-4 shadow-xl" role="tooltip">
-      <p className="mb-2 text-[14px] font-semibold tracking-normal text-v0-white">{label}</p>
+    <div className="rounded-lg border border-border-secondary bg-surface-default/95 p-4 shadow-xl" role="tooltip">
+      <p className="mb-2 text-[14px] font-semibold tracking-normal text-foreground-strong">{label}</p>
       {eventItem?.event && (
-        <div className="mb-2 flex items-center gap-1.5 rounded bg-v0-violet-500/15 px-2 py-1">
-          <div className="h-1.5 w-1.5 rounded-full bg-v0-violet-400" aria-hidden="true" />
-          <span className="text-[13px] font-medium tracking-normal text-v0-violet-300">{eventItem.event}</span>
+        <div className="mb-2 flex items-center gap-1.5 rounded bg-brand-default/15 px-2 py-1">
+          <div className="h-1.5 w-1.5 rounded-full bg-brand-soft" aria-hidden="true" />
+          <span className="text-[13px] font-medium tracking-normal text-brand-faint">{eventItem.event}</span>
         </div>
       )}
       <div className="space-y-1.5">
@@ -62,8 +62,8 @@ function CustomTooltip({
               style={{ backgroundColor: entry.color }}
               aria-hidden="true"
             />
-            <span className="font-medium tracking-normal text-v0-slate-400">{entry.name}:</span>
-            <span className="font-semibold tabular-nums text-v0-white">
+            <span className="font-medium tracking-normal text-foreground-tertiary">{entry.name}:</span>
+            <span className="font-semibold tabular-nums text-foreground-strong">
               {entry.value.toLocaleString()}
             </span>
           </div>
@@ -77,14 +77,14 @@ export function TrendsChart() {
   const isMobile = useMediaQuery("(max-width: 768px)")
 
   const [chartColors, setChartColors] = useState({
-    aiDiscovery: 'oklch(0.65 0.25 275)',
-    organicSearch: 'oklch(0.68 0.17 165)',
-    citations: 'oklch(0.70 0.14 235)',
+    aiDiscovery: '#8b5cf6',   /* --chart-1: violet-500 */
+    organicSearch: '#10b981', /* --chart-2: emerald-500 */
+    citations: '#60a5fa',     /* --chart-4: blue-400 */
   })
-  const [gridLine, setGridLine] = useState('oklch(0.25 0.01 285)')
-  const [axisText, setAxisText] = useState('oklch(0.6 0.01 285)')
-  const [refLine, setRefLine] = useState('oklch(0.5 0.15 285)')
-  const [chartLabel, setChartLabel] = useState('oklch(0.7 0.15 285)')
+  const [gridLine, setGridLine] = useState('#334155')   /* --chart-grid-line */
+  const [axisText, setAxisText] = useState('#94a3b8')   /* --chart-axis-text */
+  const [refLine, setRefLine] = useState('#7c3aed')     /* --chart-reference-line */
+  const [chartLabel, setChartLabel] = useState('#a78bfa') /* --chart-label */
 
   useEffect(() => {
     const rootStyles = getComputedStyle(document.documentElement)
@@ -93,35 +93,35 @@ export function TrendsChart() {
       organicSearch: rootStyles.getPropertyValue('--chart-2').trim(),
       citations: rootStyles.getPropertyValue('--chart-4').trim(),
     })
-    setGridLine(rootStyles.getPropertyValue('--v0-grid-line').trim())
-    setAxisText(rootStyles.getPropertyValue('--v0-axis-text').trim())
-    setRefLine(rootStyles.getPropertyValue('--v0-chart-ref-line').trim())
-    setChartLabel(rootStyles.getPropertyValue('--v0-chart-label').trim())
+    setGridLine(rootStyles.getPropertyValue('--chart-grid-line').trim())
+    setAxisText(rootStyles.getPropertyValue('--chart-axis-text').trim())
+    setRefLine(rootStyles.getPropertyValue('--chart-reference-line').trim())
+    setChartLabel(rootStyles.getPropertyValue('--chart-label').trim())
   }, [])
 
   return (
-    <Card className="border-border/50 bg-v0-slate-900/60 transition-colors duration-150 ">
+    <Card className="bg-surface-default/60 transition-colors duration-150">
       <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-4 px-5 pt-5 pb-1.5">
         <div>
-          <CardTitle className="text-lg font-semibold tracking-normal text-v0-white">
+          <CardTitle className="text-lg font-semibold tracking-normal text-foreground-strong">
             Search Visibility Trends
           </CardTitle>
-          <p className="text-[13px] font-medium tracking-normal text-v0-slate-400 mt-1">
+          <p className="text-[13px] font-medium tracking-normal text-foreground-tertiary mt-1">
             Monthly performance with AI event markers
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-4" role="list" aria-label="Chart legend">
           <div className="flex items-center gap-2" role="listitem">
-            <div className="h-2 w-2 rounded-full bg-v0-violet-500" aria-hidden="true" />
-            <span className="text-[13px] font-medium tracking-normal text-v0-slate-300">AI Discovery</span>
+            <div className="h-2 w-2 rounded-full bg-brand-default" aria-hidden="true" />
+            <span className="text-[13px] font-medium tracking-normal text-foreground-secondary">AI Discovery</span>
           </div>
           <div className="flex items-center gap-2" role="listitem">
             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: chartColors.organicSearch }} aria-hidden="true" />
-            <span className="text-[13px] font-medium tracking-normal text-v0-slate-300">Organic Search</span>
+            <span className="text-[13px] font-medium tracking-normal text-foreground-secondary">Organic Search</span>
           </div>
           <div className="flex items-center gap-2" role="listitem">
             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: chartColors.citations }} aria-hidden="true" />
-            <span className="text-[13px] font-medium tracking-normal text-v0-slate-300">Citations</span>
+            <span className="text-[13px] font-medium tracking-normal text-foreground-secondary">Citations</span>
           </div>
         </div>
       </CardHeader>

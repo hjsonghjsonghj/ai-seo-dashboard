@@ -23,11 +23,11 @@ export function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="fixed left-0 top-0 z-40 hidden h-screen w-16 flex-col border-r border-border bg-sidebar md:flex">
+      <aside className="fixed left-0 top-0 z-40 hidden h-screen w-16 flex-col border-r border-border-secondary bg-background md:flex">
         {/* Logo */}
-        <div className="flex h-16 items-center justify-center border-b border-sidebar-border">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <Sparkles className="h-5 w-5 text-primary-foreground" />
+        <div className="flex h-16 items-center justify-center border-b border-border-secondary">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-default">
+            <Sparkles className="h-5 w-5 text-foreground-strong" />
           </div>
         </div>
 
@@ -43,20 +43,20 @@ export function Sidebar() {
                 className={cn(
                   "group relative flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-200",
                   isActive
-                    ? "bg-sidebar-accent text-primary"
-                    : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                    ? "bg-surface-hover text-primary-default"
+                    : "text-foreground-muted hover:bg-surface-hover hover:text-foreground-secondary"
                 )}
                 aria-label={item.label}
                 aria-current={isActive ? "page" : undefined}
               >
                 <Icon className="h-5 w-5" />
                 {/* Tooltip */}
-                <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-popover px-2 py-1 text-xs font-medium text-popover-foreground opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-background px-2 py-1 text-xs font-medium text-foreground-primary opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   {item.label}
                 </span>
                 {/* Active indicator */}
                 {isActive && (
-                  <span className="absolute -left-2 h-5 w-1 rounded-r-full bg-primary" aria-hidden="true" />
+                  <span className="absolute -left-2 h-5 w-1 rounded-r-full bg-primary-default" aria-hidden="true" />
                 )}
               </button>
             )
@@ -64,16 +64,16 @@ export function Sidebar() {
         </nav>
 
         {/* User */}
-        <div className="flex flex-col items-center gap-2 border-t border-sidebar-border px-2 py-4">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sidebar-accent text-sm font-medium text-sidebar-foreground">
+        <div className="flex flex-col items-center gap-2 border-t border-border-secondary px-2 py-4">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-hover text-sm font-medium text-foreground-secondary">
             PA
           </div>
         </div>
       </aside>
 
       {/* Mobile Bottom Bar */}
-      <nav 
-        className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-border bg-sidebar/95 backdrop-blur-sm md:hidden"
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t border-border-secondary bg-background/95 backdrop-blur-sm md:hidden"
         role="navigation"
         aria-label="Main navigation"
       >
@@ -87,8 +87,8 @@ export function Sidebar() {
               className={cn(
                 "relative flex flex-col items-center justify-center gap-1 px-4 py-2 transition-colors",
                 isActive
-                  ? "text-primary"
-                  : "text-muted-foreground"
+                  ? "text-primary-default"
+                  : "text-foreground-muted"
               )}
               aria-label={item.label}
               aria-current={isActive ? "page" : undefined}
@@ -97,7 +97,7 @@ export function Sidebar() {
               <span className="text-[11px] font-semibold tracking-normal">{item.label}</span>
               {/* Active indicator - top bar */}
               {isActive && (
-                <span className="absolute -top-0.5 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-primary" aria-hidden="true" />
+                <span className="absolute -top-0.5 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-primary-default" aria-hidden="true" />
               )}
             </button>
           )

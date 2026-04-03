@@ -222,9 +222,9 @@ export default function SearchVisibilityPage() {
 
       <div className="pb-20 md:ml-16 md:pb-0 flex flex-col gap-2 md:gap-3">
         {/* Header with Back Button */}
-        <header className="flex h-16 items-center justify-between border-b border-border/50 bg-background/80 px-4 md:px-6 backdrop-blur-sm">
+        <header className="flex h-16 items-center justify-between border-b border-border-secondary/50 bg-background/80 px-4 md:px-6 backdrop-blur-sm">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" asChild className="gap-2 text-v0-white hover:text-white">
+            <Button variant="ghost" size="sm" asChild className="gap-2 text-foreground-strong hover:bg-surface-hover/80 hover:text-foreground-strong">
               <Link href="/">
                 <ArrowLeft className="h-4 w-4" />
                 <span className="text-[14px] font-medium">Back to Dashboard</span>
@@ -237,9 +237,9 @@ export default function SearchVisibilityPage() {
 
           <div className="mx-auto max-w-[1600px] flex flex-col gap-6">
             {/* Filter Bar */}
-            <Card className="border-border/50 bg-slate-900/60">
+            <Card className="bg-surface-default/60">
               <CardHeader className="pb-3 px-5 pt-5">
-                <CardTitle className="text-[16px] font-semibold tracking-normal text-v0-slate-300">
+                <CardTitle className="text-[16px] font-semibold tracking-normal text-foreground-secondary">
                   Filters
                 </CardTitle>
               </CardHeader>
@@ -247,9 +247,9 @@ export default function SearchVisibilityPage() {
                 <div className="flex flex-wrap items-center gap-4">
                   {/* Date Range */}
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-slate-400" />
+                    <Calendar className="h-4 w-4 text-foreground-muted" />
                     <Select value={dateRange} onValueChange={setDateRange}>
-                      <SelectTrigger className="w-[160px] bg-slate-800/50 border-slate-700 text-[14px]">
+                      <SelectTrigger className="w-[160px] bg-surface-hover/50 border-border-secondary text-[14px]">
                         <SelectValue placeholder="Select date range" />
                       </SelectTrigger>
                       <SelectContent>
@@ -263,9 +263,9 @@ export default function SearchVisibilityPage() {
 
                   {/* Source Filter */}
                   <div className="flex items-center gap-2">
-                    <Filter className="h-4 w-4 text-slate-400" />
+                    <Filter className="h-4 w-4 text-foreground-muted" />
                     <Select value={sourceFilter} onValueChange={setSourceFilter}>
-                      <SelectTrigger className="w-[180px] bg-slate-800/50 border-slate-700 text-[14px]">
+                      <SelectTrigger className="w-[180px] bg-surface-hover/50 border-border-secondary text-[14px]">
                         <SelectValue placeholder="Select source" />
                       </SelectTrigger>
                       <SelectContent>
@@ -281,13 +281,13 @@ export default function SearchVisibilityPage() {
 
                   {/* Search */}
                   <div className="relative flex-1 min-w-[240px]">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground-muted" />
                     <Input
                       type="text"
                       placeholder="Search by source or page..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 bg-slate-800/50 border-slate-700 text-[14px] placeholder:text-slate-500"
+                      className="pl-10 bg-surface-hover/50 border-border-secondary text-[14px] placeholder:text-border-primary"
                     />
                   </div>
                 </div>
@@ -316,11 +316,11 @@ export default function SearchVisibilityPage() {
                   }}
                   headerAction={
                     <div className="flex items-center gap-3">
-                      <span className="text-[14px] font-medium tabular-nums text-slate-300">
+                      <span className="text-[14px] font-medium tabular-nums text-foreground-tertiary">
                         {`${filteredCitations.length} citations`}
                       </span>
                       {selectedRows.size > 0 && (
-                        <span className="text-[13px] font-medium text-v0-emerald-400">
+                        <span className="text-[13px] font-medium text-positive-soft">
                           {selectedRows.size} items selected
                         </span>
                       )}
@@ -341,8 +341,8 @@ export default function SearchVisibilityPage() {
         </main>
       </div>
       {selectedRows.size > 0 && (
-        <div className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-border bg-background/95 px-4 py-3 shadow-lg backdrop-blur">
-          <span className="text-sm font-medium text-v0-slate-300">{selectedRows.size} citations selected</span>
+        <div className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-border-secondary bg-background/95 px-4 py-3 shadow-lg backdrop-blur">
+          <span className="text-sm font-medium text-foreground-secondary">{selectedRows.size} citations selected</span>
           <Button size="sm" variant="outline" onClick={handleExportSelected}>
             Export
           </Button>
@@ -364,27 +364,27 @@ export default function SearchVisibilityPage() {
         .detail-table-three-state thead th button[aria-label^="Sort by"] {
           cursor: pointer;
           background: transparent;
-          color: var(--v0-violet-300);
+          color: var(--color-brand-faint);
           box-shadow: none;
         }
         .detail-table-three-state thead th button[aria-label^="Sort by"] svg {
-          color: var(--v0-violet-300);
+          color: var(--color-brand-faint);
         }
         .detail-table-three-state thead th button[aria-label^="Sort by"]:hover {
-          color: var(--v0-white);
+          color: var(--color-foreground-strong);
         }
         .detail-table-three-state thead th button[aria-label^="Sort by"]:hover svg {
-          color: var(--v0-white);
+          color: var(--color-foreground-strong);
         }
 
         /* State 1: currently selected sort column */
         .detail-table-three-state thead th button[aria-label*="currently"] {
           background: transparent;
-          color: var(--v0-white);
+          color: var(--color-foreground-strong);
           box-shadow: none;
         }
         .detail-table-three-state thead th button[aria-label*="currently"] svg {
-          color: var(--v0-white);
+          color: var(--color-foreground-strong);
         }
       `}</style>
     </div>

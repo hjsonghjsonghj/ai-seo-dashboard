@@ -125,21 +125,21 @@ const trendIcons: any = {
 }
 
 const trendColors: any = {
-  up: "text-v0-emerald-400",
-  down: "text-v0-rose-400",
-  stable: "text-muted-foreground",
+  up: "text-positive-soft",
+  down: "text-danger-soft",
+  stable: "text-foreground-muted",
 }
 
 function getProgressColor(progress: number): string {
-  if (progress < 40) return "stroke-v0-red-500"
-  if (progress < 75) return "stroke-v0-amber-500"
-  return "stroke-v0-emerald-500"
+  if (progress < 40) return "stroke-danger-default"
+  if (progress < 75) return "stroke-caution-default"
+  return "stroke-positive-default"
 }
 
 function getProgressTextColor(progress: number): string {
-  if (progress < 40) return "text-v0-red-400"
-  if (progress < 75) return "text-v0-amber-400"
-  return "text-v0-emerald-400"
+  if (progress < 40) return "text-danger-soft"
+  if (progress < 75) return "text-caution-soft"
+  return "text-positive-soft"
 }
 
 function ProgressRing({ progress, size = 40 }: { progress: number; size?: number }) {
@@ -153,7 +153,7 @@ function ProgressRing({ progress, size = 40 }: { progress: number; size?: number
   return (
     <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" strokeWidth={strokeWidth} className="stroke-v0-slate-700" />
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" strokeWidth={strokeWidth} className="stroke-border-secondary" />
         <circle
           cx={size / 2} cy={size / 2} r={radius} fill="none" strokeWidth={strokeWidth} strokeLinecap="round"
           className={colorClass}
@@ -173,26 +173,26 @@ function CitationCard({ citation, onReview }: { citation: any; onReview?: (c: an
 
   return (
     <div
-      className="flex items-center justify-between rounded-lg border border-border/50 bg-v0-slate-900/40 p-5 transition-colors hover:bg-v0-slate-800/50 cursor-pointer"
+      className="flex items-center justify-between rounded-lg bg-surface-default/40 p-5 transition-colors hover:bg-surface-hover/50 cursor-pointer"
       onClick={() => onReview?.(citation)}
     >
       <div className="flex items-center gap-4">
         <ProgressRing progress={citation.optimizationProgress} size={44} />
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-[14px] font-semibold tracking-normal text-v0-slate-300">{citation.source}</span>
+            <span className="text-[14px] font-semibold tracking-normal text-foreground-secondary">{citation.source}</span>
             <TrendIcon className={cn("h-3.5 w-3.5", trendColors[citation.trend])} />
           </div>
-          <p className="text-[13px] font-medium tracking-normal text-v0-slate-400 truncate max-w-[140px]">{citation.page}</p>
+          <p className="text-[13px] font-medium tracking-normal text-foreground-tertiary truncate max-w-[140px]">{citation.page}</p>
           <div className="flex items-center gap-2 text-[13px] tracking-normal">
-            <span suppressHydrationWarning className="font-semibold tabular-nums text-v0-slate-300">
+            <span suppressHydrationWarning className="font-semibold tabular-nums text-foreground-secondary">
               {citation.mentions.toLocaleString()}
             </span>
-            <span className="font-medium text-v0-slate-400">mentions</span>
+            <span className="font-medium text-foreground-tertiary">mentions</span>
           </div>
         </div>
       </div>
-      <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-v0-slate-400 hover:text-v0-white">
+      <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-foreground-tertiary hover:text-foreground-strong">
         <ChevronRight className="h-4 w-4" />
       </Button>
     </div>
@@ -248,24 +248,24 @@ export function CitationsTableComponent({
   const someSelected = selectedCount > 0 && !allSelected
 
   function SortIndicator({ column }: { column: "mentions" | "optimization" | "lastSeen" }) {
-    if (sortBy !== column) return <ArrowUpDown className="h-3.5 w-3.5 text-v0-violet-300" />
+    if (sortBy !== column) return <ArrowUpDown className="h-3.5 w-3.5 text-brand-faint" />
     return sortDirection === "asc"
-      ? <ArrowUp className="h-3.5 w-3.5 text-v0-white" />
-      : <ArrowDown className="h-3.5 w-3.5 text-v0-white" />
+      ? <ArrowUp className="h-3.5 w-3.5 text-foreground-strong" />
+      : <ArrowDown className="h-3.5 w-3.5 text-foreground-strong" />
   }
 
   return (
-    <Card className="border-border/50 bg-v0-slate-900/60 transition-colors duration-150">
+    <Card className="bg-surface-default/60 transition-colors duration-150">
       <CardHeader className="pb-3 px-5 pt-5">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-lg font-semibold tracking-normal text-v0-slate-300">{title}</CardTitle>
-            <p className="text-[13px] font-medium tracking-normal text-v0-slate-400 mt-1">{description}</p>
+            <CardTitle className="text-lg font-semibold tracking-normal text-foreground-secondary">{title}</CardTitle>
+            <p className="text-[13px] font-medium tracking-normal text-foreground-tertiary mt-1">{description}</p>
           </div>
           <div className="flex items-center">
             {headerAction ? headerAction : (
               <Link href="/search-visibility">
-                <button className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-[13px] font-medium tracking-normal text-v0-slate-300 transition-colors hover:bg-secondary">
+                <button className="flex items-center gap-1.5 rounded-lg border border-border-secondary bg-surface-hover/50 px-3 py-1.5 text-[13px] font-medium tracking-normal text-foreground-secondary transition-colors hover:bg-surface-hover">
                   View all <ExternalLink className="h-3 w-3" />
                 </button>
               </Link>
@@ -274,10 +274,10 @@ export function CitationsTableComponent({
         </div>
       </CardHeader>
       <CardContent className="px-5 pb-5">
-        <div className="hidden md:block overflow-hidden rounded-lg border border-border/50">
+        <div className="hidden md:block overflow-hidden rounded-lg border border-border-secondary/50">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-border/50 bg-muted/30">
+              <tr className="border-b border-border-secondary/50 bg-surface-default/30">
                 {showSelectionColumn && (
                   <th className="w-10 px-3 py-3 text-center">
                     <Checkbox
@@ -287,9 +287,9 @@ export function CitationsTableComponent({
                     />
                   </th>
                 )}
-                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">Source</th>
-                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">Page</th>
-                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">Source</th>
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">Page</th>
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
                   {onSortToggle ? (
                     <button
                       type="button"
@@ -297,8 +297,8 @@ export function CitationsTableComponent({
                       className={cn(
                         "inline-flex items-center gap-1 transition-colors cursor-pointer",
                         sortBy === "mentions"
-                          ? "text-v0-white"
-                          : "text-v0-violet-300 hover:text-v0-white"
+                          ? "text-foreground-strong"
+                          : "text-brand-faint hover:text-foreground-strong"
                       )}
                       aria-label={`Sort by mentions ${sortBy === "mentions" ? `currently ${sortDirection}` : ""}`}
                     >
@@ -306,11 +306,11 @@ export function CitationsTableComponent({
                       <SortIndicator column="mentions" />
                     </button>
                   ) : (
-                    <span className="text-v0-slate-400">MENTIONS</span>
+                    <span className="text-foreground-tertiary">MENTIONS</span>
                   )}
                 </th>
-                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">Trend</th>
-                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">Trend</th>
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
                   {onSortToggle ? (
                     <button
                       type="button"
@@ -318,8 +318,8 @@ export function CitationsTableComponent({
                       className={cn(
                         "inline-flex items-center gap-1 transition-colors cursor-pointer",
                         sortBy === "optimization"
-                          ? "text-v0-white"
-                          : "text-v0-violet-300 hover:text-v0-white"
+                          ? "text-foreground-strong"
+                          : "text-brand-faint hover:text-foreground-strong"
                       )}
                       aria-label={`Sort by optimization score ${sortBy === "optimization" ? `currently ${sortDirection}` : ""}`}
                     >
@@ -327,10 +327,10 @@ export function CitationsTableComponent({
                       <SortIndicator column="optimization" />
                     </button>
                   ) : (
-                    <span className="text-v0-slate-400">OPTIMIZATION</span>
+                    <span className="text-foreground-tertiary">OPTIMIZATION</span>
                   )}
                 </th>
-                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
                   {onSortToggle ? (
                     <button
                       type="button"
@@ -338,8 +338,8 @@ export function CitationsTableComponent({
                       className={cn(
                         "inline-flex items-center gap-1 transition-colors cursor-pointer",
                         sortBy === "lastSeen"
-                          ? "text-v0-white"
-                          : "text-v0-violet-300 hover:text-v0-white"
+                          ? "text-foreground-strong"
+                          : "text-brand-faint hover:text-foreground-strong"
                       )}
                       aria-label={`Sort by last seen ${sortBy === "lastSeen" ? `currently ${sortDirection}` : ""}`}
                     >
@@ -347,13 +347,13 @@ export function CitationsTableComponent({
                       <SortIndicator column="lastSeen" />
                     </button>
                   ) : (
-                    <span className="text-v0-slate-400">LAST SEEN</span>
+                    <span className="text-foreground-tertiary">LAST SEEN</span>
                   )}
                 </th>
-                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">Quick Action</th>
+                <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">Quick Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border/30">
+            <tbody className="divide-y divide-surface-hover">
               {displayData.map((citation: any) => {
                 const TrendIcon = trendIcons[citation.trend]
                 const isSelected = selectedRowIds?.has(citation.id) ?? false
@@ -363,7 +363,7 @@ export function CitationsTableComponent({
                     key={citation.id}
                     className={cn(
                       "transition-colors duration-700",
-                      isHighlighted ? "bg-v0-emerald-500/10" : isSelected ? "bg-muted/20" : "hover:bg-muted/20"
+                      isHighlighted ? "bg-positive-default/10" : isSelected ? "bg-surface-default/20" : "hover:bg-surface-default/20"
                     )}
                   >
                     {showSelectionColumn && (
@@ -375,17 +375,17 @@ export function CitationsTableComponent({
                         />
                       </td>
                     )}
-                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span className="text-[14px] font-semibold text-v0-slate-300">{citation.source}</span></td>
-                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span className="text-[13px] font-medium text-v0-slate-400">{citation.page}</span></td>
-                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span suppressHydrationWarning className="text-[14px] font-semibold tabular-nums text-v0-slate-300">{citation.mentions.toLocaleString()}</span></td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span className="text-[14px] font-semibold text-foreground-secondary">{citation.source}</span></td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span className="text-[13px] font-medium text-foreground-tertiary">{citation.page}</span></td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span suppressHydrationWarning className="text-[14px] font-semibold tabular-nums text-foreground-secondary">{citation.mentions.toLocaleString()}</span></td>
                     <td className="whitespace-nowrap px-4 py-2.5 text-center"><TrendIcon className={cn("h-4 w-4 inline-block", trendColors[citation.trend])} /></td>
                     <td className="whitespace-nowrap px-4 py-2.5"><div className="flex justify-center"><ProgressRing progress={citation.optimizationProgress} /></div></td>
-                    <td className="whitespace-nowrap px-4 py-2.5 text-center text-[13px] font-medium text-v0-slate-400">{citation.lastSeen}</td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center text-[13px] font-medium text-foreground-tertiary">{citation.lastSeen}</td>
                     <td className="whitespace-nowrap px-4 py-2.5">
                       <div className="flex justify-center">
                         <Button
                           size="sm" variant="outline"
-                          className="h-6 gap-1.5 border-v0-violet-500/30 bg-v0-violet-500/10 px-2.5 text-[13px] font-semibold text-v0-violet-300 hover:bg-v0-violet-500/20"
+                          className="h-6 gap-1.5 border-brand/30 bg-brand-default/10 px-2.5 text-[13px] font-semibold text-brand-faint hover:bg-brand-default/20"
                           onClick={() => onReview?.(citation)}
                         >
                           <Eye className="h-3 w-3" /> Review

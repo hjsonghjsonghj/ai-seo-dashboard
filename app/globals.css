@@ -3,192 +3,124 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Dark mode Berlin startup aesthetic */
+/* ============================================================
+   SEMANTIC TOKENS in :root
+   Used by components that reference var(--xxx) directly via JS.
+   ============================================================ */
 :root {
-  /* Deep charcoal/black background */
-  --background: oklch(0.12 0.005 285);
-  --foreground: oklch(0.95 0 0);
-
-  /* Card styling - slightly lighter than background */
-  --card: oklch(0.15 0.008 285);
-  --card-foreground: oklch(0.95 0 0);
-
-  /* Popover */
-  --popover: oklch(0.13 0.006 285);
-  --popover-foreground: oklch(0.95 0 0);
-
-  /* Primary - Neon indigo accent */
-  --primary: oklch(0.65 0.25 275);
-  --primary-foreground: oklch(0.98 0 0);
-
-  /* Secondary */
-  --secondary: oklch(0.30 0.01 285);
-  --secondary-foreground: oklch(0.9 0 0);
-
-  /* Muted */
-  --muted: oklch(0.2 0.008 285);
-  --muted-foreground: oklch(0.6 0.01 285);
-
-  /* Accent - bright indigo */
-  --accent: #8b5cf6;
-  --accent-foreground: oklch(0.98 0 0);
-
-  /* Destructive */
-  --destructive: oklch(0.628 0.257 29.23);
-  --destructive-foreground: oklch(0.98 0 0);
-
-  /* Borders - subtle */
-  --border: oklch(0.25 0.01 285);
-  --input: oklch(0.2 0.008 285);
-  --ring: oklch(0.65 0.25 275);
-
-  /* Chart colors - indigo spectrum with cyan accent */
-  --chart-1: oklch(0.65 0.25 275);
-  --chart-2: oklch(0.68 0.17 165);
-  --chart-3: oklch(0.6 0.2 285);
-  --chart-4: oklch(0.70 0.14 235);
-  --chart-5: oklch(0.55 0.18 300);
-
-  --radius: 0.5rem;
-
-  /* Sidebar */
-  --sidebar: oklch(0.1 0.004 285);
-  --sidebar-foreground: oklch(0.9 0 0);
-  --sidebar-primary: oklch(0.65 0.25 275);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.18 0.01 285);
-  --sidebar-accent-foreground: oklch(0.95 0 0);
-  --sidebar-border: oklch(0.22 0.008 285);
-  --sidebar-ring: oklch(0.65 0.25 275);
-
-  /* warning - Tailwind amber-500(#f59e0b)  */
-  --warning: lab(72.7183 31.8672 97.9407);
-  --warning-foreground: oklch(0.98 0 0);
-
-  /* success - Tailwind emerald-500(#10b981) */
-  --success: oklch(0.696 0.170 162.48);
-  --success-foreground: oklch(0.98 0 0);
-
-  /* foreground-subtle - Tailwind slate-300(#cbd5e1)  */
-  --foreground-subtle: oklch(0.869 0.022 264.05);
-
-  /* border-strong - Tailwind slate-700(#334155)  */
-  --border-strong: oklch(0.372 0.044 264.05);
-
-  /* v0 palette — Tailwind  */
-  --v0-slate-900: #0f172a;
-  --v0-slate-800: #1e293b;
-  --v0-slate-700: #334155;
-  --v0-slate-400: #94a3b8;
-  --v0-slate-300: #cbd5e1;
-  --v0-white: #ffffff;
-  --v0-violet-600: #7c3aed;
-  --v0-violet-500: #8b5cf6;
-  --v0-violet-400: #a78bfa;
-  --v0-violet-300: #c4b5fd;
-  --v0-violet-200: #ddd6fe;
-  --v0-emerald-500: #10b981;
-  --v0-emerald-400: #34d399;
-  --v0-rose-400: #fb7185;
-  --v0-red-600: #dc2626;
-  --v0-red-500: #ef4444;
-  --v0-red-400: #f87171;
-  --v0-amber-600: #d97706;
-  --v0-amber-500: #f59e0b;
-  --v0-amber-400: #fbbf24;
-
-  /* Chart UI colors */
-  --v0-grid-line: oklch(0.25 0.01 285);
-  --v0-axis-text: oklch(0.6 0.01 285);
-  --v0-chart-ref-line: oklch(0.5 0.15 285);
-  --v0-chart-label: oklch(0.7 0.15 285);
+  /* Chart — accessed via JS getPropertyValue() in trends-chart.tsx */
+  --chart-1: #8b5cf6;
+  /* violet-500 */
+  --chart-2: #10b981;
+  /* emerald-500 */
+  --chart-4: #60a5fa;
+  /* blue-400 */
+  --chart-grid-line: #334155;
+  /* slate-700 */
+  --chart-axis-text: #94a3b8;
+  /* slate-400 */
+  --chart-reference-line: #7c3aed;
+  /* violet-600 */
+  --chart-label: #a78bfa;
+  /* violet-400 */
 }
 
-@theme inline {
+/* ============================================================
+   TAILWIND THEME — fully semantic, direct hex values.
+   No var() chains — ensures opacity modifiers (/60, /80 etc.)
+   and @apply work correctly at build time.
+   ============================================================ */
+@theme {
   --font-sans: var(--font-sans), 'Geist', system-ui, sans-serif;
   --font-mono: var(--font-mono), 'Geist Mono', ui-monospace, monospace;
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-warning: var(--warning);
-  --color-warning-foreground: var(--warning-foreground);
-  --color-success: var(--success);
-  --color-success-foreground: var(--success-foreground);
-  --color-foreground-subtle: var(--foreground-subtle);
-  --color-border-strong: var(--border-strong);
 
-  --color-v0-slate-900: var(--v0-slate-900);
-  --color-v0-slate-800: var(--v0-slate-800);
-  --color-v0-slate-700: var(--v0-slate-700);
-  --color-v0-slate-400: var(--v0-slate-400);
-  --color-v0-slate-300: var(--v0-slate-300);
-  --color-v0-white: var(--v0-white);
-  --color-v0-violet-600: var(--v0-violet-600);
-  --color-v0-violet-500: var(--v0-violet-500);
-  --color-v0-violet-400: var(--v0-violet-400);
-  --color-v0-violet-300: var(--v0-violet-300);
-  --color-v0-violet-200: var(--v0-violet-200);
-  --color-v0-emerald-500: var(--v0-emerald-500);
-  --color-v0-emerald-400: var(--v0-emerald-400);
-  --color-v0-rose-400: var(--v0-rose-400);
-  --color-v0-red-600: var(--v0-red-600);
-  --color-v0-red-500: var(--v0-red-500);
-  --color-v0-red-400: var(--v0-red-400);
-  --color-v0-amber-600: var(--v0-amber-600);
-  --color-v0-amber-500: var(--v0-amber-500);
-  --color-v0-amber-400: var(--v0-amber-400);
+  /* ── Base ─────────────────────────────────────────────────── */
+  --color-background: #020617;
+  /* slate-950 — page / popover / sidebar background */
 
-  --color-v0-grid-line: var(--v0-grid-line);
-  --color-v0-axis-text: var(--v0-axis-text);
-  --color-v0-chart-ref-line: var(--v0-chart-ref-line);
-  --color-v0-chart-label: var(--v0-chart-label);
+  /* ── Text content scale ──────────────────────────────────── */
+  --color-foreground-primary: #f1f5f9;
+  /* slate-100 — primary text */
+  --color-foreground-secondary: #e2e8f0;
+  /* slate-200 — secondary text / sidebar labels */
+  --color-foreground-tertiary: #CBD5E1;
+  /* slate-300 — tertiary / meta text */
+  --color-foreground-strong: #f8fafc;
+  /* slate-50 — text on any colored bg (primary / brand / danger / caution) */
+  --color-foreground-muted: #94a3b8;
+  /* slate-400 — placeholder / caption text */
+
+
+  /* ── Primary action (blue) ───────────────────────────────── */
+  --color-primary-default: #3b82f6;
+  /* blue-500 */
+
+
+  /* ── Form inputs ─────────────────────────────────────────── */
+  --color-input: #1e293b;
+  /* slate-800 — input / textarea background */
+
+  /* ── Border radius ───────────────────────────────────────── */
+  --radius: 8px;
+
+  /* ── Surface scale ───────────────────────────────────────── */
+  --color-surface-default: #0f172a;
+  /* slate-900 — card / panel / muted bg */
+  --color-surface-hover: #1e293b;
+  /* slate-800 — hover / elevated / secondary bg */
+
+
+  --color-border-primary: #475569;
+  /* slate-600 — checkbox / input edge */
+  --color-border-secondary: #334155;
+  /* slate-700 — border / divider / SVG stroke */
+
+
+  /* ── Brand (violet) ──────────────────────────────────────── */
+  --color-brand-deep: #7c3aed;
+  /* violet-600 — ring / hover / pressed */
+  --color-brand-default: #8b5cf6;
+  /* violet-500 — filled elements / accent */
+  --color-brand-soft: #a78bfa;
+  /* violet-400 — icon / focus dot */
+  --color-brand-faint: #c4b5fd;
+  /* violet-300 — secondary brand text */
+
+  /* ── Positive (green) ────────────────────────────────────── */
+  --color-positive-default: #10b981;
+  /* emerald-500 */
+  --color-positive-soft: #34d399;
+  /* emerald-400 */
+
+  /* ── Danger (red) ────────────────────────────────────────── */
+  --color-danger-deep: #dc2626;
+  /* red-600 */
+  --color-danger-default: #ef4444;
+  /* red-500 */
+  --color-danger-soft: #f87171;
+  /* red-400 */
+
+  /* ── Caution (amber) ─────────────────────────────────────── */
+  --color-caution-default: #f59e0b;
+  /* amber-500 */
+  --color-caution-soft: #fbbf24;
+  /* amber-400 */
 }
 
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply outline-brand-deep/50;
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground-primary antialiased;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Headings - SemiBold with normal tracking for dark theme readability */
   h1,
   h2,
   h3,
@@ -197,13 +129,4 @@
   h6 {
     @apply font-semibold tracking-normal;
   }
-
-  /* WCAG Accessibility: Ensure minimum readable font sizes */
-  /* Labels and metadata should use text-[13px] minimum */
-  /* Numeric data should use tabular-nums for alignment */
-
-
 }
-
-
-

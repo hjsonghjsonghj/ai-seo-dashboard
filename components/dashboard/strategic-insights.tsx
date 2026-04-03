@@ -43,22 +43,22 @@ const insights = [
 
 const typeStyles = {
   critical: {
-    bg: "bg-v0-slate-900/60 hover:bg-v0-slate-800/80",
-    badge: "bg-v0-red-500/15 text-v0-red-400",
-    button: "bg-v0-red-500 hover:bg-v0-red-600 text-v0-slate-300 focus-visible:ring-v0-red-500",
-    icon: "bg-v0-red-500/15 text-v0-red-400",
+    bg: "bg-surface-default/60 hover:bg-surface-hover/80",
+    badge: "bg-danger-default/15 text-danger-soft",
+    button: "bg-danger-default hover:bg-danger-deep text-foreground-strong focus-visible:ring-danger-default",
+    icon: "bg-danger-default/15 text-danger-soft",
   },
   opportunity: {
-    bg: "bg-v0-slate-900/60 hover:bg-v0-slate-800/80",
-    badge: "bg-v0-violet-500/15 text-v0-violet-400",
-    button: "bg-v0-violet-500 hover:bg-v0-violet-600 text-v0-slate-300 focus-visible:ring-v0-violet-500",
-    icon: "bg-v0-violet-500/15 text-v0-violet-400",
+    bg: "bg-surface-default/60 hover:bg-surface-hover/80",
+    badge: "bg-brand-default/15 text-brand-soft",
+    button: "bg-brand-default hover:bg-brand-deep text-foreground-strong focus-visible:ring-brand",
+    icon: "bg-brand-default/15 text-brand-soft",
   },
   optimization: {
-    bg: "bg-v0-slate-900/60 hover:bg-v0-slate-800/80",
-    badge: "bg-warning/15 text-warning",
-    button: "bg-warning hover:bg-warning/90 text-warning-foreground focus-visible:ring-warning",
-    icon: "bg-warning/15 text-warning",
+    bg: "bg-surface-default/60 hover:bg-surface-hover/80",
+    badge: "bg-caution-default/15 text-caution-default",
+    button: "bg-caution-default hover:bg-caution-default/90 text-foreground-strong focus-visible:ring-caution-default",
+    icon: "bg-caution-default/15 text-caution-default",
   },
 }
 
@@ -66,18 +66,18 @@ export function StrategicInsights() {
   return (
     <section className="space-y-4" aria-labelledby="insights-heading">
       <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-v0-violet-500/15" aria-hidden="true">
-          <Sparkles className="h-4 w-4 text-v0-violet-400" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-default/15" aria-hidden="true">
+          <Sparkles className="h-4 w-4 text-brand-soft" />
         </div>
         <div>
           <h2
             id="insights-heading"
-            className="text-lg font-semibold tracking-normal text-v0-slate-300"
+            className="text-lg font-semibold tracking-normal text-foreground-secondary"
           >
             AI-Generated Strategic Insights
           </h2>
-          <p className="text-[13px] font-medium tracking-normal text-v0-slate-400">
-            Actionable recommendations powered by Peec Intelligence
+          <p className="text-[13px] font-medium tracking-normal text-foreground-tertiary">
+            Actionable recommendations powered by Intelligence
           </p>
         </div>
       </div>
@@ -91,7 +91,7 @@ export function StrategicInsights() {
             <Card
               key={insight.id}
               className={cn(
-                "cursor-pointer border-border/50 transition-colors duration-150 flex flex-col h-full",
+                "cursor-pointer transition-colors duration-150 flex flex-col h-full",
                 styles.bg
               )}
               role="article"
@@ -104,7 +104,7 @@ export function StrategicInsights() {
                       <Icon className="h-4 w-4" />
                     </div>
                     <div>
-                      <CardTitle className="text-[13px] font-semibold uppercase tracking-wide text-v0-slate-400">
+                      <CardTitle className="text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
                         {insight.title}
                       </CardTitle>
                     </div>
@@ -123,11 +123,11 @@ export function StrategicInsights() {
                 <div className="flex-1">
                   <h3
                     id={`insight-${insight.id}-headline`}
-                    className="mb-0 text-base font-semibold tracking-normal text-v0-slate-300"
+                    className="mb-0 text-base font-semibold tracking-normal text-foreground-secondary"
                   >
                     {insight.headline}
                   </h3>
-                  <p className="text-[13px] font-medium leading-relaxed tracking-normal text-v0-slate-400">
+                  <p className="text-[13px] font-medium leading-relaxed tracking-normal text-foreground-tertiary">
                     {insight.description}
                   </p>
                 </div>
