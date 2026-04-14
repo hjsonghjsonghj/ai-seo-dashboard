@@ -28,7 +28,7 @@ function StatCard({ title, value, change, changeLabel, targetValue, currentValue
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 space-y-1.5">
-            <p className="text-[13px] font-medium tracking-normal text-foreground-secondary">{title}</p>
+            <p className="text-body-sm font-medium tracking-normal text-foreground-secondary">{title}</p>
             <p className="text-3xl font-bold tracking-normal tabular-nums text-foreground-strong">{value}</p>
           </div>
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-default/15">
@@ -37,7 +37,7 @@ function StatCard({ title, value, change, changeLabel, targetValue, currentValue
         </div>
 
         <div className="mt-5 space-y-3">
-          <div className="flex items-center gap-1.5 text-[13px]">
+          <div className="flex items-center gap-1.5 text-body-sm">
             <span className="font-medium tracking-normal text-foreground-tertiary">Goal:</span>
             <span className="font-semibold tabular-nums text-brand-faint">{targetValue}{unit}</span>
             <span className="font-medium tabular-nums text-foreground-tertiary">({Math.round(progressPercent)}%)</span>
@@ -56,10 +56,10 @@ function StatCard({ title, value, change, changeLabel, targetValue, currentValue
             ) : (
               <TrendingDown className="h-3.5 w-3.5 text-danger-soft" />
             )}
-            <span className={cn("text-[13px] font-bold tabular-nums", isPositive ? "text-positive-soft" : "text-danger-soft")}>
+            <span className={cn("text-body-sm font-bold tabular-nums", isPositive ? "text-positive-soft" : "text-danger-soft")}>
               {isPositive ? "+" : ""}{change}%
             </span>
-            <span className="text-[13px] font-medium tracking-normal text-foreground-tertiary">{changeLabel}</span>
+            <span className="text-body-sm font-medium tracking-normal text-foreground-tertiary">{changeLabel}</span>
           </div>
         </div>
       </CardContent>

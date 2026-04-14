@@ -10,7 +10,7 @@ export function Header() {
         <h1 className="text-lg md:text-xl font-semibold tracking-normal text-foreground-strong">
           Dashboard Overview
         </h1>
-        <p className="text-[13px] md:text-[14px] font-medium tracking-normal text-foreground-tertiary">
+        <p className="text-body-sm md:text-body-lg font-medium tracking-normal text-foreground-tertiary">
           Track your AI search visibility and performance
         </p>
       </div>
@@ -43,7 +43,7 @@ export function Header() {
           className="relative h-8 w-8 md:h-9 md:w-9 border-border-secondary bg-surface-default/30 text-foreground-primary hover:bg-surface-default/50"
         >
           <Bell className="h-4 w-4" />
-          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary-default text-[10px] font-medium text-foreground-strong">
+          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary-default text-label-micro leading-none font-medium text-foreground-strong">
             3
           </span>
         </Button>

@@ -105,7 +105,116 @@
   /* amber-500 */
   --color-caution-soft: #fbbf24;
   /* amber-400 */
+
+  /* ── Semantic Typography Scale ───────────────────────────── */
+  /* Usage: text-{token}  →  sets font-size + line-height      */
+  --text-display-sm: 30px;
+  --text-display-sm--line-height: 1.2;
+
+  --text-title-page: 20px;
+  --text-title-page--line-height: 1.4;
+
+  --text-title-section: 18px;
+  --text-title-section--line-height: 1.5;
+
+  --text-title-sub: 16px;
+  --text-title-sub--line-height: 1.5;
+
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 1.5;
+
+  --text-body-md: 14px;
+  --text-body-md--line-height: 1.428;
+  /* ≈ 20px computed */
+
+  --text-body-sm: 13px;
+  --text-body-sm--line-height: 1.385;
+  /* ≈ 18px computed */
+
+  --text-label-xs: 12px;
+  --text-label-xs--line-height: 1.333;
+  /* ≈ 16px computed */
+
+  --text-label-micro: 11px;
+  --text-label-micro--line-height: 1;
+
+  /* ── Semantic Font Weight Scale ─────────────────────────── */
+  /* Default weight per text style — override freely with     */
+  /* font-semibold / font-medium etc. in component classes.   */
+  /* Primitives: regular=400  medium=500  semibold=600        */
+  --fw-display-sm:    600; /* semibold — large heading       */
+  --fw-title-page:    600; /* semibold — page-level heading  */
+  --fw-title-section: 600; /* semibold — section heading     */
+  --fw-title-sub:     600; /* semibold — confirmed in comps  */
+  --fw-body-lg:       400; /* regular  — prose, overridden   */
+  --fw-body-md:       500; /* medium   — confirmed in comps  */
+  --fw-body-sm:       500; /* medium   — confirmed in comps  */
+  --fw-label-xs:      500; /* medium   — confirmed in comps  */
+  --fw-label-micro:   500; /* medium   — confirmed in comps  */
 }
+
+/* ============================================================
+   TYPOGRAPHY UTILITIES
+   Each class sets font-size + line-height + default font-weight.
+   Override weight freely: add font-semibold / font-bold etc.
+   ============================================================ */
+
+@utility text-display-sm {
+  font-size:   var(--text-display-sm);
+  line-height: var(--text-display-sm--line-height);
+  font-weight: var(--fw-display-sm);
+}
+
+@utility text-title-page {
+  font-size:   var(--text-title-page);
+  line-height: var(--text-title-page--line-height);
+  font-weight: var(--fw-title-page);
+}
+
+@utility text-title-section {
+  font-size:   var(--text-title-section);
+  line-height: var(--text-title-section--line-height);
+  font-weight: var(--fw-title-section);
+}
+
+@utility text-title-sub {
+  font-size:   var(--text-title-sub);
+  line-height: var(--text-title-sub--line-height);
+  font-weight: var(--fw-title-sub);
+}
+
+@utility text-body-lg {
+  font-size:   var(--text-body-lg);
+  line-height: var(--text-body-lg--line-height);
+  font-weight: var(--fw-body-lg);
+}
+
+@utility text-body-md {
+  font-size:   var(--text-body-md);
+  line-height: var(--text-body-md--line-height);
+  font-weight: var(--fw-body-md);
+}
+
+@utility text-body-sm {
+  font-size:   var(--text-body-sm);
+  line-height: var(--text-body-sm--line-height);
+  font-weight: var(--fw-body-sm);
+}
+
+@utility text-label-xs {
+  font-size:   var(--text-label-xs);
+  line-height: var(--text-label-xs--line-height);
+  font-weight: var(--fw-label-xs);
+}
+
+@utility text-label-micro {
+  font-size:   var(--text-label-micro);
+  line-height: var(--text-label-micro--line-height);
+  font-weight: var(--fw-label-micro);
+  /* 핵심: 컬러를 클래스가 아니라 변수로 제어합니다 */
+  color: var(--current-progress-color, currentColor);
+}
+
 
 /* ============================================================
    BASE STYLES

@@ -1,0 +1,7 @@
+{
+  "name": "Typography Variables Injector",
+  "id": "typography-variables-injector-seo-ds",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma"]
+}

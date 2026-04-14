@@ -119,16 +119,13 @@ export default function SearchVisibilityPage() {
 
   function handleSortToggle(column: SortKey) {
     if (sortBy !== column) {
+      // Switching to a new column: always start descending (largest / most-recent first)
       setSortBy(column)
-      setSortDirection("asc")
-      return
-    }
-    if (sortDirection === "asc") {
       setSortDirection("desc")
       return
     }
-    setSortBy("mentions")
-    setSortDirection("desc")
+    // Same column: simple toggle between desc ↔ asc
+    setSortDirection((prev) => (prev === "desc" ? "asc" : "desc"))
   }
 
   function handleToggleRow(id: number, checked: boolean) {
@@ -227,7 +224,7 @@ export default function SearchVisibilityPage() {
             <Button variant="ghost" size="sm" asChild className="gap-2 text-foreground-strong hover:bg-surface-hover/80 hover:text-foreground-strong">
               <Link href="/">
                 <ArrowLeft className="h-4 w-4" />
-                <span className="text-[14px] font-medium">Back to Dashboard</span>
+                <span className="text-body-lg font-medium">Back to Dashboard</span>
               </Link>
             </Button>
           </div>
@@ -239,7 +236,7 @@ export default function SearchVisibilityPage() {
             {/* Filter Bar */}
             <Card className="bg-surface-default/60">
               <CardHeader className="pb-3 px-5 pt-5">
-                <CardTitle className="text-[16px] font-semibold tracking-normal text-foreground-secondary">
+                <CardTitle className="text-title-sub font-semibold tracking-normal text-foreground-secondary">
                   Filters
                 </CardTitle>
               </CardHeader>
@@ -249,14 +246,14 @@ export default function SearchVisibilityPage() {
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-foreground-muted" />
                     <Select value={dateRange} onValueChange={setDateRange}>
-                      <SelectTrigger className="w-[160px] bg-surface-hover/50 border-border-secondary text-[14px]">
+                      <SelectTrigger className="w-[160px] bg-surface-hover/50 border-border-secondary text-body-lg">
                         <SelectValue placeholder="Select date range" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="7d" className="text-[14px]">Last 7 days</SelectItem>
-                        <SelectItem value="30d" className="text-[14px]">Last 30 days</SelectItem>
-                        <SelectItem value="90d" className="text-[14px]">Last 90 days</SelectItem>
-                        <SelectItem value="1y" className="text-[14px]">Last year</SelectItem>
+                        <SelectItem value="7d" className="text-body-lg">Last 7 days</SelectItem>
+                        <SelectItem value="30d" className="text-body-lg">Last 30 days</SelectItem>
+                        <SelectItem value="90d" className="text-body-lg">Last 90 days</SelectItem>
+                        <SelectItem value="1y" className="text-body-lg">Last year</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -265,16 +262,16 @@ export default function SearchVisibilityPage() {
                   <div className="flex items-center gap-2">
                     <Filter className="h-4 w-4 text-foreground-muted" />
                     <Select value={sourceFilter} onValueChange={setSourceFilter}>
-                      <SelectTrigger className="w-[180px] bg-surface-hover/50 border-border-secondary text-[14px]">
+                      <SelectTrigger className="w-[180px] bg-surface-hover/50 border-border-secondary text-body-lg">
                         <SelectValue placeholder="Select source" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all" className="text-[14px]">All Sources</SelectItem>
-                        <SelectItem value="ChatGPT" className="text-[14px]">ChatGPT</SelectItem>
-                        <SelectItem value="Claude" className="text-[14px]">Claude</SelectItem>
-                        <SelectItem value="Perplexity" className="text-[14px]">Perplexity</SelectItem>
-                        <SelectItem value="Google AI" className="text-[14px]">Google AI</SelectItem>
-                        <SelectItem value="Copilot" className="text-[14px]">Copilot</SelectItem>
+                        <SelectItem value="all" className="text-body-lg">All Sources</SelectItem>
+                        <SelectItem value="ChatGPT" className="text-body-lg">ChatGPT</SelectItem>
+                        <SelectItem value="Claude" className="text-body-lg">Claude</SelectItem>
+                        <SelectItem value="Perplexity" className="text-body-lg">Perplexity</SelectItem>
+                        <SelectItem value="Google AI" className="text-body-lg">Google AI</SelectItem>
+                        <SelectItem value="Copilot" className="text-body-lg">Copilot</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -287,7 +284,7 @@ export default function SearchVisibilityPage() {
                       placeholder="Search by source or page..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 bg-surface-hover/50 border-border-secondary text-[14px] placeholder:text-border-primary"
+                      className="pl-10 bg-surface-hover/50 border-border-secondary text-body-lg placeholder:text-border-primary"
                     />
                   </div>
                 </div>
@@ -316,11 +313,11 @@ export default function SearchVisibilityPage() {
                   }}
                   headerAction={
                     <div className="flex items-center gap-3">
-                      <span className="text-[14px] font-medium tabular-nums text-foreground-tertiary">
+                      <span className="text-body-lg font-medium tabular-nums text-foreground-tertiary">
                         {`${filteredCitations.length} citations`}
                       </span>
                       {selectedRows.size > 0 && (
-                        <span className="text-[13px] font-medium text-positive-soft">
+                        <span className="text-body-sm font-medium text-positive-soft">
                           {selectedRows.size} items selected
                         </span>
                       )}

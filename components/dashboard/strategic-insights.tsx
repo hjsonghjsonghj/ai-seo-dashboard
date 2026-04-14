@@ -1,7 +1,8 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { AlertTriangle, Rocket, Zap, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -41,22 +42,26 @@ const insights = [
   },
 ]
 
+// Maps data type → Badge semantic variant
+const badgeVariantMap = {
+  critical: "danger",
+  opportunity: "positive",
+  optimization: "caution",
+} as const
+
 const typeStyles = {
   critical: {
     bg: "bg-surface-default/60 hover:bg-surface-hover/80",
-    badge: "bg-danger-default/15 text-danger-soft",
     button: "bg-danger-default hover:bg-danger-deep text-foreground-strong focus-visible:ring-danger-default",
     icon: "bg-danger-default/15 text-danger-soft",
   },
   opportunity: {
     bg: "bg-surface-default/60 hover:bg-surface-hover/80",
-    badge: "bg-brand-default/15 text-brand-soft",
     button: "bg-brand-default hover:bg-brand-deep text-foreground-strong focus-visible:ring-brand",
     icon: "bg-brand-default/15 text-brand-soft",
   },
   optimization: {
     bg: "bg-surface-default/60 hover:bg-surface-hover/80",
-    badge: "bg-caution-default/15 text-caution-default",
     button: "bg-caution-default hover:bg-caution-default/90 text-foreground-strong focus-visible:ring-caution-default",
     icon: "bg-caution-default/15 text-caution-default",
   },
@@ -76,7 +81,7 @@ export function StrategicInsights() {
           >
             AI-Generated Strategic Insights
           </h2>
-          <p className="text-[13px] font-medium tracking-normal text-foreground-tertiary">
+          <p className="text-body-sm font-medium tracking-normal text-foreground-tertiary">
             Actionable recommendations powered by Intelligence
           </p>
         </div>
@@ -103,20 +108,20 @@ export function StrategicInsights() {
                     <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", styles.icon)} aria-hidden="true">
                       <Icon className="h-4 w-4" />
                     </div>
-                    <div>
-                      <CardTitle className="text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
-                        {insight.title}
-                      </CardTitle>
-                    </div>
+                    {/* Solution B: CardTitle 대신 <p> 직접 사용.
+                        CardTitle(div)은 cn()으로 leading-none/font-semibold를 주입하므로
+                        tailwind-merge가 text-body-sm을 text-color 그룹으로 오분류해 삭제함.
+                        의미상으로도 insight.headline(h3)이 실제 카드 제목이므로 이 레이블은 <p>가 적절. */}
+                    <p className="text-body-sm font-semibold uppercase tracking-wide text-foreground-tertiary leading-none">
+                      {insight.title}
+                    </p>
                   </div>
-                  <span
-                    className={cn(
-                      "shrink-0 rounded-full px-2 py-0.5 text-[12px] font-semibold uppercase tracking-normal",
-                      styles.badge
-                    )}
+                  <Badge
+                    variant={badgeVariantMap[insight.type]}
+                    className="shrink-0 tracking-normal"
                   >
                     {insight.priority}
-                  </span>
+                  </Badge>
                 </div>
               </CardHeader>
               <CardContent className="flex flex-col flex-1 px-5 pb-5 pt-0">
@@ -127,7 +132,7 @@ export function StrategicInsights() {
                   >
                     {insight.headline}
                   </h3>
-                  <p className="text-[13px] font-medium leading-relaxed tracking-normal text-foreground-tertiary">
+                  <p className="text-body-sm font-medium tracking-normal text-foreground-tertiary">
                     {insight.description}
                   </p>
                 </div>

@@ -9,6 +9,7 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
+        // ── General-purpose variants ──────────────────────────
         default:
           'border-transparent bg-primary-default text-foreground-strong [a&]:hover:bg-primary-default/90',
         secondary:
@@ -17,6 +18,14 @@ const badgeVariants = cva(
           'border-transparent bg-danger-soft text-foreground-strong [a&]:hover:bg-danger-soft/90 focus-visible:ring-danger-soft/20 dark:focus-visible:ring-danger-soft/40 dark:bg-danger-soft/60',
         outline:
           'text-foreground-primary [a&]:hover:bg-brand-default [a&]:hover:text-foreground-strong',
+        // ── Semantic status variants (pill · bold · uppercase) ─
+        // rounded-full / font-bold / uppercase override the base rounded-md / font-medium
+        danger:
+          'border-transparent bg-danger-default/15 text-danger-soft rounded-full font-bold uppercase',
+        positive:
+          'border-transparent bg-brand-default/15 text-brand-soft rounded-full font-bold uppercase',
+        caution:
+          'border-transparent bg-caution-default/15 text-caution-default rounded-full font-bold uppercase',
       },
     },
     defaultVariants: {

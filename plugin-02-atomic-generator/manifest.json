@@ -1,0 +1,12 @@
+{
+  "name": "Atomic Component Generator",
+  "id": "atomic-component-generator-v2",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": [
+    "figma"
+  ],
+  "capabilities": [],
+  "enableProposedApi": true
+}

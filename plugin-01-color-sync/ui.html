@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-size: 12px;
+      background: #1e1e1e;
+      color: #e2e8f0;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .status-bar {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      font-size: 12px;
+      color: #a78bfa;
+      font-weight: 500;
+    }
+
+    .debug-section {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+
+    .debug-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stat-item {
+      background: #1e293b;
+      padding: 8px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: #a78bfa;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .loss-item {
+      background: #450a0a;
+      border: 1px solid #7f1d1d;
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 6px;
+      font-size: 11px;
+    }
+
+    .loss-node {
+      color: #fca5a5;
+      font-weight: 500;
+    }
+
+    .loss-details {
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .opacity-value {
+      color: #34d399;
+      font-weight: 600;
+    }
+
+    .export-btn {
+      background: #059669;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-size: 11px;
+      padding: 6px 12px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .export-btn:hover {
+      background: #047857;
+    }
+
+    .info-box {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    .info-box strong {
+      color: #cbd5e1;
+    }
+
+    /* Presets */
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .preset-btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #e2e8f0;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .preset-btn:hover {
+      background: #334155;
+      border-color: #475569;
+    }
+
+    .preset-btn.active {
+      background: #4c1d95;
+      border-color: #7c3aed;
+      color: #c4b5fd;
+    }
+
+    /* Custom input */
+    .custom-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .custom-label {
+      color: #94a3b8;
+      min-width: 48px;
+    }
+
+    .custom-input {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #e2e8f0;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 10px;
+      outline: none;
+      text-align: center;
+    }
+
+    .custom-input:focus {
+      border-color: #7c3aed;
+    }
+
+    .custom-unit {
+      color: #64748b;
+    }
+
+    /* Apply button */
+    .apply-btn {
+      width: 100%;
+      background: #7c3aed;
+      border: none;
+      border-radius: 8px;
+      color: #f8fafc;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-bottom: 8px;
+    }
+
+    .apply-btn:hover {
+      background: #6d28d9;
+    }
+
+    .apply-btn:active {
+      background: #5b21b6;
+    }
+
+    .close-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #64748b;
+      font-size: 12px;
+      padding: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .close-btn:hover {
+      border-color: #475569;
+      color: #94a3b8;
+    }
+
+    .result-msg {
+      font-size: 11px;
+      color: #34d399;
+      text-align: center;
+      min-height: 16px;
+      margin-bottom: 8px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #1e293b;
+      margin: 14px 0;
+    }
+
+    /* Common use-cases reference */
+    .ref-list {
+      list-style: none;
+    }
+
+    .ref-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 3px 0;
+      border-bottom: 1px solid #1e293b;
+      color: #94a3b8;
+      font-size: 11px;
+    }
+
+    .ref-list li:last-child {
+      border-bottom: none;
+    }
+
+    .ref-list .token {
+      color: #a78bfa;
+      font-weight: 500;
+    }
+
+    .ref-list .pct {
+      color: #34d399;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="status-bar" id="status">⚙️ 변수 바인딩 완료 (opacity 자동 보존)</div>
+
+  <div class="section-title">디버그 리포트</div>
+  <div class="debug-section">
+    <div class="debug-stats">
+      <div class="stat-item">
+        <div class="stat-value" id="total-nodes">0</div>
+        <div class="stat-label">전체 노드</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="total-bindings">0</div>
+        <div class="stat-label">바인딩된 속성</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="opacity-losses">0</div>
+        <div class="stat-label">Opacity 손실</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="success-rate">0%</div>
+        <div class="stat-label">성공률</div>
+      </div>
+    </div>
+
+    <div class="restore-status" id="restore-status" style="display: none;">
+      ✅ <span id="restore-count-text">0개</span> opacity 자동 복원됨
+    </div>
+
+    <div id="opacity-loss-list"></div>
+    <button class="export-btn" id="export-debug">전체 디버그 데이터 내보내기</button>
+    <button class="export-btn" id="manual-restore" style="background: #7c3aed; margin-left: 8px;">수동 복원 실행</button>
+  </div>
+
+  <hr class="divider" />
+
+  <div class="section-title">Opacity 적용</div>
+
+  <div class="presets-grid">
+    <button class="preset-btn" data-val="0.15">15%</button>
+    <button class="preset-btn" data-val="0.30">30%</button>
+    <button class="preset-btn" data-val="0.50">50%</button>
+    <button class="preset-btn" data-val="0.60">60%</button>
+    <button class="preset-btn" data-val="0.80">80%</button>
+    <button class="preset-btn" data-val="0.95">95%</button>
+    <button class="preset-btn" data-val="1.00">100%</button>
+    <button class="preset-btn" data-val="0.05">5%</button>
+  </div>
+
+  <div class="custom-row">
+    <span class="custom-label">직접 입력</span>
+    <input class="custom-input" id="custom-val" type="number" min="1" max="100" value="60" />
+    <span class="custom-unit">%</span>
+  </div>
+
+  <div class="result-msg" id="result-msg"></div>
+
+  <button class="apply-btn" id="apply-btn">선택한 노드에 적용</button>
+  <button class="close-btn" id="close-btn">닫기</button>
+
+  <script>
+    let selectedOpacity = 0.60;
+
+    // preset 버튼
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const val = parseFloat(btn.dataset.val);
+        selectedOpacity = val;
+        document.getElementById('custom-val').value = Math.round(val * 100);
+      });
+    });
+
+    // 기본 선택 (60%)
+    document.querySelector('[data-val="0.60"]').classList.add('active');
+
+    // 직접 입력
+    document.getElementById('custom-val').addEventListener('input', (e) => {
+      const pct = Math.min(100, Math.max(1, parseInt(e.target.value) || 60));
+      selectedOpacity = pct / 100;
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      const match = document.querySelector(`[data-val="${selectedOpacity.toFixed(2)}"]`);
+      if (match) match.classList.add('active');
+    });
+
+    // 적용 버튼
+    document.getElementById('apply-btn').addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'apply-opacity', opacity: selectedOpacity } }, '*');
+    });
+
+    // 닫기
+    document.getElementById('close-btn').addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'close' } }, '*');
+    });
+
+    // 플러그인으로부터 메시지 수신
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (!msg) return;
+
+      if (msg.type === 'bound-count') {
+        document.getElementById('status').textContent =
+          '✅ 변수 바인딩 ' + msg.count + '개 완료 · opacity 자동 보존';
+      }
+
+      if (msg.type === 'debug-data') {
+        updateDebugDisplay(msg.data);
+      }
+
+      if (msg.type === 'debug-export') {
+        downloadDebugData(msg.data);
+      }
+
+      if (msg.type === 'restore-count') {
+        const restoreStatus = document.getElementById('restore-status');
+        const restoreCountText = document.getElementById('restore-count-text');
+        restoreCountText.textContent = msg.count + '개';
+        restoreStatus.style.display = 'block';
+      }
+
+      if (msg.type === 'restore-result') {
+        const restoreStatus = document.getElementById('restore-status');
+        const restoreCountText = document.getElementById('restore-count-text');
+        restoreCountText.textContent = msg.count + '개';
+        restoreStatus.style.display = 'block';
+        // 3초 후 숨김
+        setTimeout(() => {
+          restoreStatus.style.display = 'none';
+        }, 3000);
+      }
+
+      if (msg.type === 'apply-result') {
+        const pct = Math.round(msg.opacity * 100);
+        const el = document.getElementById('result-msg');
+        el.textContent = msg.count + '개 fill에 ' + pct + '% 적용됨';
+        setTimeout(() => { el.textContent = ''; }, 3000);
+      }
+    };
+
+    function updateDebugDisplay(data) {
+      // 통계 업데이트
+      document.getElementById('total-nodes').textContent = data.totalNodes || 0;
+      document.getElementById('total-bindings').textContent = (data.bindings || []).length;
+      document.getElementById('opacity-losses').textContent = (data.opacityLosses || []).length;
+
+      const successRate = data.bindings && data.bindings.length > 0
+        ? Math.round((1 - data.opacityLosses.length / data.bindings.length) * 100)
+        : 100;
+      document.getElementById('success-rate').textContent = successRate + '%';
+
+      // Opacity 손실 목록 업데이트
+      const lossList = document.getElementById('opacity-loss-list');
+      if (data.opacityLosses && data.opacityLosses.length > 0) {
+        lossList.innerHTML = '<div class="section-title" style="margin-top: 12px;">Opacity 손실 상세</div>' +
+          data.opacityLosses.slice(0, 5).map(loss =>
+            `<div class="loss-item">
+            <div class="loss-node">${loss.nodeName} (${loss.nodeType})</div>
+            <div class="loss-details">
+              변수: ${loss.variableName}<br>
+              예상: <span class="opacity-value">${Math.round(loss.expectedOpacity * 100)}%</span> → 
+              실제: <span class="opacity-value">${Math.round((loss.after.opacity || 1) * 100)}%</span>
+            </div>
+          </div>`
+          ).join('') +
+          (data.opacityLosses.length > 5 ? `<div style="color: #64748b; font-size: 10px; margin-top: 4px;">...외 ${data.opacityLosses.length - 5}개</div>` : '');
+      } else {
+        lossList.innerHTML = '<div style="color: #34d399; font-size: 11px; margin-top: 8px;">✅ Opacity 손실 없음</div>';
+      }
+    }
+
+    function downloadDebugData(data) {
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `figma-debug-${new Date().toISOString().slice(0, 19)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // 내보내기 버튼
+    document.getElementById('export-debug').addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'export-debug' } }, '*');
+    });
+
+    // 수동 복원 버튼
+    document.getElementById('manual-restore').addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'manual-restore' } }, '*');
+    });
+  </script>
+</body>
+
+</html>

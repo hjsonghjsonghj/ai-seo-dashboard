@@ -14,31 +14,31 @@ export function CitationsDetailTableSkeleton({ rows = 25 }: { rows?: number }) {
       <div className="mb-3 h-6 w-56 animate-pulse rounded bg-surface-hover/70" />
 
       <div className="overflow-hidden rounded-lg border border-border-secondary/50">
-        <table className="w-full">
+        <table className="w-full border-separate border-spacing-0">
           <thead>
             <tr className="border-b border-border-secondary/50 bg-surface-default/30">
               <th className="w-10 px-3 py-3 text-center">
                 <ShimmerBlock className="mx-auto h-4 w-4 rounded border border-border-primary bg-surface-hover/30" />
               </th>
-              <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
+              <th className="px-4 py-3 text-center text-label-xs font-semibold uppercase tracking-wide text-foreground-tertiary">
                 <ShimmerBlock className="mx-auto h-4 w-20 rounded bg-surface-hover/35" />
               </th>
-              <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
+              <th className="px-4 py-3 text-center text-label-xs font-semibold uppercase tracking-wide text-foreground-tertiary">
                 <ShimmerBlock className="mx-auto h-4 w-16 rounded bg-surface-hover/35" />
               </th>
-              <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
+              <th className="px-4 py-3 text-center text-label-xs font-semibold uppercase tracking-wide text-foreground-tertiary">
                 <ShimmerBlock className="mx-auto h-4 w-24 rounded bg-surface-hover/35" />
               </th>
-              <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
+              <th className="px-4 py-3 text-center text-label-xs font-semibold uppercase tracking-wide text-foreground-tertiary">
                 <ShimmerBlock className="mx-auto h-4 w-14 rounded bg-surface-hover/35" />
               </th>
-              <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
+              <th className="px-4 py-3 text-center text-label-xs font-semibold uppercase tracking-wide text-foreground-tertiary">
                 <ShimmerBlock className="mx-auto h-4 w-28 rounded bg-surface-hover/35" />
               </th>
-              <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
+              <th className="px-4 py-3 text-center text-label-xs font-semibold uppercase tracking-wide text-foreground-tertiary">
                 <ShimmerBlock className="mx-auto h-4 w-24 rounded bg-surface-hover/35" />
               </th>
-              <th className="px-4 py-3 text-center text-[13px] font-semibold uppercase tracking-wide text-foreground-tertiary">
+              <th className="px-4 py-3 text-center text-label-xs font-semibold uppercase tracking-wide text-foreground-tertiary">
                 <ShimmerBlock className="mx-auto h-4 w-28 rounded bg-surface-hover/35" />
               </th>
             </tr>
@@ -63,7 +63,7 @@ export function CitationsDetailTableSkeleton({ rows = 25 }: { rows?: number }) {
                   <ShimmerBlock className="mx-auto h-4 w-4 rounded-full bg-surface-hover/35" />
                 </td>
                 <td className="px-4 py-2.5">
-                  <ShimmerBlock className="h-4 w-20 rounded bg-surface-hover/35" />
+                  <ShimmerBlock className="mx-auto h-6 w-6 rounded-full bg-surface-hover/35" />
                 </td>
                 <td className="px-4 py-2.5">
                   <ShimmerBlock className="h-4 w-24 rounded bg-surface-hover/35" />

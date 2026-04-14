@@ -47,16 +47,16 @@ function CustomTooltip({
 
   return (
     <div className="rounded-lg border border-border-secondary bg-surface-default/95 p-4 shadow-xl" role="tooltip">
-      <p className="mb-2 text-[14px] font-semibold tracking-normal text-foreground-strong">{label}</p>
+      <p className="mb-2 text-body-lg font-semibold tracking-normal text-foreground-strong">{label}</p>
       {eventItem?.event && (
         <div className="mb-2 flex items-center gap-1.5 rounded bg-brand-default/15 px-2 py-1">
           <div className="h-1.5 w-1.5 rounded-full bg-brand-soft" aria-hidden="true" />
-          <span className="text-[13px] font-medium tracking-normal text-brand-faint">{eventItem.event}</span>
+          <span className="text-body-sm font-medium tracking-normal text-brand-faint">{eventItem.event}</span>
         </div>
       )}
       <div className="space-y-1.5">
         {payload.map((entry) => (
-          <div key={entry.name} className="flex items-center gap-2 text-[13px]">
+          <div key={entry.name} className="flex items-center gap-2 text-body-sm">
             <div
               className="h-2 w-2 rounded-full"
               style={{ backgroundColor: entry.color }}
@@ -106,22 +106,22 @@ export function TrendsChart() {
           <CardTitle className="text-lg font-semibold tracking-normal text-foreground-strong">
             Search Visibility Trends
           </CardTitle>
-          <p className="text-[13px] font-medium tracking-normal text-foreground-tertiary mt-1">
+          <p className="text-body-sm font-medium tracking-normal text-foreground-tertiary mt-1">
             Monthly performance with AI event markers
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-4" role="list" aria-label="Chart legend">
           <div className="flex items-center gap-2" role="listitem">
             <div className="h-2 w-2 rounded-full bg-brand-default" aria-hidden="true" />
-            <span className="text-[13px] font-medium tracking-normal text-foreground-secondary">AI Discovery</span>
+            <span className="text-body-sm font-medium tracking-normal text-foreground-secondary">AI Discovery</span>
           </div>
           <div className="flex items-center gap-2" role="listitem">
             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: chartColors.organicSearch }} aria-hidden="true" />
-            <span className="text-[13px] font-medium tracking-normal text-foreground-secondary">Organic Search</span>
+            <span className="text-body-sm font-medium tracking-normal text-foreground-secondary">Organic Search</span>
           </div>
           <div className="flex items-center gap-2" role="listitem">
             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: chartColors.citations }} aria-hidden="true" />
-            <span className="text-[13px] font-medium tracking-normal text-foreground-secondary">Citations</span>
+            <span className="text-body-sm font-medium tracking-normal text-foreground-secondary">Citations</span>
           </div>
         </div>
       </CardHeader>
