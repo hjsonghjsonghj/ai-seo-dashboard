@@ -92,10 +92,10 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
                         <Share2 className="size-4" />
                     </button>
                     <SheetHeader className="px-6 pt-6">
-                        <SheetTitle className="text-title-sub font-semibold tracking-normal text-foreground-strong">
+                        <SheetTitle className="text-title-sub-semibold text-foreground-strong">
                             {selectedCitation.source}
                         </SheetTitle>
-                        <SheetDescription className="text-body-lg font-medium tracking-normal text-foreground-muted">
+                        <SheetDescription className="text-body-md-regular font-medium text-foreground-muted">
                             {selectedCitation.page}
                         </SheetDescription>
                     </SheetHeader>
@@ -103,7 +103,7 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
                     <div className="px-6 py-6 space-y-8">
                         {/* Optimization Checklist */}
                         <div className="space-y-4">
-                            <h3 className="text-body-lg font-semibold tracking-normal text-foreground-strong">
+                            <h3 className="text-body-md-regular font-semibold text-foreground-strong">
                                 Optimization Checklist
                             </h3>
                             <div className="space-y-3">
@@ -116,7 +116,7 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
                                             )}
                                         />
                                         <span className={cn(
-                                            "text-body-lg font-medium tracking-normal",
+                                            "text-body-md-regular font-medium",
                                             item.done ? "text-foreground-tertiary" : "text-border-primary"
                                         )}>
                                             {item.text}
@@ -128,34 +128,34 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
 
                         {/* AI Context */}
                         <div className="space-y-4">
-                            <h3 className="text-body-lg font-semibold tracking-normal text-foreground-strong">
+                            <h3 className="text-body-md-regular font-semibold text-foreground-strong">
                                 AI Context
                             </h3>
-                            <p className="text-body-lg font-medium tracking-normal text-foreground-muted">
+                            <p className="text-body-md-regular font-medium text-foreground-muted">
                                 {selectedCitation.aiContext}
                             </p>
                         </div>
 
                         {/* Current Stats */}
                         <div className="space-y-4">
-                            <h3 className="text-body-lg font-semibold tracking-normal text-foreground-strong">
+                            <h3 className="text-body-md-regular font-semibold text-foreground-strong">
                                 Current Stats
                             </h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="rounded-lg border border-border-secondary/50 bg-surface-hover/50 p-4">
-                                    <p className="text-label-xs font-medium uppercase tracking-wide text-border-primary" style={{ letterSpacing: '0.01em' }}>
+                                    <p className="text-label-xs-caps-medium text-border-primary">
                                         Mentions
                                     </p>
-                                    <p className="text-title-sub font-semibold tabular-nums text-foreground-strong mt-1">
+                                    <p className="text-title-sub-semibold tabular-nums text-foreground-strong mt-1">
                                         {selectedCitation.mentions.toLocaleString()}
                                     </p>
                                 </div>
                                 <div className="rounded-lg border border-border-secondary/50 bg-surface-hover/50 p-4">
-                                    <p className="text-label-xs font-medium uppercase tracking-wide text-border-primary" style={{ letterSpacing: '0.01em' }}>
+                                    <p className="text-label-xs-caps-medium text-border-primary">
                                         Optimization
                                     </p>
                                     <p className={cn(
-                                        "text-title-sub font-semibold tabular-nums mt-1",
+                                        "text-title-sub-semibold tabular-nums mt-1",
                                         selectedCitation.optimizationProgress >= 75 ? "text-positive-default" :
                                             selectedCitation.optimizationProgress >= 40 ? "text-caution-default" : "text-danger-soft"
                                     )}>
@@ -168,7 +168,7 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
 
                     <SheetFooter className="px-6 pb-6 flex-col gap-3 sm:flex-col">
                         <Button
-                            className="w-full gap-2 bg-brand-deep hover:bg-brand-deep/80 text-foreground-strong text-body-lg font-semibold"
+                            className="w-full gap-2 bg-brand-deep hover:bg-brand-deep/80 text-foreground-strong text-body-md-regular font-semibold"
                             onClick={handlePrint}
                         >
                             <Download className="h-4 w-4" />
@@ -176,7 +176,7 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
                         </Button>
                         <Button
                             variant="outline"
-                            className="w-full gap-2 border-border-secondary bg-surface-hover/50 text-foreground-tertiary hover:bg-surface-hover hover:text-foreground-primary text-body-lg font-semibold"
+                            className="w-full gap-2 border-border-secondary bg-surface-hover/50 text-foreground-tertiary hover:bg-surface-hover hover:text-foreground-primary text-body-md-regular font-semibold"
                             onClick={() => onResolve?.(selectedCitation)}
                         >
                             <CheckCircle2 className="h-4 w-4" />

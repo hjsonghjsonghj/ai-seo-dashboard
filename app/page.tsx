@@ -71,7 +71,7 @@ export default function DashboardPage() {
 
 
         <main className="px-4 pt-2 pb-4 md:px-6 md:pt-2 md:pb-6">
-          <div className="mx-auto max-w-[1600px] space-y-4 md:space-y-6">
+          <div className="mx-auto max-w-container space-y-4 md:space-y-6">
             {/* Stats Row */}
             <StatCards />
 

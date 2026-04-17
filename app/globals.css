@@ -8,21 +8,33 @@
    Used by components that reference var(--xxx) directly via JS.
    ============================================================ */
 :root {
-  /* Chart — accessed via JS getPropertyValue() in trends-chart.tsx */
-  --chart-1: #8b5cf6;
-  /* violet-500 */
-  --chart-2: #10b981;
-  /* emerald-500 */
-  --chart-4: #60a5fa;
-  /* blue-400 */
-  --chart-grid-line: #334155;
-  /* slate-700 */
-  --chart-axis-text: #94a3b8;
-  /* slate-400 */
-  --chart-reference-line: #7c3aed;
-  /* violet-600 */
-  --chart-label: #a78bfa;
-  /* violet-400 */
+  /* ── Chart Colors — read via JS getPropertyValue() in trends-chart.tsx ── */
+  --chart-1: #8b5cf6;              /* violet-500  — AI Discovery area   */
+  --chart-2: #10b981;              /* emerald-500 — Organic Search area  */
+  --chart-4: #60a5fa;              /* blue-400    — Citations area       */
+  --chart-grid-line: #334155;      /* slate-700   — CartesianGrid stroke */
+  --chart-axis-text: #94a3b8;      /* slate-400   — XAxis / YAxis fills  */
+  --chart-reference-line: #7c3aed; /* violet-600  — ReferenceLine stroke */
+  --chart-label: #a78bfa;          /* violet-400  — ReferenceLine labels */
+
+  /* ── Chart Typography — single source of truth for all chart text ──────
+     Change any value here to restyle that layer across every chart.
+     SVG props read these via style={{ fontSize: 'var(--chart-...)' }};
+     Tailwind utilities (text-chart-axis etc.) are wired to these in @theme. */
+
+  /* Axis ticks  (XAxis / YAxis) */
+  --chart-axis-font-size:   12px;
+  --chart-axis-font-weight: 400;   /* Regular — compact label, low visual weight */
+
+  /* Reference-line event labels */
+  --chart-label-font-size:        12px;
+  --chart-label-font-weight:      500;   /* Medium  — slightly heavier than axis   */
+  --chart-label-letter-spacing:   0.01em;
+
+  /* Tooltip container baseline */
+  --chart-tooltip-font-size:         12px;
+  --chart-tooltip-label-font-weight: 500; /* Medium — metric name in tooltip row  */
+  --chart-tooltip-value-font-weight: 500; /* Medium — numeric value in tooltip row */
 }
 
 /* ============================================================
@@ -33,6 +45,7 @@
 @theme {
   --font-sans: var(--font-sans), 'Geist', system-ui, sans-serif;
   --font-mono: var(--font-mono), 'Geist Mono', ui-monospace, monospace;
+  --font-family-base: "Geist", sans-serif;  /* typography utility binding token */
 
   /* ── Base ─────────────────────────────────────────────────── */
   --color-background: #020617;
@@ -120,15 +133,16 @@
   --text-title-sub: 16px;
   --text-title-sub--line-height: 1.5;
 
-  --text-body-lg: 16px;
-  --text-body-lg--line-height: 1.5;
+  --text-body-md: 16px;
+  --text-body-md--line-height: 1.5;
+  /* 24px computed */
 
-  --text-body-md: 14px;
-  --text-body-md--line-height: 1.428;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.428;
   /* ≈ 20px computed */
 
-  --text-body-sm: 13px;
-  --text-body-sm--line-height: 1.385;
+  --text-body-micro: 13px;
+  --text-body-micro--line-height: 1.385;
   /* ≈ 18px computed */
 
   --text-label-xs: 12px;
@@ -138,81 +152,193 @@
   --text-label-micro: 11px;
   --text-label-micro--line-height: 1;
 
-  /* ── Semantic Font Weight Scale ─────────────────────────── */
-  /* Default weight per text style — override freely with     */
-  /* font-semibold / font-medium etc. in component classes.   */
-  /* Primitives: regular=400  medium=500  semibold=600        */
-  --fw-display-sm:    600; /* semibold — large heading       */
-  --fw-title-page:    600; /* semibold — page-level heading  */
-  --fw-title-section: 600; /* semibold — section heading     */
-  --fw-title-sub:     600; /* semibold — confirmed in comps  */
-  --fw-body-lg:       400; /* regular  — prose, overridden   */
-  --fw-body-md:       500; /* medium   — confirmed in comps  */
-  --fw-body-sm:       500; /* medium   — confirmed in comps  */
-  --fw-label-xs:      500; /* medium   — confirmed in comps  */
-  --fw-label-micro:   500; /* medium   — confirmed in comps  */
+  /* ── Explicit Font Weight Scale — name encodes both token and weight ──── */
+  /* Each variable is named --fw-{token}-{weight-name} so it's              */
+  /* unambiguous which utility it belongs to and what weight it sets.        */
+  /* Primitives: regular=400  medium=500  semibold=600  bold=700             */
+  --fw-display-sm-semibold:      600; /* display-sm default — large heading        */
+  --fw-display-sm-bold:          700; /* display-sm KPI variant — stat numbers     */
+  --fw-title-page-semibold:      600; /* page-level heading                        */
+  --fw-title-section-semibold:   600; /* section heading                           */
+  --fw-title-sub-semibold:       600; /* sub-section heading                       */
+  --fw-body-md-regular:          400; /* body prose — 16px                         */
+  --fw-body-md-medium:           500; /* body interactive — 16px                   */
+  --fw-body-sm-medium:           500; /* small body — 14px                         */
+  --fw-body-micro-medium:        500; /* micro body — 13px                         */
+  --fw-body-micro-bold:          700; /* micro body emphasis — 13px                */
+  --fw-label-xs-medium:          500; /* xs label — confirmed in comps             */
+  --fw-label-micro-medium:       500; /* micro label — confirmed in comps          */
+  /* ── Caps variants — uppercase labels with 0.01em letter-spacing ─────── */
+  --fw-label-xs-caps-medium:     500; /* stat cell labels (drawer)                 */
+  --fw-label-xs-caps-semibold:   600; /* table column headers                      */
+  --fw-body-micro-caps-semibold: 600; /* insight card type labels                  */
+
+  /* ── Letter-Spacing Scale ────────────────────────────────────── */
+  /* Baked into every @utility so components never need tracking-*. */
+  --ls-normal: normal;  /* default — lets font use its built-in kerning      */
+  --ls-caps:   0.01em;  /* uppercase labels — subtle, professional tracking  */
+
+  /* ── Chart Typography — Tailwind utilities wired to :root vars ──────────
+     Generates:  text-chart-axis      → font-size + line-height for axis ticks
+                 text-chart-tooltip   → font-size + line-height for tooltip body
+                 font-chart-label     → font-weight for tooltip metric names
+                 font-chart-value     → font-weight for tooltip numeric values
+     All values cascade from :root chart variables — edit there, not here.  */
+  --text-chart-axis:                 var(--chart-axis-font-size);
+  --text-chart-axis--line-height:    1.333; /* 16 / 12 */
+
+  --text-chart-tooltip:              var(--chart-tooltip-font-size);
+  --text-chart-tooltip--line-height: 1.333;
+
+  --font-weight-chart-label:  var(--chart-tooltip-label-font-weight);
+  --font-weight-chart-value:  var(--chart-tooltip-value-font-weight);
+
+  /* ── Layout Spacing Tokens ─────────────────────────────────── */
+  /* Usage: max-w-container → max-width: 1600px (page container) */
+  --spacing-container: 1600px;
 }
 
 /* ============================================================
-   TYPOGRAPHY UTILITIES
-   Each class sets font-size + line-height + default font-weight.
-   Override weight freely: add font-semibold / font-bold etc.
+   TYPOGRAPHY UTILITIES — Fully Explicit Semantic Hierarchy
+   Every utility name encodes size token + weight.
+   Every utility bundles font-family + font-size + line-height
+   + font-weight + letter-spacing — no font-*, tracking-*, or
+   uppercase overrides needed anywhere in component JSX.
+
+   Pattern:  text-{size-token}-{weight}          → letter-spacing: normal (font default)
+             text-{size-token}-caps-{weight}      → letter-spacing: 0.01em + uppercase
    ============================================================ */
 
-@utility text-display-sm {
-  font-size:   var(--text-display-sm);
-  line-height: var(--text-display-sm--line-height);
-  font-weight: var(--fw-display-sm);
+/* ── Display scale ─────────────────────────────────────────── */
+@utility text-display-sm-semibold {
+  font-family:    var(--font-family-base);
+  font-size:      var(--text-display-sm);
+  line-height:    var(--text-display-sm--line-height);
+  font-weight:    var(--fw-display-sm-semibold);
+  letter-spacing: var(--ls-normal);
 }
 
-@utility text-title-page {
-  font-size:   var(--text-title-page);
-  line-height: var(--text-title-page--line-height);
-  font-weight: var(--fw-title-page);
+@utility text-display-sm-bold {
+  font-family:    var(--font-family-base);
+  font-size:      var(--text-display-sm);
+  line-height:    var(--text-display-sm--line-height);
+  font-weight:    var(--fw-display-sm-bold);
+  letter-spacing: var(--ls-normal);
 }
 
-@utility text-title-section {
-  font-size:   var(--text-title-section);
-  line-height: var(--text-title-section--line-height);
-  font-weight: var(--fw-title-section);
+/* ── Title scale ────────────────────────────────────────────── */
+@utility text-title-page-semibold {
+  font-family:    var(--font-family-base);
+  font-size:      var(--text-title-page);
+  line-height:    var(--text-title-page--line-height);
+  font-weight:    var(--fw-title-page-semibold);
+  letter-spacing: var(--ls-normal);
 }
 
-@utility text-title-sub {
-  font-size:   var(--text-title-sub);
-  line-height: var(--text-title-sub--line-height);
-  font-weight: var(--fw-title-sub);
+@utility text-title-section-semibold {
+  font-family:    var(--font-family-base);
+  font-size:      var(--text-title-section);
+  line-height:    var(--text-title-section--line-height);
+  font-weight:    var(--fw-title-section-semibold);
+  letter-spacing: var(--ls-normal);
 }
 
-@utility text-body-lg {
-  font-size:   var(--text-body-lg);
-  line-height: var(--text-body-lg--line-height);
-  font-weight: var(--fw-body-lg);
+@utility text-title-sub-semibold {
+  font-family:    var(--font-family-base);
+  font-size:      var(--text-title-sub);
+  line-height:    var(--text-title-sub--line-height);
+  font-weight:    var(--fw-title-sub-semibold);
+  letter-spacing: var(--ls-normal);
 }
 
-@utility text-body-md {
-  font-size:   var(--text-body-md);
-  line-height: var(--text-body-md--line-height);
-  font-weight: var(--fw-body-md);
+/* ── Body scale ─────────────────────────────────────────────── */
+@utility text-body-md-regular {
+  font-family:    var(--font-family-base);
+  font-size:      var(--text-body-md);
+  line-height:    var(--text-body-md--line-height);
+  font-weight:    var(--fw-body-md-regular);
+  letter-spacing: var(--ls-normal);
 }
 
-@utility text-body-sm {
-  font-size:   var(--text-body-sm);
-  line-height: var(--text-body-sm--line-height);
-  font-weight: var(--fw-body-sm);
+@utility text-body-md-medium {
+  font-family:    var(--font-family-base);
+  font-size:      var(--text-body-md);
+  line-height:    var(--text-body-md--line-height);
+  font-weight:    var(--fw-body-md-medium);
+  letter-spacing: var(--ls-normal);
 }
 
-@utility text-label-xs {
-  font-size:   var(--text-label-xs);
-  line-height: var(--text-label-xs--line-height);
-  font-weight: var(--fw-label-xs);
+@utility text-body-sm-medium {
+  font-family:    var(--font-family-base);
+  font-size:      var(--text-body-sm);
+  line-height:    var(--text-body-sm--line-height);
+  font-weight:    var(--fw-body-sm-medium);
+  letter-spacing: var(--ls-normal);
 }
 
-@utility text-label-micro {
-  font-size:   var(--text-label-micro);
-  line-height: var(--text-label-micro--line-height);
-  font-weight: var(--fw-label-micro);
-  /* 핵심: 컬러를 클래스가 아니라 변수로 제어합니다 */
+@utility text-body-micro-medium {
+  font-family:    var(--font-family-base);
+  font-size:      var(--text-body-micro);
+  line-height:    var(--text-body-micro--line-height);
+  font-weight:    var(--fw-body-micro-medium);
+  letter-spacing: var(--ls-normal);
+}
+
+@utility text-body-micro-bold {
+  font-family:    var(--font-family-base);
+  font-size:      var(--text-body-micro);
+  line-height:    var(--text-body-micro--line-height);
+  font-weight:    var(--fw-body-micro-bold);
+  letter-spacing: var(--ls-normal);
+}
+
+/* ── Label scale ────────────────────────────────────────────── */
+@utility text-label-xs-medium {
+  font-family:    var(--font-family-base);
+  font-size:      var(--text-label-xs);
+  line-height:    var(--text-label-xs--line-height);
+  font-weight:    var(--fw-label-xs-medium);
+  letter-spacing: var(--ls-normal);
+}
+
+@utility text-label-micro-medium {
+  font-family:    var(--font-family-base);
+  font-size:      var(--text-label-micro);
+  line-height:    var(--text-label-micro--line-height);
+  font-weight:    var(--fw-label-micro-medium);
+  letter-spacing: var(--ls-normal);
+  /* Color controlled via CSS variable — set by ProgressRing parent */
   color: var(--current-progress-color, currentColor);
+}
+
+/* ── Caps variants — ALL_CAPS uppercase labels ──────────────── */
+/* font-family, letter-spacing, and text-transform are baked in: */
+/* no tracking-*, uppercase, or font-family overrides in JSX.    */
+@utility text-label-xs-caps-medium {
+  font-family:    var(--font-family-base);
+  font-size:      var(--text-label-xs);
+  line-height:    var(--text-label-xs--line-height);
+  font-weight:    var(--fw-label-xs-caps-medium);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+@utility text-label-xs-caps-semibold {
+  font-family:    var(--font-family-base);
+  font-size:      var(--text-label-xs);
+  line-height:    var(--text-label-xs--line-height);
+  font-weight:    var(--fw-label-xs-caps-semibold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+@utility text-body-micro-caps-semibold {
+  font-family:    var(--font-family-base);
+  font-size:      var(--text-body-micro);
+  line-height:    var(--text-body-micro--line-height);
+  font-weight:    var(--fw-body-micro-caps-semibold);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
 }
 
 

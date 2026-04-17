@@ -161,7 +161,7 @@ function ProgressRing({ progress, size = 40 }: { progress: number; size?: number
         />
       </svg>
       <span
-        className="absolute text-label-micro leading-none font-black tabular-nums tracking-normal"
+        className="absolute text-label-micro-medium leading-none tabular-nums"
         style={{
           ["--current-progress-color" as any]: getProgressTextColor(progress)
         }}
@@ -185,11 +185,11 @@ function CitationCard({ citation, onReview }: { citation: any; onReview?: (c: an
         <ProgressRing progress={citation.optimizationProgress} size={44} />
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-label-micro font-semibold tracking-normal text-foreground-secondary">{citation.source}</span>
+            <span className="text-label-micro-medium font-semibold text-foreground-secondary">{citation.source}</span>
             <TrendIcon className={cn("h-3.5 w-3.5", trendColors[citation.trend])} />
           </div>
-          <p className="text-body-md font-medium tracking-normal text-foreground-tertiary truncate max-w-[140px]">{citation.page}</p>
-          <div className="flex items-center gap-2 text-body-md tracking-normal">
+          <p className="text-body-md-medium text-foreground-tertiary truncate max-w-[140px]">{citation.page}</p>
+          <div className="flex items-center gap-2 text-body-md-medium">
             <span suppressHydrationWarning className="font-semibold tabular-nums text-foreground-secondary">
               {citation.mentions.toLocaleString()}
             </span>
@@ -264,13 +264,13 @@ export function CitationsTableComponent({
       <CardHeader className="pb-3 px-5 pt-5">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-lg font-semibold tracking-normal text-foreground-secondary">{title}</CardTitle>
-            <p className="text-body-md font-medium tracking-normal text-foreground-tertiary mt-1">{description}</p>
+            <CardTitle className="text-title-section-semibold text-foreground-secondary">{title}</CardTitle>
+            <p className="text-body-md-medium text-foreground-tertiary mt-1">{description}</p>
           </div>
           <div className="flex items-center">
             {headerAction ? headerAction : (
               <Link href="/search-visibility">
-                <button className="flex items-center gap-1.5 rounded-lg border border-border-secondary bg-surface-hover/50 px-3 py-1.5 text-label-xs font-medium tracking-normal text-foreground-secondary transition-colors hover:bg-surface-hover">
+                <button className="flex items-center gap-1.5 rounded-lg border border-border-secondary bg-surface-hover/50 px-3 py-1.5 text-label-xs-medium text-foreground-secondary transition-colors hover:bg-surface-hover">
                   View all <ExternalLink className="h-3 w-3" />
                 </button>
               </Link>
@@ -292,9 +292,9 @@ export function CitationsTableComponent({
                     />
                   </th>
                 )}
-                <th className="px-4 py-3 text-center text-label-xs font-semibold uppercase tracking-wide text-foreground-tertiary">Source</th>
-                <th className="px-4 py-3 text-center text-label-xs font-semibold uppercase tracking-wide text-foreground-tertiary">Page</th>
-                <th className="px-4 py-3 text-center text-label-xs font-semibold uppercase tracking-wide text-foreground-tertiary">
+                <th className="px-4 py-3 text-center text-label-xs-caps-semibold text-foreground-tertiary">Source</th>
+                <th className="px-4 py-3 text-center text-label-xs-caps-semibold text-foreground-tertiary">Page</th>
+                <th className="px-4 py-3 text-center text-label-xs-caps-semibold text-foreground-tertiary">
                   {onSortToggle ? (
                     <button
                       type="button"
@@ -314,8 +314,8 @@ export function CitationsTableComponent({
                     <span className="text-foreground-tertiary">MENTIONS</span>
                   )}
                 </th>
-                <th className="px-4 py-3 text-center text-label-xs font-semibold uppercase tracking-wide text-foreground-tertiary">Trend</th>
-                <th className="px-4 py-3 text-center text-label-xs font-semibold uppercase tracking-wide text-foreground-tertiary">
+                <th className="px-4 py-3 text-center text-label-xs-caps-semibold text-foreground-tertiary">Trend</th>
+                <th className="px-4 py-3 text-center text-label-xs-caps-semibold text-foreground-tertiary">
                   {onSortToggle ? (
                     <button
                       type="button"
@@ -335,7 +335,7 @@ export function CitationsTableComponent({
                     <span className="text-foreground-tertiary">OPTIMIZATION</span>
                   )}
                 </th>
-                <th className="px-4 py-3 text-center text-label-xs font-semibold uppercase tracking-wide text-foreground-tertiary">
+                <th className="px-4 py-3 text-center text-label-xs-caps-semibold text-foreground-tertiary">
                   {onSortToggle ? (
                     <button
                       type="button"
@@ -355,7 +355,7 @@ export function CitationsTableComponent({
                     <span className="text-foreground-tertiary">LAST SEEN</span>
                   )}
                 </th>
-                <th className="px-4 py-3 text-center text-label-xs font-semibold uppercase tracking-wide text-foreground-tertiary">Quick Action</th>
+                <th className="px-4 py-3 text-center text-label-xs-caps-semibold text-foreground-tertiary">Quick Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-hover">
@@ -383,17 +383,17 @@ export function CitationsTableComponent({
                         />
                       </td>
                     )}
-                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span className="text-body-lg font-semibold text-foreground-secondary">{citation.source}</span></td>
-                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span className="text-body-md font-medium text-foreground-tertiary">{citation.page}</span></td>
-                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span suppressHydrationWarning className="text-body-lg font-semibold tabular-nums text-foreground-secondary">{citation.mentions.toLocaleString()}</span></td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span className="text-body-md-regular font-semibold text-foreground-secondary">{citation.source}</span></td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span className="text-body-md-medium text-foreground-tertiary">{citation.page}</span></td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center"><span suppressHydrationWarning className="text-body-md-regular font-semibold tabular-nums text-foreground-secondary">{citation.mentions.toLocaleString()}</span></td>
                     <td className="whitespace-nowrap px-4 py-2.5 text-center"><TrendIcon className={cn("h-4 w-4 inline-block", trendColors[citation.trend])} /></td>
                     <td className="whitespace-nowrap px-4 py-2.5"><div className="flex justify-center"><ProgressRing progress={citation.optimizationProgress} /></div></td>
-                    <td className="whitespace-nowrap px-4 py-2.5 text-center text-body-md font-medium text-foreground-tertiary">{citation.lastSeen}</td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-center text-body-md-medium text-foreground-tertiary">{citation.lastSeen}</td>
                     <td className="whitespace-nowrap px-4 py-2.5">
                       <div className="flex justify-center">
                         <Button
                           size="sm" variant="outline"
-                          className="h-6 gap-1.5 border-brand/30 bg-brand-default/10 px-2.5 text-label-xs font-semibold text-brand-faint hover:bg-brand-default/20"
+                          className="h-6 gap-1.5 border-brand/30 bg-brand-default/10 px-2.5 text-label-xs-medium font-semibold text-brand-faint hover:bg-brand-default/20"
                           onClick={() => onReview?.(citation)}
                         >
                           <Eye className="h-3 w-3" /> Review

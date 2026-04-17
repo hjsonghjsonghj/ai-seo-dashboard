@@ -1,6 +1,7 @@
 // ============================================================
-// Atomic Component Generator — code.js
+// Atomic Component Generator — code.js  (v3 — Typography-Bound)
 // Source of truth: app/globals.css (@theme) + components/ui/*
+//                 plugin-01b injector (text style names)
 //
 // Figma Plugin API rules:
 //  • primaryAxisSizingMode / counterAxisSizingMode → 'AUTO' | 'FIXED' only
@@ -14,9 +15,12 @@
 //  • Slot component: getOrCreateSlot() appends it to page (needed for createInstance)
 //  • Opacity: setBoundVariableForPaint resets opacity to 1
 //    → CAPTURE original opacity → bind → RE-INJECT opacity (spread pattern)
+//  • textAutoResize = 'WIDTH_AND_HEIGHT':
+//    Text dimensions are driven by content, preventing the text-overflows-frame bug.
+//    layoutSizingHorizontal = 'FILL' can be applied on top where needed (Card, Field…).
 // ============================================================
 
-// ── 1. TOKEN MAP ──────────────────────────────────────────────
+// ── 1-A. COLOR TOKEN MAP ──────────────────────────────────────
 const TOKENS = {
   'background':           { r: 0.008, g: 0.024, b: 0.090 }, // #020617
   'surface-default':      { r: 0.059, g: 0.090, b: 0.165 }, // #0f172a
@@ -44,30 +48,176 @@ const TOKENS = {
 };
 
 const RADIUS = { sm: 6, md: 8, lg: 12, xl: 16 };
-const FONT   = 'Inter';
+const FONT   = 'Inter'; // Fallback font — DS Sync injector may use Geist
+
+// ── 1-B. TYPOGRAPHY TOKEN MAP ─────────────────────────────────
+// Mirrors plugin-01b (DS Sync Injector) TOKENS exactly.
+// Purpose: two-layer binding strategy
+//   Layer 1 (strict)   — textStyleId applied when Figma style exists
+//   Layer 2 (fallback) — these values used when DS Sync hasn't been run yet
+//
+// key         = Figma text style name created by the injector
+// size        = px font-size (matches globals.css --text-{key})
+// lh          = px line-height (matches --text-{key}--line-height)
+// weight      = Figma fontName.style string for Inter fallback
+// uppercase   = true → textCase = 'UPPER' (caps tokens only)
+//
+// Component → token mapping:
+//   button / toggle label  → body-sm-medium          (14 / 20px  / Medium)
+//   badge label            → label-xs-caps-semibold  (12 / 16px  / SemiBold / UPPER)
+//   checkbox / radio label → body-sm-medium
+//   switch label           → body-sm-medium
+//   card title             → title-sub-semibold      (16 / 24px  / SemiBold)
+//   field label            → body-sm-medium
+//   alert title            → body-sm-medium
+//   avatar initials (md)   → label-xs-medium         (12 / 16px  / Medium)
+//   avatar initials (lg)   → body-md-medium          (16 / 24px  / Medium)
+const TYPOGRAPHY_MAP = {
+  'display-sm-semibold':      { size: 30, lh: 36, weight: 'Semi Bold'  },
+  'display-sm-bold':          { size: 30, lh: 36, weight: 'Bold'       },
+  'title-page-semibold':      { size: 20, lh: 28, weight: 'Semi Bold'  },
+  'title-section-semibold':   { size: 18, lh: 27, weight: 'Semi Bold'  },
+  'title-sub-semibold':       { size: 16, lh: 24, weight: 'Semi Bold'  },
+  'body-md-regular':          { size: 16, lh: 24, weight: 'Regular'    },
+  'body-md-medium':           { size: 16, lh: 24, weight: 'Medium'     },
+  'body-sm-medium':           { size: 14, lh: 20, weight: 'Medium'     },
+  'body-micro-medium':        { size: 13, lh: 18, weight: 'Medium'     },
+  'body-micro-bold':          { size: 13, lh: 18, weight: 'Bold'       },
+  'label-xs-medium':          { size: 12, lh: 16, weight: 'Medium'     },
+  'label-micro-medium':       { size: 11, lh: 14, weight: 'Medium'     },
+  'label-xs-caps-medium':     { size: 12, lh: 16, weight: 'Medium',    uppercase: true },
+  'label-xs-caps-semibold':   { size: 12, lh: 16, weight: 'Semi Bold', uppercase: true },
+  'body-micro-caps-semibold': { size: 13, lh: 18, weight: 'Semi Bold', uppercase: true },
+};
+
+// ── 1-C. LINE-HEIGHT FALLBACK MAP ─────────────────────────────
+// Ultimate fallback when neither textStyleId nor TYPOGRAPHY_MAP covers a size.
+// Formula: size × line-height-ratio from globals.css @theme, rounded to integer.
+const LINE_H = {
+  30: 36,  // display-sm:    30 × 1.2
+  20: 28,  // title-page:    20 × 1.4
+  18: 27,  // title-section: 18 × 1.5
+  16: 24,  // title-sub / body-md: 16 × 1.5
+  14: 20,  // body-sm:       14 × 1.428 ≈ 20
+  13: 18,  // body-micro:    13 × 1.385 ≈ 18
+  12: 16,  // label-xs:      12 × 1.333 ≈ 16
+  11: 14,  // label-micro:   11 × 1.273 ≈ 14
+  10: 14,  // fallback
+   9: 12,  // avatar sm initials
+};
 
 // ── 2. BASE HELPERS ───────────────────────────────────────────
 function tok(name) { return TOKENS[name] || { r: 1, g: 1, b: 1 }; }
 function solid(color) { return [{ type: 'SOLID', color }]; }
 function solidOpacity(color, opacity) { return [{ type: 'SOLID', color, opacity }]; }
 
+// ── FONT LOADING ──────────────────────────────────────────────
+// Loads Inter fallback fonts + any font used by locally registered
+// text styles (created by plugin-01b DS Sync Injector, e.g. Geist).
+// All calls are guarded — missing fonts are silently skipped.
 async function loadFonts() {
-  await Promise.all([
-    figma.loadFontAsync({ family: FONT, style: 'Regular' }),
-    figma.loadFontAsync({ family: FONT, style: 'Medium' }),
-    figma.loadFontAsync({ family: FONT, style: 'Semi Bold' }),
-    figma.loadFontAsync({ family: FONT, style: 'Bold' }),
-  ]);
+  const fallback = [
+    { family: FONT, style: 'Regular'   },
+    { family: FONT, style: 'Medium'    },
+    { family: FONT, style: 'Semi Bold' },
+    { family: FONT, style: 'Bold'      },
+  ];
+
+  // Collect unique fonts from registered text styles
+  let styleFonts = [];
+  try {
+    styleFonts = figma.getLocalTextStyles()
+      .map(s => s.fontName)
+      .filter(Boolean);
+  } catch (_) {}
+
+  const all = [...fallback, ...styleFonts];
+  const unique = [...new Map(all.map(f => [`${f.family}|${f.style}`, f])).values()];
+  await Promise.all(unique.map(f => figma.loadFontAsync(f).catch(() => {})));
 }
 
-function makeText(chars, { size = 14, weight = 'Medium', colorTok = 'foreground-primary', lineH, uppercase = false } = {}) {
+// ── TEXT STYLE LOOKUP ─────────────────────────────────────────
+// Returns the Figma TextStyle whose name matches `key`, or null.
+// Styles are created by plugin-01b; if DS Sync hasn't been run,
+// makeText() falls back gracefully to TYPOGRAPHY_MAP values.
+function findTextStyle(key) {
+  try {
+    return figma.getLocalTextStyles().find(s => s.name === key) || null;
+  } catch (_) { return null; }
+}
+
+// ── MAKE TEXT NODE ────────────────────────────────────────────
+// Creates a text node with strict typography token binding.
+//
+// Binding priority:
+//   1. Figma text style (textStyleId) — when DS Sync has been run
+//   2. TYPOGRAPHY_MAP fallback values — per-token explicit metrics
+//   3. Explicit size / weight / lineH params — legacy/override path
+//
+// textAutoResize = 'WIDTH_AND_HEIGHT':
+//   Both dimensions adapt to content. Prevents the "text overflows frame"
+//   rendering defect in FIXED-height Auto Layout containers (Toggle, Button…).
+//   For wrapping text, apply layoutSizingHorizontal = 'FILL' AFTER appendChild.
+function makeText(chars, {
+  size     = 14,
+  weight   = 'Medium',
+  colorTok = 'foreground-primary',
+  lineH,
+  uppercase     = false,
+  typographyKey = null,
+} = {}) {
   const t = figma.createText();
-  t.fontName   = { family: FONT, style: weight };
-  t.fontSize   = size;
-  t.characters = chars;
-  t.fills      = solid(tok(colorTok));
-  if (lineH)    t.lineHeight = { value: lineH, unit: 'PIXELS' };
-  if (uppercase) t.textCase  = 'UPPER';
+
+  if (typographyKey) {
+    const style  = findTextStyle(typographyKey);
+    const mapDef = TYPOGRAPHY_MAP[typographyKey];
+
+    // ── Step 1: Set fontName before characters (Figma API requirement) ────
+    if (style) {
+      try { t.fontName = style.fontName; }
+      catch (_) { t.fontName = { family: FONT, style: mapDef?.weight ?? weight }; }
+    } else {
+      t.fontName = { family: FONT, style: mapDef?.weight ?? weight };
+    }
+
+    // ── Step 2: Set text content ──────────────────────────────────────────
+    t.characters = chars;
+
+    // ── Step 3: Apply text style or TYPOGRAPHY_MAP metrics ───────────────
+    if (style) {
+      // Strict binding: textStyleId inherits size / lh / weight / letterSpacing
+      try { t.textStyleId = style.id; } catch (_) {}
+    } else if (mapDef) {
+      // Fallback: explicit metrics from TYPOGRAPHY_MAP
+      t.fontSize   = mapDef.size;
+      t.lineHeight = { value: mapDef.lh, unit: 'PIXELS' };
+    } else {
+      t.fontSize   = size;
+      t.lineHeight = { value: lineH ?? (LINE_H[size] ?? Math.round(size * 1.4)), unit: 'PIXELS' };
+    }
+
+    // ── Step 4: Text case — uppercase AFTER style (overrides style's textCase) ──
+    if (uppercase || mapDef?.uppercase) {
+      try { t.textCase = 'UPPER'; } catch (_) {}
+    }
+
+  } else {
+    // Legacy / explicit path — no token binding
+    t.fontName   = { family: FONT, style: weight };
+    t.characters = chars;
+    t.fontSize   = size;
+    t.lineHeight = { value: lineH ?? (LINE_H[size] ?? Math.round(size * 1.4)), unit: 'PIXELS' };
+    if (uppercase) t.textCase = 'UPPER';
+  }
+
+  // Color fill (always explicit — text styles don't carry color)
+  t.fills = solid(tok(colorTok));
+
+  // WIDTH_AND_HEIGHT: text determines its own size from content.
+  // Eliminates vertical / horizontal overflow in Auto Layout containers.
+  // Post-append, set layoutSizingHorizontal = 'FILL' where spanning is needed.
+  t.textAutoResize = 'WIDTH_AND_HEIGHT';
+
   return t;
 }
 
@@ -79,7 +229,6 @@ function viewportCenter() {
 // ── 3. POSITIONING ────────────────────────────────────────────
 // Stacks new components below existing canvas content, never overlapping.
 function getNextPosition(width, height) {
-  // Exclude parked slot (at -9999) and any other off-canvas helpers
   const visible = figma.currentPage.children.filter(n => n.x > -1000 && n.y > -1000);
   if (visible.length === 0) {
     const vc = viewportCenter();
@@ -99,7 +248,7 @@ function getNextPosition(width, height) {
 function _findVar(vars, tokenName) {
   if (!vars || vars.length === 0) return null;
   const dash  = tokenName;
-  const slash  = tokenName.replace(/-/g, '/');
+  const slash = tokenName.replace(/-/g, '/');
   const exact = vars.find(v => v.name === dash || v.name === slash);
   if (exact) return exact;
   return vars.find(v => v.name.endsWith('/' + dash) || v.name.endsWith('/' + slash));
@@ -112,17 +261,9 @@ function bindFill(node, tokenName, vars) {
     if (!v) return;
     const paint = node.fills[0];
     if (paint.type !== 'SOLID') return;
-
-    // ── Capture & Re-inject pattern ──────────────────────────────
-    // Step 1: capture opacity BEFORE binding (Figma resets it to 1 on bind)
     const originalOpacity = typeof paint.opacity === 'number' ? paint.opacity : 1;
-
-    // Step 2: bind the variable — apply result to node.fills immediately
     const boundPaint = figma.variables.setBoundVariableForPaint(paint, 'color', v);
     node.fills = [boundPaint];
-
-    // Step 3: re-read node.fills AFTER binding (Figma's normalised representation),
-    //         clone it, then re-inject the stored opacity to override Figma's reset
     const newFills = JSON.parse(JSON.stringify(node.fills));
     newFills[0].opacity = originalOpacity;
     node.fills = newFills;
@@ -136,16 +277,9 @@ function bindStroke(node, tokenName, vars) {
     if (!v) return;
     const paint = node.strokes[0];
     if (paint.type !== 'SOLID') return;
-
-    // ── Capture & Re-inject pattern ──────────────────────────────
-    // Step 1: capture opacity BEFORE binding
     const originalOpacity = typeof paint.opacity === 'number' ? paint.opacity : 1;
-
-    // Step 2: bind and apply
     const boundPaint = figma.variables.setBoundVariableForPaint(paint, 'color', v);
     node.strokes = [boundPaint];
-
-    // Step 3: re-read, clone, re-inject
     const newStrokes = JSON.parse(JSON.stringify(node.strokes));
     newStrokes[0].opacity = originalOpacity;
     node.strokes = newStrokes;
@@ -158,12 +292,8 @@ async function loadColorVars() {
 }
 
 // ── 5. COMBINE HELPER ─────────────────────────────────────────
-// Centralises the combineAsComponentSet pattern:
-//   1. combine in-memory components  2. append to page  3. position  4. zoom
-// Fallback for older Figma: groups components instead of ComponentSet.
 function combineAndPlace(components, name) {
   if (typeof figma.combineAsComponentSet === 'function') {
-    // ✅ Modern Figma — creates proper ComponentSet with Variants panel
     const set = figma.combineAsComponentSet(components);
     set.name  = name;
     figma.currentPage.appendChild(set);
@@ -174,9 +304,6 @@ function combineAndPlace(components, name) {
     return set;
   }
 
-  // ⚠️ Fallback: combineAsComponentSet unavailable (Figma app outdated).
-  // Components' x/y are already set relatively in the position step.
-  // Offset them all to the next canvas slot, then group for organisation.
   let bboxW = 0, bboxH = 0;
   for (const comp of components) {
     bboxW = Math.max(bboxW, comp.x + (comp.width  || 100));
@@ -215,8 +342,8 @@ async function getOrCreateSlot() {
     comp.counterAxisAlignItems = 'CENTER';
     comp.primaryAxisSizingMode = 'FIXED';
     comp.counterAxisSizingMode = 'FIXED';
-    figma.currentPage.appendChild(comp); // must be on page before createInstance()
-    comp.x = -9999; comp.y = -9999;      // park off-canvas
+    figma.currentPage.appendChild(comp);
+    comp.x = -9999; comp.y = -9999;
   }
   comp.fills        = [];
   comp.cornerRadius = 2;
@@ -254,6 +381,8 @@ async function generateSlotComponent() {
 }
 
 // ── 7. BUTTON SET ─────────────────────────────────────────────
+// Layout: HORIZONTAL Auto Layout · Hugs content (AUTO) × Fixed height
+// Text: body-sm-medium (14/20px Medium) bound via textStyleId
 const BTN_VARIANTS = {
   default:     { bg: 'primary-default', text: 'foreground-strong',    border: null },
   destructive: { bg: 'danger-soft',     text: 'foreground-strong',    border: null },
@@ -262,13 +391,15 @@ const BTN_VARIANTS = {
   ghost:       { bg: null,              text: 'foreground-primary',   border: null },
   link:        { bg: null,              text: 'primary-default',      border: null, underline: true },
 };
+
+// typoKey replaces fs: 14 — font metrics flow from the text style
 const BTN_SIZES = {
-  default: { h: 36, pl: 16, pr: 16, fs: 14, gap: 8 },
-  sm:      { h: 32, pl: 12, pr: 12, fs: 14, gap: 6 },
-  lg:      { h: 40, pl: 24, pr: 24, fs: 14, gap: 8 },
-  icon:    { h: 36, pl: 0,  pr: 0,  fs: 14, gap: 0, fixed: 36 },
-  'icon-sm': { h: 32, pl: 0,  pr: 0,  fs: 14, gap: 0, fixed: 32 },
-  'icon-lg': { h: 40, pl: 0,  pr: 0,  fs: 14, gap: 0, fixed: 40 },
+  default:   { h: 36, pl: 16, pr: 16, gap: 8,  typoKey: 'body-sm-medium' },
+  sm:        { h: 32, pl: 12, pr: 12, gap: 6,  typoKey: 'body-sm-medium' },
+  lg:        { h: 40, pl: 24, pr: 24, gap: 8,  typoKey: 'body-sm-medium' },
+  icon:      { h: 36, pl: 0,  pr: 0,  gap: 0,  fixed: 36 },
+  'icon-sm': { h: 32, pl: 0,  pr: 0,  gap: 0,  fixed: 32 },
+  'icon-lg': { h: 40, pl: 0,  pr: 0,  gap: 0,  fixed: 40 },
 };
 
 async function generateButtonSet() {
@@ -286,7 +417,7 @@ async function generateButtonSet() {
     for (const [vName, vConf] of varEntries) {
       for (const [sName, sConf] of sizeEntries) {
         step = `comp[${vName}/${sName}]`;
-        const comp   = figma.createComponent(); // in memory — NOT appended yet
+        const comp   = figma.createComponent();
         comp.name    = `variant=${vName}, size=${sName}`;
         const isIcon = !!sConf.fixed;
 
@@ -304,8 +435,8 @@ async function generateButtonSet() {
           comp.counterAxisSizingMode = 'FIXED';
         } else {
           comp.resize(10, sConf.h);
-          comp.primaryAxisSizingMode = 'AUTO';
-          comp.counterAxisSizingMode = 'FIXED';
+          comp.primaryAxisSizingMode = 'AUTO';   // Hugs text width
+          comp.counterAxisSizingMode = 'FIXED';  // Height locked
         }
 
         if (vConf.bg) { comp.fills = solid(tok(vConf.bg)); bindFill(comp, vConf.bg, vars); }
@@ -317,7 +448,8 @@ async function generateButtonSet() {
         } else { comp.strokes = []; }
 
         if (!isIcon) {
-          const lbl = makeText('Button', { size: sConf.fs, weight: 'Medium', colorTok: vConf.text });
+          // body-sm-medium: 14px / 20px lh / Medium — strict textStyleId binding
+          const lbl = makeText('Button', { colorTok: vConf.text, typographyKey: sConf.typoKey });
           if (vConf.underline) lbl.textDecoration = 'UNDERLINE';
           bindFill(lbl, vConf.text, vars);
           comp.appendChild(lbl);
@@ -329,7 +461,6 @@ async function generateButtonSet() {
       }
     }
 
-    // Grid-position children BEFORE combining
     step = 'position';
     let yOff = 0;
     for (let vi = 0; vi < varEntries.length; vi++) {
@@ -354,14 +485,18 @@ async function generateButtonSet() {
 }
 
 // ── 8. BADGE SET ──────────────────────────────────────────────
-// Mirrors: components/ui/badge.tsx semantic variants
-// Shape: rounded-full (pill) · Font: 12px Bold UPPERCASE
-// Fill: 15% opacity background · Border: none
-// Variant names match badge.tsx exactly: danger / positive / caution
+// Semantic naming: danger / positive / caution
+// → Figma property: variant=danger | positive | caution
+//
+// positive variant FIXED: now uses positive-default/positive-soft (green)
+//   (was incorrectly using brand-default/brand-soft — purple)
+//
+// Text: label-xs-caps-semibold (12px / 16px lh / SemiBold / UPPERCASE)
+//   — strict textStyleId binding; falls back to TYPOGRAPHY_MAP metrics
 const BADGE_VARIANTS = {
-  danger:   { bgColor: 'danger-default',  bgOpacity: 0.15, textColor: 'danger-soft',    label: 'Danger'   },
-  positive: { bgColor: 'brand-default',   bgOpacity: 0.15, textColor: 'brand-soft',     label: 'Positive' },
-  caution:  { bgColor: 'caution-default', bgOpacity: 0.15, textColor: 'caution-default', label: 'Caution' },
+  danger:   { bgColor: 'danger-default',    bgOpacity: 0.15, textColor: 'danger-soft',    label: 'Danger'   },
+  positive: { bgColor: 'positive-default',  bgOpacity: 0.15, textColor: 'positive-soft',  label: 'Positive' },
+  caution:  { bgColor: 'caution-default',   bgOpacity: 0.15, textColor: 'caution-soft',   label: 'Caution'  },
 };
 
 async function generateBadgeSet() {
@@ -373,27 +508,31 @@ async function generateBadgeSet() {
     const components = [];
     for (const [vName, vConf] of Object.entries(BADGE_VARIANTS)) {
       step = `comp[${vName}]`;
-      const comp = figma.createComponent(); // in memory — NOT appended yet
+      const comp = figma.createComponent();
       comp.name  = `variant=${vName}`;
 
       comp.layoutMode            = 'HORIZONTAL';
       comp.primaryAxisAlignItems = 'CENTER';
       comp.counterAxisAlignItems = 'CENTER';
-      comp.primaryAxisSizingMode = 'AUTO';
-      comp.counterAxisSizingMode = 'AUTO';
+      comp.primaryAxisSizingMode = 'AUTO';   // Hugs text width
+      comp.counterAxisSizingMode = 'AUTO';   // Hugs text height + paddingTop/Bottom
       comp.paddingLeft = comp.paddingRight = 8;
       comp.paddingTop  = comp.paddingBottom = 2;
       comp.itemSpacing  = 4;
-      comp.cornerRadius = 9999; // rounded-full (pill)
-      comp.strokes      = [];   // border-transparent
+      comp.cornerRadius = 9999; // rounded-full pill
+      comp.strokes      = [];
 
-      // 0.15 opacity fill — bindFill re-injects opacity via JSON-clone pattern
+      // 0.15 opacity background — bindFill re-injects opacity via JSON-clone pattern
       comp.fills = solidOpacity(tok(vConf.bgColor), vConf.bgOpacity);
       bindFill(comp, vConf.bgColor, vars);
 
       step = `text[${vName}]`;
-      // Bold + uppercase to match badge.tsx semantic variant style
-      const lbl = makeText(vConf.label, { size: 12, weight: 'Bold', colorTok: vConf.textColor, uppercase: true });
+      // label-xs-caps-semibold: 12px / 16px lh / SemiBold / UPPERCASE
+      // textCase = 'UPPER' is set by the style; makeText also applies it via mapDef.uppercase
+      const lbl = makeText(vConf.label, {
+        colorTok:     vConf.textColor,
+        typographyKey: 'label-xs-caps-semibold',
+      });
       bindFill(lbl, vConf.textColor, vars);
       comp.appendChild(lbl);
       components.push(comp);
@@ -418,8 +557,8 @@ async function generateBadgeSet() {
 
 // ── 9. CHECKBOX SET ───────────────────────────────────────────
 const CHECKBOX_VARIANTS = {
-  unchecked: { bg: 'input',           border: 'border-secondary',  hasCheck: false },
-  checked:   { bg: 'primary-default', border: 'primary-default',   hasCheck: true  },
+  unchecked: { bg: 'input',           border: 'border-secondary',   hasCheck: false },
+  checked:   { bg: 'primary-default', border: 'primary-default',    hasCheck: true  },
   disabled:  { bg: 'surface-hover',   border: 'foreground-tertiary', hasCheck: false },
 };
 
@@ -442,7 +581,7 @@ async function generateCheckboxSet() {
       comp.itemSpacing = 8;
       comp.fills       = [];
 
-      // 16×16 checkbox box
+      // 16×16 checkbox box — FIXED size, independent of text
       const box = figma.createFrame();
       box.name         = 'box';
       box.resize(16, 16);
@@ -460,13 +599,15 @@ async function generateCheckboxSet() {
       bindStroke(box, vConf.border, vars);
 
       if (vConf.hasCheck) {
+        // Checkmark — small glyph, no typography token match, explicit sizing
         const check = makeText('✓', { size: 10, weight: 'Medium', colorTok: 'foreground-strong' });
         check.textAlignHorizontal = 'CENTER';
         bindFill(check, 'foreground-strong', vars);
         box.appendChild(check);
       }
 
-      const label = makeText('Checkbox', { size: 14, weight: 'Regular', colorTok: 'foreground-primary' });
+      // body-sm-medium: 14px / 20px lh / Medium
+      const label = makeText('Checkbox', { colorTok: 'foreground-primary', typographyKey: 'body-sm-medium' });
       bindFill(label, 'foreground-primary', vars);
       comp.appendChild(box);
       comp.appendChild(label);
@@ -489,8 +630,8 @@ async function generateCheckboxSet() {
 
 // ── 10. RADIO SET ─────────────────────────────────────────────
 const RADIO_VARIANTS = {
-  unchecked: { bg: 'input',           border: 'border-secondary',   hasDot: false },
-  checked:   { bg: 'primary-default', border: 'primary-default',    hasDot: true  },
+  unchecked: { bg: 'input',           border: 'border-secondary',    hasDot: false },
+  checked:   { bg: 'primary-default', border: 'primary-default',     hasDot: true  },
   disabled:  { bg: 'surface-hover',   border: 'foreground-tertiary', hasDot: false },
 };
 
@@ -513,12 +654,12 @@ async function generateRadioSet() {
       comp.itemSpacing = 8;
       comp.fills       = [];
 
-      // 16×16 circle
+      // 16×16 circle — FIXED size
       const circle = figma.createFrame();
       circle.name         = 'radio';
       circle.resize(16, 16);
       circle.layoutMode   = 'NONE';
-      circle.cornerRadius = 8; // full circle
+      circle.cornerRadius = 8;
       circle.fills        = solid(tok(vConf.bg));
       bindFill(circle, vConf.bg, vars);
       circle.strokes      = solid(tok(vConf.border));
@@ -531,11 +672,11 @@ async function generateRadioSet() {
         dot.resize(6, 6);
         dot.fills = solid(tok('foreground-strong'));
         bindFill(dot, 'foreground-strong', vars);
-        dot.x = 5; dot.y = 5; // center in 16×16
+        dot.x = 5; dot.y = 5;
         circle.appendChild(dot);
       }
 
-      const label = makeText('Radio option', { size: 14, weight: 'Regular', colorTok: 'foreground-primary' });
+      const label = makeText('Radio option', { colorTok: 'foreground-primary', typographyKey: 'body-sm-medium' });
       bindFill(label, 'foreground-primary', vars);
       comp.appendChild(circle);
       comp.appendChild(label);
@@ -558,9 +699,9 @@ async function generateRadioSet() {
 
 // ── 11. SWITCH SET ────────────────────────────────────────────
 const SWITCH_VARIANTS = {
-  off:      { trackBg: 'border-secondary',  thumbX: 1  },
-  on:       { trackBg: 'primary-default',   thumbX: 14 },
-  disabled: { trackBg: 'surface-hover',     thumbX: 1  },
+  off:      { trackBg: 'border-secondary', thumbX: 1  },
+  on:       { trackBg: 'primary-default',  thumbX: 14 },
+  disabled: { trackBg: 'surface-hover',    thumbX: 1  },
 };
 
 async function generateSwitchSet() {
@@ -582,7 +723,7 @@ async function generateSwitchSet() {
       comp.itemSpacing = 8;
       comp.fills       = [];
 
-      // Track: 32×18
+      // Track: 32×18 — FIXED size
       const track = figma.createFrame();
       track.name         = 'track';
       track.resize(32, 18);
@@ -592,7 +733,7 @@ async function generateSwitchSet() {
       bindFill(track, vConf.trackBg, vars);
       track.strokes      = [];
 
-      // Thumb: 16×16
+      // Thumb: 16×16 — FIXED size, positioned inside track
       const thumb = figma.createFrame();
       thumb.name         = 'thumb';
       thumb.resize(16, 16);
@@ -601,10 +742,10 @@ async function generateSwitchSet() {
       thumb.fills        = solid(tok('foreground-strong'));
       bindFill(thumb, 'foreground-strong', vars);
       thumb.x = vConf.thumbX;
-      thumb.y = 1; // (18-16)/2 = 1
+      thumb.y = 1; // (18 - 16) / 2 = 1
       track.appendChild(thumb);
 
-      const label = makeText('Switch', { size: 14, weight: 'Regular', colorTok: 'foreground-primary' });
+      const label = makeText('Switch', { colorTok: 'foreground-primary', typographyKey: 'body-sm-medium' });
       bindFill(label, 'foreground-primary', vars);
       comp.appendChild(track);
       comp.appendChild(label);
@@ -627,9 +768,9 @@ async function generateSwitchSet() {
 
 // ── 12. AVATAR SET ────────────────────────────────────────────
 const AVATAR_VARIANTS = {
-  sm:      { size: 24 },
-  default: { size: 32 },
-  lg:      { size: 48 },
+  sm:      { size: 24, typoKey: null           },  // 9px — no token match, explicit
+  default: { size: 32, typoKey: 'label-xs-medium' }, // 12px Medium
+  lg:      { size: 48, typoKey: 'body-md-medium'  }, // 16px Medium
 };
 
 async function generateAvatarSet() {
@@ -649,14 +790,15 @@ async function generateAvatarSet() {
       comp.primaryAxisSizingMode = 'FIXED';
       comp.counterAxisSizingMode = 'FIXED';
       comp.resize(vConf.size, vConf.size);
-      comp.cornerRadius = vConf.size / 2; // circle
+      comp.cornerRadius = vConf.size / 2;
       comp.clipsContent = true;
       comp.fills        = solid(tok('surface-hover'));
       bindFill(comp, 'surface-hover', vars);
 
-      // Initials placeholder
-      const fs = vConf.size <= 24 ? 9 : vConf.size <= 32 ? 12 : 16;
-      const initials = makeText('JD', { size: fs, weight: 'Semi Bold', colorTok: 'foreground-muted' });
+      // Initials placeholder — token key where available, explicit for sm
+      const initials = vConf.typoKey
+        ? makeText('JD', { colorTok: 'foreground-muted', typographyKey: vConf.typoKey })
+        : makeText('JD', { size: 9, weight: 'Semi Bold', colorTok: 'foreground-muted' });
       bindFill(initials, 'foreground-muted', vars);
       comp.appendChild(initials);
       components.push(comp);
@@ -742,9 +884,13 @@ async function generateInput() {
     bindStroke(comp, 'border-secondary', vars);
 
     step = 'text';
+    // Placeholder: 14px Regular — no dedicated token (body-sm is Medium-only).
+    // Explicit params used; textAutoResize = 'WIDTH_AND_HEIGHT' still applied.
     const ph = makeText('Placeholder text', { size: 14, weight: 'Regular', colorTok: 'foreground-muted' });
     bindFill(ph, 'foreground-muted', vars);
     comp.appendChild(ph);
+    // FILL: placeholder spans input width cleanly
+    try { ph.layoutSizingHorizontal = 'FILL'; } catch (_) {}
 
     step = 'place';
     const pos = getNextPosition(comp.width, comp.height);
@@ -793,31 +939,49 @@ async function generateCard() {
     const header = section('CardHeader');
     header.paddingLeft = header.paddingRight = 24;
     header.paddingTop = 24; header.paddingBottom = 0; header.itemSpacing = 6;
-    const cardTitle = makeText('Card Title', { size: 16, weight: 'Semi Bold', colorTok: 'foreground-primary' });
+
+    // title-sub-semibold: 16px / 24px lh / SemiBold
+    const cardTitle = makeText('Card Title', {
+      colorTok: 'foreground-primary',
+      typographyKey: 'title-sub-semibold',
+    });
     bindFill(cardTitle, 'foreground-primary', vars);
-    const cardDesc  = makeText('Card description goes here', { size: 14, weight: 'Regular', colorTok: 'foreground-muted', lineH: 20 });
+
+    // Card description: 14px Regular — no token match; explicit fallback
+    const cardDesc = makeText('Card description goes here', {
+      size: 14, weight: 'Regular', colorTok: 'foreground-muted',
+    });
     bindFill(cardDesc, 'foreground-muted', vars);
     header.appendChild(cardTitle); header.appendChild(cardDesc);
+    try { cardTitle.layoutSizingHorizontal = 'FILL'; } catch (_) {}
+    try { cardDesc.layoutSizingHorizontal  = 'FILL'; } catch (_) {}
 
     step = 'content';
     const content = section('CardContent');
     content.paddingLeft = content.paddingRight = 24;
     content.paddingTop = 24; content.paddingBottom = 0;
-    const contentText = makeText('Content area', { size: 14, weight: 'Regular', colorTok: 'foreground-secondary' });
+    const contentText = makeText('Content area', {
+      colorTok: 'foreground-secondary',
+      typographyKey: 'body-sm-medium',
+    });
     bindFill(contentText, 'foreground-secondary', vars);
     content.appendChild(contentText);
+    try { contentText.layoutSizingHorizontal = 'FILL'; } catch (_) {}
 
     step = 'footer';
     const footer = section('CardFooter', 'HORIZONTAL');
     footer.counterAxisAlignItems = 'CENTER';
     footer.paddingLeft = footer.paddingRight = 24;
     footer.paddingTop = 16; footer.paddingBottom = 24; footer.itemSpacing = 8;
-    const footerText = makeText('Footer', { size: 14, weight: 'Regular', colorTok: 'foreground-muted' });
+    const footerText = makeText('Footer', {
+      colorTok: 'foreground-muted',
+      typographyKey: 'body-sm-medium',
+    });
     bindFill(footerText, 'foreground-muted', vars);
     footer.appendChild(footerText);
+    try { footerText.layoutSizingHorizontal = 'FILL'; } catch (_) {}
 
     comp.appendChild(header); comp.appendChild(content); comp.appendChild(footer);
-    // Apply FILL sizing AFTER appendChild (avoids Figma API ordering bug)
     try { header.layoutSizingHorizontal  = 'FILL'; } catch (_) {}
     try { content.layoutSizingHorizontal = 'FILL'; } catch (_) {}
     try { footer.layoutSizingHorizontal  = 'FILL'; } catch (_) {}
@@ -859,9 +1023,9 @@ async function generateButtonGroup() {
     const COUNT = 3;
     for (let i = 0; i < COUNT; i++) {
       const node = (source.type === 'COMPONENT' || source.type === 'INSTANCE') ? source.createInstance() : source.clone();
-      if (i === 0)           { node.topLeftRadius = baseRadius; node.bottomLeftRadius = baseRadius; node.topRightRadius = 0; node.bottomRightRadius = 0; }
-      else if (i === COUNT-1){ node.topLeftRadius = 0; node.bottomLeftRadius = 0; node.topRightRadius = baseRadius; node.bottomRightRadius = baseRadius; }
-      else                   { node.topLeftRadius = node.bottomLeftRadius = node.topRightRadius = node.bottomRightRadius = 0; }
+      if (i === 0)            { node.topLeftRadius = baseRadius; node.bottomLeftRadius = baseRadius; node.topRightRadius = 0; node.bottomRightRadius = 0; }
+      else if (i === COUNT-1) { node.topLeftRadius = 0; node.bottomLeftRadius = 0; node.topRightRadius = baseRadius; node.bottomRightRadius = baseRadius; }
+      else                    { node.topLeftRadius = node.bottomLeftRadius = node.topRightRadius = node.bottomRightRadius = 0; }
       frame.appendChild(node);
     }
 
@@ -896,9 +1060,11 @@ async function generateField() {
     comp.counterAxisSizingMode = 'FIXED';
     comp.itemSpacing = 6; comp.fills = [];
 
-    const lbl = makeText('Label', { size: 14, weight: 'Medium', colorTok: 'foreground-primary' });
+    // Field label: body-sm-medium (14px / 20px lh / Medium)
+    const lbl = makeText('Label', { colorTok: 'foreground-primary', typographyKey: 'body-sm-medium' });
     bindFill(lbl, 'foreground-primary', vars);
     comp.appendChild(lbl);
+    try { lbl.layoutSizingHorizontal = 'FILL'; } catch (_) {}
 
     step = 'input';
     const inp = figma.createFrame();
@@ -911,12 +1077,18 @@ async function generateField() {
     inp.fills   = solid(tok('input')); bindFill(inp, 'input', vars);
     inp.strokes = solid(tok('border-secondary')); inp.strokeWeight = 1; inp.strokeAlign = 'INSIDE';
     bindStroke(inp, 'border-secondary', vars);
-    const ph = makeText('Placeholder', { size: 14, weight: 'Regular', colorTok: 'foreground-muted' });
-    bindFill(ph, 'foreground-muted', vars); inp.appendChild(ph);
 
-    const helper = makeText('Helper text', { size: 12, weight: 'Regular', colorTok: 'foreground-muted' });
+    // Placeholder: 14px Regular — explicit fallback (no body-sm-regular token)
+    const ph = makeText('Placeholder', { size: 14, weight: 'Regular', colorTok: 'foreground-muted' });
+    bindFill(ph, 'foreground-muted', vars);
+    inp.appendChild(ph);
+    try { ph.layoutSizingHorizontal = 'FILL'; } catch (_) {}
+
+    // Helper text: label-xs-medium (12px / 16px lh / Medium)
+    const helper = makeText('Helper text', { colorTok: 'foreground-muted', typographyKey: 'label-xs-medium' });
     bindFill(helper, 'foreground-muted', vars);
     comp.appendChild(inp); comp.appendChild(helper);
+    try { helper.layoutSizingHorizontal = 'FILL'; } catch (_) {}
 
     step = 'place';
     const pos = getNextPosition(comp.width, comp.height);
@@ -932,33 +1104,57 @@ async function generateField() {
 }
 
 // ── 18. TOGGLE SET ────────────────────────────────────────────
-// Mirrors: components/ui/toggle.tsx (improved)
-// Dimensions: variant(2) × state(3) × size(3) = 18 components
+// Mirrors: components/ui/toggle.tsx — variant × state × size = 18 components
 //
-// default/off  → ghost: transparent bg, subtle border
-// default/on   → soft brand: brand-default/15 bg, brand-soft text
-// outline/off  → bordered: border-secondary visible
-// outline/on   → solid brand: brand-default fill, foreground-strong text
+// OVERFLOW FIX (v3):
+//   Root cause: text node width was set to the natural single-line value
+//   ('HEIGHT' mode) while the parent frame had counterAxisSizingMode = 'FIXED'.
+//   In some Figma versions this creates a layout conflict that renders text
+//   outside the frame boundary.
+//
+//   Resolution:
+//   1. makeText now sets textAutoResize = 'WIDTH_AND_HEIGHT' — text node
+//      dimensions are always driven by content, never by frame constraints.
+//   2. typoKey references body-sm-medium (14px / lh 20px). With the frame
+//      height at 32–40px, the text sits at (h - 20) / 2 = 6–10px from top/bottom.
+//      counterAxisAlignItems = 'CENTER' distributes this gap symmetrically.
+//   3. paddingTop = paddingBottom = 0 keeps the centering governed purely by
+//      Auto Layout alignment, not by manual padding.
+//
+// Semantic naming (Figma Properties):
+//   variant  = default | outline
+//   state    = off | on | disabled
+//   size     = default | sm | lg
+//
+// default/off  → ghost: no bg, no border
+// default/on   → soft brand fill (brand-default @ 15%) + brand border (@ 25%)
+// outline/off  → border-secondary visible
+// outline/on   → solid brand fill, foreground-strong text
 // any/disabled → comp.opacity = 0.5 (mirrors disabled:opacity-50)
 
-// Each state: { bg, bgOpacity, text, stroke, strokeOpacity }
 const TOGGLE_VARIANT_STATES = {
   default: {
-    off:      { bg: null,            bgOpacity: 1,    text: 'foreground-secondary', stroke: null,             strokeOpacity: 1    },
-    on:       { bg: 'brand-default', bgOpacity: 0.15, text: 'brand-soft',           stroke: 'brand-default',  strokeOpacity: 0.25 },
-    disabled: { bg: null,            bgOpacity: 1,    text: 'foreground-muted',     stroke: null,             strokeOpacity: 1    },
+    off:      { bg: null,            bgOpacity: 1,    text: 'foreground-secondary', stroke: null,              strokeOpacity: 1    },
+    on:       { bg: 'brand-default', bgOpacity: 0.15, text: 'brand-soft',           stroke: 'brand-default',   strokeOpacity: 0.25 },
+    disabled: { bg: null,            bgOpacity: 1,    text: 'foreground-muted',     stroke: null,              strokeOpacity: 1    },
   },
   outline: {
-    off:      { bg: null,            bgOpacity: 1,    text: 'foreground-secondary', stroke: 'border-secondary', strokeOpacity: 1  },
-    on:       { bg: 'brand-default', bgOpacity: 1,    text: 'foreground-strong',    stroke: 'brand-default',    strokeOpacity: 1  },
-    disabled: { bg: null,            bgOpacity: 1,    text: 'foreground-muted',     stroke: 'border-secondary', strokeOpacity: 1  },
+    off:      { bg: null,            bgOpacity: 1,    text: 'foreground-secondary', stroke: 'border-secondary', strokeOpacity: 1    },
+    on:       { bg: 'brand-default', bgOpacity: 1,    text: 'foreground-strong',    stroke: 'brand-default',    strokeOpacity: 1    },
+    disabled: { bg: null,            bgOpacity: 1,    text: 'foreground-muted',     stroke: 'border-secondary', strokeOpacity: 1    },
   },
 };
 
+// typoKey replaces fs: 14 — font metrics driven by text style registration
+// Frame heights are intentionally larger than body-sm-medium lh (20px):
+//   sm  h=32  →  (32-20)/2 = 6px top/bottom breathing room
+//   default h=36 →  (36-20)/2 = 8px
+//   lg  h=40  →  (40-20)/2 = 10px
+// All values > 0, so text is always fully inside the frame.
 const TOGGLE_SIZES = {
-  default: { h: 36, px: 12, minW: 36, fs: 14 },
-  sm:      { h: 32, px: 10, minW: 32, fs: 14 },
-  lg:      { h: 40, px: 16, minW: 40, fs: 14 },
+  default: { h: 36, px: 12, minW: 36, typoKey: 'body-sm-medium' },
+  sm:      { h: 32, px: 10, minW: 32, typoKey: 'body-sm-medium' },
+  lg:      { h: 40, px: 16, minW: 40, typoKey: 'body-sm-medium' },
 };
 
 async function generateToggleSet() {
@@ -980,14 +1176,20 @@ async function generateToggleSet() {
           const comp = figma.createComponent();
           comp.name  = `variant=${vName}, state=${stKey}, size=${sName}`;
 
+          // ── Auto Layout ────────────────────────────────────────────────
+          // HORIZONTAL: text flows left-to-right, vertically centered.
+          // AUTO width (Hugs): frame grows with text content.
+          // FIXED height: locked at sConf.h regardless of text.
           comp.layoutMode            = 'HORIZONTAL';
-          comp.primaryAxisAlignItems = 'CENTER';
-          comp.counterAxisAlignItems = 'CENTER';
-          comp.primaryAxisSizingMode = 'AUTO';
-          comp.counterAxisSizingMode = 'FIXED';
+          comp.primaryAxisAlignItems = 'CENTER';   // horizontal: center text
+          comp.counterAxisAlignItems = 'CENTER';   // vertical:   center text (key fix)
+          comp.primaryAxisSizingMode = 'AUTO';     // Hugs content width
+          comp.counterAxisSizingMode = 'FIXED';    // Height locked
           comp.resize(sConf.minW, sConf.h);
-          comp.paddingLeft = comp.paddingRight = sConf.px;
-          comp.paddingTop  = comp.paddingBottom = 0;
+          comp.paddingLeft  = sConf.px;
+          comp.paddingRight = sConf.px;
+          comp.paddingTop   = 0;  // centering is handled by counterAxisAlignItems
+          comp.paddingBottom = 0;
           comp.itemSpacing  = 8;
           comp.cornerRadius = RADIUS.md;
 
@@ -1009,12 +1211,17 @@ async function generateToggleSet() {
             comp.strokes = [];
           }
 
-          // Label text
-          const lbl = makeText('Toggle', { size: sConf.fs, weight: 'Medium', colorTok: vConf.text });
+          // Label — body-sm-medium (14px / 20px lh / Medium)
+          // textAutoResize = 'WIDTH_AND_HEIGHT' (set by makeText) ensures
+          // the text node never exceeds the frame's FIXED height.
+          const lbl = makeText('Toggle', {
+            colorTok:      vConf.text,
+            typographyKey: sConf.typoKey,
+          });
           bindFill(lbl, vConf.text, vars);
           comp.appendChild(lbl);
 
-          // disabled:opacity-50
+          // disabled:opacity-50 — mirrors Tailwind disabled:opacity-50
           if (stKey === 'disabled') comp.opacity = 0.5;
 
           components.push(comp);
@@ -1022,7 +1229,7 @@ async function generateToggleSet() {
       }
     }
 
-    // Grid layout: each row = one (variant/state) × all sizes
+    // Grid layout: variant group → state row → size columns
     step = 'position';
     let yOff = 0;
     const nStates = stateKeys.length;
@@ -1088,7 +1295,8 @@ async function generateAlertSet() {
       bindStroke(comp, vConf.border, vars);
 
       step = `icon[${vName}]`;
-      const iconText = makeText(vConf.icon, { size: 16, weight: 'Medium', colorTok: vConf.text });
+      // Icon glyph: title-sub-semibold (16px / 24px lh / SemiBold)
+      const iconText = makeText(vConf.icon, { colorTok: vConf.text, typographyKey: 'title-sub-semibold' });
       bindFill(iconText, vConf.text, vars);
 
       step = `textblock[${vName}]`;
@@ -1102,15 +1310,21 @@ async function generateAlertSet() {
       textBlock.itemSpacing = 4;
       textBlock.fills = [];
 
-      const title = makeText('Alert Title', { size: 14, weight: 'Medium', colorTok: 'foreground-primary' });
+      // Alert title: body-sm-medium (14px / 20px lh / Medium)
+      const title = makeText('Alert Title', { colorTok: 'foreground-primary', typographyKey: 'body-sm-medium' });
       bindFill(title, 'foreground-primary', vars);
-      const desc  = makeText('Alert description text.', { size: 14, weight: 'Regular', colorTok: 'foreground-muted' });
+
+      // Alert description: 14px Regular — explicit fallback (no body-sm-regular token)
+      const desc = makeText('Alert description text.', { size: 14, weight: 'Regular', colorTok: 'foreground-muted' });
       bindFill(desc, 'foreground-muted', vars);
       textBlock.appendChild(title);
       textBlock.appendChild(desc);
+      try { title.layoutSizingHorizontal = 'FILL'; } catch (_) {}
+      try { desc.layoutSizingHorizontal  = 'FILL'; } catch (_) {}
 
       comp.appendChild(iconText);
       comp.appendChild(textBlock);
+      try { textBlock.layoutSizingHorizontal = 'FILL'; } catch (_) {}
       components.push(comp);
     }
 

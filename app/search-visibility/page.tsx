@@ -224,7 +224,7 @@ export default function SearchVisibilityPage() {
             <Button variant="ghost" size="sm" asChild className="gap-2 text-foreground-strong hover:bg-surface-hover/80 hover:text-foreground-strong">
               <Link href="/">
                 <ArrowLeft className="h-4 w-4" />
-                <span className="text-body-lg font-medium">Back to Dashboard</span>
+                <span className="text-body-md-regular font-medium">Back to Dashboard</span>
               </Link>
             </Button>
           </div>
@@ -232,11 +232,11 @@ export default function SearchVisibilityPage() {
 
         <main className="px-4 pt-2 md:px-6 md:pt-2">
 
-          <div className="mx-auto max-w-[1600px] flex flex-col gap-6">
+          <div className="mx-auto max-w-container flex flex-col gap-6">
             {/* Filter Bar */}
             <Card className="bg-surface-default/60">
               <CardHeader className="pb-3 px-5 pt-5">
-                <CardTitle className="text-title-sub font-semibold tracking-normal text-foreground-secondary">
+                <CardTitle className="text-title-sub-semibold text-foreground-secondary">
                   Filters
                 </CardTitle>
               </CardHeader>
@@ -246,14 +246,14 @@ export default function SearchVisibilityPage() {
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-foreground-muted" />
                     <Select value={dateRange} onValueChange={setDateRange}>
-                      <SelectTrigger className="w-[160px] bg-surface-hover/50 border-border-secondary text-body-lg">
+                      <SelectTrigger className="w-[160px] bg-surface-hover/50 border-border-secondary text-body-md-regular">
                         <SelectValue placeholder="Select date range" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="7d" className="text-body-lg">Last 7 days</SelectItem>
-                        <SelectItem value="30d" className="text-body-lg">Last 30 days</SelectItem>
-                        <SelectItem value="90d" className="text-body-lg">Last 90 days</SelectItem>
-                        <SelectItem value="1y" className="text-body-lg">Last year</SelectItem>
+                        <SelectItem value="7d" className="text-body-md-regular">Last 7 days</SelectItem>
+                        <SelectItem value="30d" className="text-body-md-regular">Last 30 days</SelectItem>
+                        <SelectItem value="90d" className="text-body-md-regular">Last 90 days</SelectItem>
+                        <SelectItem value="1y" className="text-body-md-regular">Last year</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -262,16 +262,16 @@ export default function SearchVisibilityPage() {
                   <div className="flex items-center gap-2">
                     <Filter className="h-4 w-4 text-foreground-muted" />
                     <Select value={sourceFilter} onValueChange={setSourceFilter}>
-                      <SelectTrigger className="w-[180px] bg-surface-hover/50 border-border-secondary text-body-lg">
+                      <SelectTrigger className="w-[180px] bg-surface-hover/50 border-border-secondary text-body-md-regular">
                         <SelectValue placeholder="Select source" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all" className="text-body-lg">All Sources</SelectItem>
-                        <SelectItem value="ChatGPT" className="text-body-lg">ChatGPT</SelectItem>
-                        <SelectItem value="Claude" className="text-body-lg">Claude</SelectItem>
-                        <SelectItem value="Perplexity" className="text-body-lg">Perplexity</SelectItem>
-                        <SelectItem value="Google AI" className="text-body-lg">Google AI</SelectItem>
-                        <SelectItem value="Copilot" className="text-body-lg">Copilot</SelectItem>
+                        <SelectItem value="all" className="text-body-md-regular">All Sources</SelectItem>
+                        <SelectItem value="ChatGPT" className="text-body-md-regular">ChatGPT</SelectItem>
+                        <SelectItem value="Claude" className="text-body-md-regular">Claude</SelectItem>
+                        <SelectItem value="Perplexity" className="text-body-md-regular">Perplexity</SelectItem>
+                        <SelectItem value="Google AI" className="text-body-md-regular">Google AI</SelectItem>
+                        <SelectItem value="Copilot" className="text-body-md-regular">Copilot</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -284,7 +284,7 @@ export default function SearchVisibilityPage() {
                       placeholder="Search by source or page..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 bg-surface-hover/50 border-border-secondary text-body-lg placeholder:text-border-primary"
+                      className="pl-10 bg-surface-hover/50 border-border-secondary text-body-md-regular placeholder:text-border-primary"
                     />
                   </div>
                 </div>
@@ -313,11 +313,11 @@ export default function SearchVisibilityPage() {
                   }}
                   headerAction={
                     <div className="flex items-center gap-3">
-                      <span className="text-body-lg font-medium tabular-nums text-foreground-tertiary">
+                      <span className="text-body-md-regular font-medium tabular-nums text-foreground-tertiary">
                         {`${filteredCitations.length} citations`}
                       </span>
                       {selectedRows.size > 0 && (
-                        <span className="text-body-sm font-medium text-positive-soft">
+                        <span className="text-body-micro-medium text-positive-soft">
                           {selectedRows.size} items selected
                         </span>
                       )}
@@ -339,7 +339,7 @@ export default function SearchVisibilityPage() {
       </div>
       {selectedRows.size > 0 && (
         <div className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-border-secondary bg-background/95 px-4 py-3 shadow-lg backdrop-blur">
-          <span className="text-sm font-medium text-foreground-secondary">{selectedRows.size} citations selected</span>
+          <span className="text-body-md-medium text-foreground-secondary">{selectedRows.size} citations selected</span>
           <Button size="sm" variant="outline" onClick={handleExportSelected}>
             Export
           </Button>

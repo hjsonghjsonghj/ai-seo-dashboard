@@ -77,11 +77,11 @@ export function StrategicInsights() {
         <div>
           <h2
             id="insights-heading"
-            className="text-lg font-semibold tracking-normal text-foreground-secondary"
+            className="text-title-section-semibold text-foreground-secondary"
           >
             AI-Generated Strategic Insights
           </h2>
-          <p className="text-body-sm font-medium tracking-normal text-foreground-tertiary">
+          <p className="text-body-micro-medium text-foreground-tertiary">
             Actionable recommendations powered by Intelligence
           </p>
         </div>
@@ -112,7 +112,7 @@ export function StrategicInsights() {
                         CardTitle(div)은 cn()으로 leading-none/font-semibold를 주입하므로
                         tailwind-merge가 text-body-sm을 text-color 그룹으로 오분류해 삭제함.
                         의미상으로도 insight.headline(h3)이 실제 카드 제목이므로 이 레이블은 <p>가 적절. */}
-                    <p className="text-body-sm font-semibold uppercase tracking-wide text-foreground-tertiary leading-none">
+                    <p className="text-body-micro-caps-semibold text-foreground-tertiary leading-none">
                       {insight.title}
                     </p>
                   </div>
@@ -128,11 +128,11 @@ export function StrategicInsights() {
                 <div className="flex-1">
                   <h3
                     id={`insight-${insight.id}-headline`}
-                    className="mb-0 text-base font-semibold tracking-normal text-foreground-secondary"
+                    className="mb-0 text-title-sub-semibold text-foreground-secondary"
                   >
                     {insight.headline}
                   </h3>
-                  <p className="text-body-sm font-medium tracking-normal text-foreground-tertiary">
+                  <p className="text-body-micro-medium text-foreground-tertiary">
                     {insight.description}
                   </p>
                 </div>

@@ -59,7 +59,7 @@ function NavigationMenuItem({
 }
 
 const navigationMenuTriggerStyle = cva(
-  'group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium hover:bg-brand-default hover:text-foreground-strong focus:bg-brand-default focus:text-foreground-strong disabled:pointer-events-none disabled:opacity-50 data-[state=open]:hover:bg-brand-default data-[state=open]:text-foreground-strong data-[state=open]:focus:bg-brand-default data-[state=open]:bg-brand-default/50 focus-visible:ring-brand-deep/50 outline-none transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1',
+  'group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium hover:bg-brand-default hover:text-foreground-strong focus:bg-brand-default focus:text-foreground-strong disabled:pointer-events-none disabled:opacity-50 data-[state=open]:hover:bg-brand-default data-[state=open]:text-foreground-strong data-[state=open]:focus:bg-brand-default data-[state=open]:bg-brand-default/50 focus-visible:ring-brand-deep/50 outline-none transition-[color,box-shadow] focus-visible:ring-3 focus-visible:outline-1',
 )
 
 function NavigationMenuTrigger({
@@ -127,7 +127,7 @@ function NavigationMenuLink({
     <NavigationMenuPrimitive.Link
       data-slot="navigation-menu-link"
       className={cn(
-        "data-[active=true]:focus:bg-brand-default data-[active=true]:hover:bg-brand-default data-[active=true]:bg-brand-default/50 data-[active=true]:text-foreground-strong hover:bg-brand-default hover:text-foreground-strong focus:bg-brand-default focus:text-foreground-strong focus-visible:ring-brand-deep/50 [&_svg:not([class*='text-'])]:text-foreground-muted flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
+        "data-[active=true]:focus:bg-brand-default data-[active=true]:hover:bg-brand-default data-[active=true]:bg-brand-default/50 data-[active=true]:text-foreground-strong hover:bg-brand-default hover:text-foreground-strong focus:bg-brand-default focus:text-foreground-strong focus-visible:ring-brand-deep/50 [&_svg:not([class*='text-'])]:text-foreground-muted flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none focus-visible:ring-3 focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}

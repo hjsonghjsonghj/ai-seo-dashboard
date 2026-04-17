@@ -1,7 +1,5 @@
 // ============================================================
-// AI SEO Dashboard – Variable Binder (FINAL FIX)
-// 1. 변수 바인딩 후 유실되는 투명도를 2단계 재주입으로 복구
-// 2. 구형 실행 환경 호환성을 위해 구식 문법(ES6 이전) 사용
+// AI SEO Dashboard – Variable Binder (GET or CREATE 적용 버전)
 // ============================================================
 
 function hex(h) {
@@ -12,7 +10,7 @@ function hex(h) {
   };
 }
 
-const SCALES = {
+var SCALES = {
   slate: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a', 950: '#020617' },
   violet: { 50: '#f5f3ff', 100: '#ede9fe', 200: '#ddd6fe', 300: '#c4b5fd', 400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9', 800: '#5b21b6', 900: '#4c1d95', 950: '#2e1065' },
   blue: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a', 950: '#172554' },
@@ -21,7 +19,7 @@ const SCALES = {
   amber: { 50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a', 300: '#fcd34d', 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706', 700: '#b45309', 800: '#92400e', 900: '#78350f', 950: '#451a03' },
 };
 
-const SEM_MAP = [
+var SEM_MAP = [
   { name: 'background', hex: '#020617', ref: 'slate/950' },
   { name: 'foreground/primary', hex: '#f1f5f9', ref: 'slate/100' },
   { name: 'foreground/secondary', hex: '#e2e8f0', ref: 'slate/200' },
@@ -50,9 +48,9 @@ const SEM_MAP = [
   { name: 'chart/4', hex: '#60a5fa', ref: 'blue/400' },
 ];
 
-const DIRECT_TOL = 1.5 / 255;
-const PREMUL_TOL = 8 / 255;
-const MIN_OPACITY = 0.04;
+var DIRECT_TOL = 1.5 / 255;
+var PREMUL_TOL = 8 / 255;
+var MIN_OPACITY = 0.04;
 
 function findVarMatch(rgb, colorMap) {
   for (var i = 0; i < colorMap.length; i++) {
@@ -62,38 +60,11 @@ function findVarMatch(rgb, colorMap) {
       return { variable: entry.variable, inferredOpacity: null };
     }
   }
-
-  var best = null;
-  var bestScore = PREMUL_TOL * 3;
-  for (var j = 0; j < colorMap.length; j++) {
-    var entry2 = colorMap[j];
-    var ref2 = entry2.rgb;
-    var estimates = [];
-    if (ref2.r > 0.02) estimates.push(rgb.r / ref2.r);
-    if (ref2.g > 0.02) estimates.push(rgb.g / ref2.g);
-    if (ref2.b > 0.02) estimates.push(rgb.b / ref2.b);
-    if (estimates.length === 0) continue;
-
-    var sum = 0;
-    for (var k = 0; k < estimates.length; k++) sum += estimates[k];
-    var opEst = sum / estimates.length;
-
-    if (opEst < MIN_OPACITY || opEst > 1.01) continue;
-    var op = Math.min(1, Math.max(MIN_OPACITY, opEst));
-    var score = Math.abs(rgb.r - ref2.r * op) + Math.abs(rgb.g - ref2.g * op) + Math.abs(rgb.b - ref2.b * op);
-    if (score < bestScore) {
-      bestScore = score;
-      best = { variable: entry2.variable, inferredOpacity: op };
-    }
-  }
-  return best;
+  return null;
 }
 
-// ── 변수 바인딩 핵심 로직 ───────────────────────
 async function bindNode(node, colorMap) {
   var boundCount = 0;
-
-  // 1. Fills 처리
   if ('fills' in node && Array.isArray(node.fills) && node.fills !== figma.mixed) {
     var originalFills = node.fills;
     var newFills = [];
@@ -105,15 +76,10 @@ async function bindNode(node, colorMap) {
       if (p.type === 'SOLID') {
         var match = findVarMatch(p.color, colorMap);
         if (match) {
-          // 변수 바인딩 실행 (오퍼시티가 1로 초기화됨)
           var boundPaint = figma.variables.setBoundVariableForPaint(p, 'color', match.variable);
           newFills.push(boundPaint);
-
-          // 원본 오퍼시티가 0.99 미만인 경우 나중에 덮어쓸 목록에 추가
           var origFillOp = (p.opacity !== undefined) ? p.opacity : 1;
-          if (origFillOp < 0.99) {
-            needsManualFillOpacity.push({ index: i, opacity: origFillOp });
-          }
+          if (origFillOp < 0.99) needsManualFillOpacity.push({ index: i, opacity: origFillOp });
           changedF = true;
           boundCount++;
           continue;
@@ -123,20 +89,17 @@ async function bindNode(node, colorMap) {
     }
 
     if (changedF) {
-      node.fills = newFills; // 1차 적용
-      // 2차 강제 주입 (변수가 연결된 상태에서 오퍼시티만 덮어쓰기)
+      node.fills = newFills;
       if (needsManualFillOpacity.length > 0) {
         var tempFills = JSON.parse(JSON.stringify(node.fills));
         for (var f = 0; f < needsManualFillOpacity.length; f++) {
-          var itemF = needsManualFillOpacity[f];
-          tempFills[itemF.index].opacity = itemF.opacity;
+          tempFills[needsManualFillOpacity[f].index].opacity = needsManualFillOpacity[f].opacity;
         }
         node.fills = tempFills;
       }
     }
   }
 
-  // 2. Strokes 처리
   if ('strokes' in node && Array.isArray(node.strokes)) {
     var originalStrokes = node.strokes;
     var newStrokes = [];
@@ -150,11 +113,8 @@ async function bindNode(node, colorMap) {
         if (matchS) {
           var boundStroke = figma.variables.setBoundVariableForPaint(s, 'color', matchS.variable);
           newStrokes.push(boundStroke);
-
           var origStrokeOp = (s.opacity !== undefined) ? s.opacity : 1;
-          if (origStrokeOp < 0.99) {
-            needsManualStrokeOpacity.push({ index: j, opacity: origStrokeOp });
-          }
+          if (origStrokeOp < 0.99) needsManualStrokeOpacity.push({ index: j, opacity: origStrokeOp });
           changedS = true;
           boundCount++;
           continue;
@@ -168,15 +128,13 @@ async function bindNode(node, colorMap) {
       if (needsManualStrokeOpacity.length > 0) {
         var tempStrokes = JSON.parse(JSON.stringify(node.strokes));
         for (var sIdx = 0; sIdx < needsManualStrokeOpacity.length; sIdx++) {
-          var itemS = needsManualStrokeOpacity[sIdx];
-          tempStrokes[itemS.index].opacity = itemS.opacity;
+          tempStrokes[needsManualStrokeOpacity[sIdx].index].opacity = needsManualStrokeOpacity[sIdx].opacity;
         }
         node.strokes = tempStrokes;
       }
     }
   }
 
-  // 3. 자식 노드 재귀
   if ('children' in node) {
     for (var k = 0; k < node.children.length; k++) {
       boundCount += await bindNode(node.children[k], colorMap);
@@ -185,39 +143,54 @@ async function bindNode(node, colorMap) {
   return boundCount;
 }
 
-// ── 컬렉션 및 변수 생성 ────────────────────────
 async function createVariables() {
   var collections = figma.variables.getLocalVariableCollections();
+  var primC, semC;
+
+  // 1. 기존 컬렉션 탐색 (삭제 안 함)
   for (var i = 0; i < collections.length; i++) {
-    var col = collections[i];
-    if (['Primitives', 'Semantic'].indexOf(col.name) !== -1) col.remove();
+    if (collections[i].name === 'Primitives') primC = collections[i];
+    if (collections[i].name === 'Semantic') semC = collections[i];
   }
 
-  var primC = figma.variables.createVariableCollection('Primitives');
+  // 2. 없으면 생성
+  if (!primC) primC = figma.variables.createVariableCollection('Primitives');
+  if (!semC) semC = figma.variables.createVariableCollection('Semantic');
+
   var primM = primC.defaultModeId;
+  var semM = semC.defaultModeId;
+
+  // 3. Primitives 변수 생성/참조
   var P = {};
+  var allVars = figma.variables.getLocalVariables();
+
   for (var scale in SCALES) {
     var steps = SCALES[scale];
     for (var step in steps) {
-      var v = figma.variables.createVariable(scale + '/' + step, primC, 'COLOR');
-      v.setValueForMode(primM, hex(steps[step]));
-      P[scale + '/' + step] = v;
+      var vName = scale + '/' + step;
+      var existingV = allVars.find(function (v) { return v.name === vName && v.variableCollectionId === primC.id; });
+      if (!existingV) {
+        existingV = figma.variables.createVariable(vName, primC, 'COLOR');
+      }
+      existingV.setValueForMode(primM, hex(steps[step]));
+      P[vName] = existingV;
     }
   }
 
-  var semC = figma.variables.createVariableCollection('Semantic');
-  var semM = semC.defaultModeId;
+  // 4. Semantic 변수 생성/참조 및 Alias 연결
   var S = {};
   for (var j = 0; j < SEM_MAP.length; j++) {
     var item = SEM_MAP[j];
-    var v2 = figma.variables.createVariable(item.name, semC, 'COLOR');
-    v2.setValueForMode(semM, { type: 'VARIABLE_ALIAS', id: P[item.ref].id });
-    S[item.name] = v2;
+    var existingS = allVars.find(function (v) { return v.name === item.name && v.variableCollectionId === semC.id; });
+    if (!existingS) {
+      existingS = figma.variables.createVariable(item.name, semC, 'COLOR');
+    }
+    existingS.setValueForMode(semM, { type: 'VARIABLE_ALIAS', id: P[item.ref].id });
+    S[item.name] = existingS;
   }
   return { S: S };
 }
 
-// ── 실행 ───────────────────────────────────────
 async function main() {
   try {
     figma.notify('⚙️ 디자인 토큰 바인딩 중...');

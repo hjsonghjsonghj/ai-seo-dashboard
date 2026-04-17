@@ -51,7 +51,7 @@ export function Sidebar() {
               >
                 <Icon className="h-5 w-5" />
                 {/* Tooltip */}
-                <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-background px-2 py-1 text-xs font-medium text-foreground-primary opacity-0 shadow-md transition-opacity group-hover:opacity-100">
+                <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap rounded-md bg-background px-2 py-1 text-label-xs-medium text-foreground-primary opacity-0 shadow-md transition-opacity group-hover:opacity-100">
                   {item.label}
                 </span>
                 {/* Active indicator */}
@@ -65,7 +65,7 @@ export function Sidebar() {
 
         {/* User */}
         <div className="flex flex-col items-center gap-2 border-t border-border-secondary px-2 py-4">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-hover text-sm font-medium text-foreground-secondary">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-hover text-body-md-medium text-foreground-secondary">
             PA
           </div>
         </div>
@@ -94,7 +94,7 @@ export function Sidebar() {
               aria-current={isActive ? "page" : undefined}
             >
               <Icon className="h-5 w-5" />
-              <span className="text-label-micro font-semibold tracking-normal">{item.label}</span>
+              <span className="text-label-micro-medium font-semibold">{item.label}</span>
               {/* Active indicator - top bar */}
               {isActive && (
                 <span className="absolute -top-0.5 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-primary-default" aria-hidden="true" />
