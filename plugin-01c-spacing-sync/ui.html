@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spacing Sync Pro</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--figma-color-text, #1a1a1a);
+      background: var(--figma-color-bg, #ffffff);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 550px;
+    }
+
+    .header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--figma-color-text, #1a1a1a);
+    }
+
+    .subtitle {
+      font-size: 11px;
+      color: var(--figma-color-text-secondary, #666);
+      line-height: 1.4;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--figma-color-border, #e5e5e5);
+    }
+
+    .token-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .token-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 4px;
+      background: var(--figma-color-bg-secondary, #f5f5f5);
+      border-radius: 4px;
+    }
+
+    .token-chip .swatch {
+      background: var(--figma-color-brand, #0d99ff);
+      border-radius: 2px;
+      height: 8px;
+    }
+
+    .token-chip .label {
+      font-size: 10px;
+      color: var(--figma-color-text-secondary, #666);
+      white-space: nowrap;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .btn:hover {
+      opacity: 0.85;
+    }
+
+    .btn:active {
+      opacity: 0.7;
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--figma-color-brand, #0d99ff);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: var(--figma-color-bg-secondary, #f0f0f0);
+      color: var(--figma-color-text, #1a1a1a);
+    }
+
+    .message {
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .message.visible {
+      display: block;
+    }
+
+    .message.success {
+      background: #e6f7ee;
+      color: #1a6b3a;
+      border: 1px solid #b3e8cc;
+    }
+
+    .message.error {
+      background: #fdecea;
+      color: #8b1a14;
+      border: 1px solid #f5b8b4;
+    }
+
+    .message.loading {
+      background: var(--figma-color-bg-secondary, #f5f5f5);
+      color: var(--figma-color-text-secondary, #666);
+      border: 1px solid var(--figma-color-border, #e5e5e5);
+    }
+
+    .spinner {
+      display: none;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <div class="title">Spacing Sync Pro</div>
+    <div class="subtitle">Sync the 4px grid scale to Figma Variables<br>and bind Auto Layout layers automatically.</div>
+  </div>
+
+  <hr class="divider" />
+
+  <div class="token-grid" id="tokenGrid"></div>
+
+  <hr class="divider" />
+
+  <div class="actions">
+    <button class="btn btn-primary" id="btnSync">Sync Spacing Tokens</button>
+    <button class="btn btn-secondary" id="btnApply">Apply to Selected Layers</button>
+  </div>
+
+  <div class="message" id="message"></div>
+
+  <script>
+    // Token definitions (mirrors code.js SPACING_TOKENS)
+    var TOKENS = [
+      { name: "0px", value: 0 },
+      { name: "2px", value: 2 },
+      { name: "4px", value: 4 },
+      { name: "6px", value: 6 },
+      { name: "8px", value: 8 },
+      { name: "10px", value: 10 },
+      { name: "12px", value: 12 },
+      { name: "16px", value: 16 },
+      { name: "20px", value: 20 },
+      { name: "24px", value: 24 },
+      { name: "32px", value: 32 },
+    ];
+
+    // Render token chips (swatch width scales with px value for visual reference)
+    var grid = document.getElementById("tokenGrid");
+    var maxVal = 32;
+    for (var i = 0; i < TOKENS.length; i++) {
+      var token = TOKENS[i];
+      var chip = document.createElement("div");
+      chip.className = "token-chip";
+      var swatch = document.createElement("div");
+      swatch.className = "swatch";
+      var pct = token.value === 0 ? 4 : Math.max(10, Math.round((token.value / maxVal) * 100));
+      swatch.style.width = pct + "%";
+      var label = document.createElement("div");
+      label.className = "label";
+      label.textContent = token.name;
+      chip.appendChild(swatch);
+      chip.appendChild(label);
+      grid.appendChild(chip);
+    }
+
+    // Message helper
+    function showMessage(text, type) {
+      var el = document.getElementById("message");
+      el.textContent = text;
+      el.className = "message visible " + type;
+    }
+
+    var btnSync = document.getElementById("btnSync");
+    var btnApply = document.getElementById("btnApply");
+    var labelSync = btnSync.textContent;
+    var labelApply = btnApply.textContent;
+
+    function setLoading(loading) {
+      btnSync.disabled = loading;
+      btnApply.disabled = loading;
+    }
+
+    function restoreLabels() {
+      btnSync.textContent = labelSync;
+      btnApply.textContent = labelApply;
+    }
+
+    // Button handlers
+    btnSync.addEventListener("click", function () {
+      setLoading(true);
+      btnSync.textContent = "Processing...";
+      showMessage("Syncing tokens...", "loading");
+      parent.postMessage({ pluginMessage: { type: "sync-tokens" } }, "*");
+    });
+
+    btnApply.addEventListener("click", function () {
+      setLoading(true);
+      btnApply.textContent = "Processing...";
+      showMessage("Applying to layers...", "loading");
+      parent.postMessage({ pluginMessage: { type: "apply-to-layers" } }, "*");
+    });
+
+    // Messages from plugin code
+    window.onmessage = function (event) {
+      var msg = event.data.pluginMessage;
+      if (!msg) return;
+
+      setLoading(false);
+      restoreLabels();
+
+      if (msg.type === "sync-done") {
+        showMessage(
+          "Done! " + msg.created + " token(s) created, " + msg.updated + " updated.",
+          "success"
+        );
+      } else if (msg.type === "apply-done") {
+        showMessage(
+          "Done! " + msg.bound + " layer binding(s) applied.",
+          "success"
+        );
+      } else if (msg.type === "error") {
+        showMessage(msg.message, "error");
+      }
+    };
+  </script>
+</body>
+
+</html>
