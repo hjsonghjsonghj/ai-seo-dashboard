@@ -1,0 +1,10 @@
+{
+  "name": "Variable Binder (02b)",
+  "id": "variable-binder-02b",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "capabilities": [],
+  "enableProposedApi": true
+}

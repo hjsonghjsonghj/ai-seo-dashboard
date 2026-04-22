@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Variable Binder 02b</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:         #020617;
+      --surface:    #0f172a;
+      --surface-2:  #1e293b;
+      --border:     #334155;
+      --border-2:   #475569;
+      --text-1:     #f1f5f9;
+      --text-2:     #cbd5e1;
+      --text-3:     #94a3b8;
+      --brand:      #8b5cf6;
+      --brand-deep: #7c3aed;
+      --positive:   #10b981;
+      --danger:     #ef4444;
+      --caution:    #f59e0b;
+      --radius:     8px;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text-1);
+      font-size: 12px;
+      padding: 12px;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+
+    /* ── Header ──────────────────────────────────────────── */
+    .header {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 12px;
+    }
+    .header-icon {
+      width: 28px; height: 28px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--brand-deep), var(--brand));
+      border-radius: 6px;
+      display: grid; place-items: center;
+      font-size: 14px;
+    }
+    .header-text h1 { font-size: 12px; font-weight: 600; color: var(--text-1); }
+    .header-text p  { font-size: 10px; color: var(--text-3); margin-top: 1px; }
+
+    /* ── Section card ────────────────────────────────────── */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 10px; margin-bottom: 8px;
+    }
+    .card-label {
+      font-size: 9px; font-weight: 600; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px;
+    }
+
+    /* ── Scope selector ──────────────────────────────────── */
+    .scope-row { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    .scope-btn {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text-2); font-size: 11px; font-weight: 500;
+      padding: 7px 8px; cursor: pointer; text-align: center;
+      transition: border-color 0.12s, color 0.12s;
+    }
+    .scope-btn:hover { border-color: var(--border-2); color: var(--text-1); }
+    .scope-btn.active {
+      border-color: var(--brand); color: var(--brand);
+      background: rgba(139,92,246,0.08);
+    }
+    .scope-btn .icon { font-size: 13px; display: block; margin-bottom: 3px; }
+    .scope-btn .lbl  { display: block; }
+    .scope-btn .sub  { display: block; font-size: 9px; color: var(--text-3); margin-top: 2px; }
+
+    /* ── Stage summary (what will be bound) ──────────────── */
+    .stage-list { display: flex; flex-direction: column; gap: 4px; }
+    .stage-item {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--surface-2); border-radius: 5px;
+      padding: 6px 8px;
+    }
+    .stage-dot {
+      width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    }
+    .dot-color  { background: var(--brand); }
+    .dot-radius { background: var(--positive); }
+    .dot-scope  { background: var(--caution); }
+    .stage-item span { color: var(--text-2); font-size: 11px; }
+    .stage-item strong { color: var(--text-1); font-weight: 600; }
+
+    /* ── Run button ──────────────────────────────────────── */
+    .run-btn {
+      width: 100%; padding: 10px;
+      background: var(--brand-deep); color: #fff;
+      border: none; border-radius: var(--radius); font-size: 12px;
+      font-weight: 600; cursor: pointer; letter-spacing: 0.02em;
+      transition: background 0.12s, opacity 0.12s;
+      margin-top: 2px;
+    }
+    .run-btn:hover:not(:disabled) { background: var(--brand); }
+    .run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── Progress bar ────────────────────────────────────── */
+    .progress-wrap { display: none; margin-bottom: 8px; }
+    .progress-wrap.visible { display: block; }
+    .progress-bar-bg {
+      height: 4px; background: var(--surface-2);
+      border-radius: 2px; overflow: hidden; margin-bottom: 5px;
+    }
+    .progress-bar-fill {
+      height: 100%; background: var(--brand);
+      border-radius: 2px; width: 0%;
+      transition: width 0.25s ease;
+    }
+    .progress-text { font-size: 10px; color: var(--text-3); }
+
+    /* ── Results ─────────────────────────────────────────── */
+    .results { display: none; }
+    .results.visible { display: block; }
+
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+    .result-cell {
+      background: var(--surface-2); border-radius: 5px;
+      padding: 8px 6px; text-align: center;
+    }
+    .result-cell .num {
+      font-size: 18px; font-weight: 700; color: var(--text-1);
+      display: block; line-height: 1;
+    }
+    .result-cell .num.brand   { color: var(--brand); }
+    .result-cell .num.green   { color: var(--positive); }
+    .result-cell .num.text-3  { color: var(--text-3); }
+    .result-cell .lbl {
+      font-size: 9px; font-weight: 600; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      display: block; margin-top: 3px;
+    }
+
+    /* ── Error list ──────────────────────────────────────── */
+    .error-box { display: none; }
+    .error-box.visible { display: block; margin-top: 7px; }
+    .error-header {
+      font-size: 9px; font-weight: 600; color: var(--danger);
+      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 5px;
+    }
+    .error-scroll {
+      max-height: 72px; overflow-y: auto;
+      background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 5px; padding: 5px 7px;
+    }
+    .error-row {
+      font-size: 10px; color: var(--danger); font-family: 'Courier New', monospace;
+      padding: 1px 0; opacity: 0.9;
+    }
+
+    /* ── Fatal error ─────────────────────────────────────── */
+    .fatal { display: none; }
+    .fatal.visible { display: block; margin-bottom: 8px; }
+    .fatal-msg {
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 6px; padding: 9px 10px;
+      color: var(--danger); font-size: 11px; line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    /* ── Re-run link ─────────────────────────────────────── */
+    .rerun-row { margin-top: 6px; text-align: center; }
+    .rerun-link {
+      font-size: 10px; color: var(--text-3); cursor: pointer;
+      text-decoration: underline; text-underline-offset: 2px;
+      background: none; border: none;
+    }
+    .rerun-link:hover { color: var(--brand); }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-icon">🔗</div>
+    <div class="header-text">
+      <h1>Variable Binder</h1>
+      <p>plugin-02b &mdash; Color + Radius token binding</p>
+    </div>
+  </div>
+
+  <!-- Scope selector -->
+  <div class="card" id="scope-card">
+    <div class="card-label">Binding Scope</div>
+    <div class="scope-row">
+      <button class="scope-btn active" id="btn-all" onclick="setScope('all-atoms')">
+        <span class="icon">⬡</span>
+        <span class="lbl">All Atoms</span>
+        <span class="sub">15 atom frames on page</span>
+      </button>
+      <button class="scope-btn" id="btn-sel" onclick="setScope('selection')">
+        <span class="icon">▣</span>
+        <span class="lbl">Selection</span>
+        <span class="sub">Selected layers only</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- What will be bound -->
+  <div class="card">
+    <div class="card-label">Binding targets</div>
+    <div class="stage-list">
+      <div class="stage-item">
+        <div class="stage-dot dot-color"></div>
+        <span><strong>Colors</strong> &mdash; fills + strokes bound to Semantic variables</span>
+      </div>
+      <div class="stage-item">
+        <div class="stage-dot dot-radius"></div>
+        <span><strong>Radius</strong> &mdash; 6 / 8 / 12 / 16 px bound to Radius variables</span>
+      </div>
+      <div class="stage-item">
+        <div class="stage-dot dot-scope"></div>
+        <span><strong>Opacity</strong> &mdash; fill-level opacity preserved after binding</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap" id="progress-wrap">
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+    <div class="progress-text" id="progress-text">Initialising...</div>
+  </div>
+
+  <!-- Fatal error -->
+  <div class="fatal" id="fatal">
+    <div class="fatal-msg" id="fatal-msg"></div>
+  </div>
+
+  <!-- Results -->
+  <div class="results card" id="results">
+    <div class="card-label">Results</div>
+    <div class="result-grid">
+      <div class="result-cell">
+        <span class="num brand" id="res-colors">0</span>
+        <span class="lbl">Colors</span>
+      </div>
+      <div class="result-cell">
+        <span class="num green" id="res-radii">0</span>
+        <span class="lbl">Radii</span>
+      </div>
+      <div class="result-cell">
+        <span class="num text-3" id="res-nodes">0</span>
+        <span class="lbl">Nodes</span>
+      </div>
+    </div>
+    <div class="error-box" id="error-box">
+      <div class="error-header" id="error-header"></div>
+      <div class="error-scroll" id="error-scroll"></div>
+    </div>
+    <div class="rerun-row">
+      <button class="rerun-link" onclick="reset()">Run again</button>
+    </div>
+  </div>
+
+  <!-- Run button -->
+  <button class="run-btn" id="run-btn" onclick="run()">
+    Bind Variables
+  </button>
+
+  <script>
+    var scope = 'all-atoms';
+
+    function setScope(s) {
+      scope = s;
+      document.getElementById('btn-all').classList.toggle('active', s === 'all-atoms');
+      document.getElementById('btn-sel').classList.toggle('active', s === 'selection');
+    }
+
+    function run() {
+      var btn = document.getElementById('run-btn');
+      btn.disabled = true;
+      btn.textContent = 'Binding...';
+
+      document.getElementById('fatal').classList.remove('visible');
+      document.getElementById('results').classList.remove('visible');
+      document.getElementById('progress-wrap').classList.add('visible');
+      setProgress(5, 'Starting...');
+
+      parent.postMessage({ pluginMessage: { type: 'run', scope: scope } }, '*');
+    }
+
+    function setProgress(pct, text) {
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('progress-text').textContent = text;
+    }
+
+    function reset() {
+      document.getElementById('run-btn').disabled = false;
+      document.getElementById('run-btn').textContent = 'Bind Variables';
+      document.getElementById('progress-wrap').classList.remove('visible');
+      document.getElementById('progress-fill').style.width = '0%';
+      document.getElementById('results').classList.remove('visible');
+      document.getElementById('fatal').classList.remove('visible');
+    }
+
+    window.onmessage = function(event) {
+      var msg = event.data.pluginMessage;
+      if (!msg) return;
+
+      if (msg.type === 'stage') {
+        setProgress(msg.progress || 50, msg.text || '');
+        return;
+      }
+
+      if (msg.type === 'error') {
+        document.getElementById('progress-wrap').classList.remove('visible');
+        document.getElementById('fatal').classList.add('visible');
+        document.getElementById('fatal-msg').textContent = msg.message || 'Unknown error';
+        document.getElementById('run-btn').disabled = false;
+        document.getElementById('run-btn').textContent = 'Bind Variables';
+        return;
+      }
+
+      if (msg.type === 'done') {
+        setProgress(100, 'Complete.');
+        setTimeout(function() {
+          document.getElementById('progress-wrap').classList.remove('visible');
+          document.getElementById('results').classList.add('visible');
+          document.getElementById('res-colors').textContent = msg.colors || 0;
+          document.getElementById('res-radii').textContent  = msg.radii  || 0;
+          document.getElementById('res-nodes').textContent  = msg.nodes  || 0;
+
+          var errorBox    = document.getElementById('error-box');
+          var errorScroll = document.getElementById('error-scroll');
+          var errorHeader = document.getElementById('error-header');
+
+          if (msg.errorCount && msg.errorCount > 0) {
+            errorBox.classList.add('visible');
+            errorHeader.textContent = msg.errorCount + ' binding error' + (msg.errorCount > 1 ? 's' : '');
+            errorScroll.innerHTML = '';
+            var errs = msg.errors || [];
+            for (var i = 0; i < errs.length; i++) {
+              var row = document.createElement('div');
+              row.className = 'error-row';
+              row.textContent = errs[i];
+              errorScroll.appendChild(row);
+            }
+          } else {
+            errorBox.classList.remove('visible');
+          }
+
+          document.getElementById('run-btn').disabled = false;
+          document.getElementById('run-btn').textContent = 'Bind Variables';
+        }, 300);
+      }
+    };
+  </script>
+</body>
+</html>

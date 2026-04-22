@@ -40,7 +40,7 @@ const PADDING_FIELDS = ["paddingTop", "paddingRight", "paddingBottom", "paddingL
 // ============================================================
 figma.showUI(__html__, {
   width: 360,
-  height: 380,
+  height: 38 0,
   title: "Spacing Sync Pro",
   themeColors: true,
 });

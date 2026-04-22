@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Atomic Generator 02a</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:         #020617;
+      --surface:    #0f172a;
+      --surface-2:  #1e293b;
+      --border:     #334155;
+      --border-2:   #475569;
+      --text-1:     #f1f5f9;
+      --text-2:     #94a3b8;
+      --text-3:     #CBD5E1;
+      --primary:    #3b82f6;
+      --brand:      #8b5cf6;
+      --brand-deep: #7c3aed;
+      --positive:   #10b981;
+      --radius:     8px;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text-1);
+      font-size: 13px;
+      padding: 12px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+    .header-icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--primary), var(--brand));
+      border-radius: 6px; display: grid; place-items: center;
+      font-size: 14px; flex-shrink: 0;
+    }
+    .header h1 { font-size: 13px; font-weight: 600; color: var(--text-1); }
+    .header p  { font-size: 10px; color: var(--text-2); margin-top: 2px; }
+
+    /* Section */
+    .section {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 10px; margin-bottom: 8px;
+    }
+    .section-label {
+      font-size: 10px; font-weight: 600; color: var(--text-2);
+      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 7px;
+    }
+
+    /* Button grid */
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+
+    /* Buttons */
+    .btn {
+      display: flex; align-items: center; gap: 5px;
+      background: var(--surface-2); color: var(--text-1);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 6px 9px; font-size: 11px; font-weight: 500;
+      cursor: pointer; transition: background 0.12s, border-color 0.12s;
+      line-height: 1; white-space: nowrap; width: 100%;
+    }
+    .btn:hover  { background: var(--border); border-color: var(--border-2); }
+    .btn:active { background: var(--border-2); }
+    .btn.primary {
+      background: linear-gradient(135deg, var(--primary), var(--brand));
+      border-color: transparent; color: #fff;
+      justify-content: center; padding: 8px 12px; font-size: 12px;
+    }
+    .btn.primary:hover { opacity: 0.9; }
+    .btn .icon { font-size: 11px; flex-shrink: 0; }
+
+    /* Generate all button */
+    .btn-all-wrap { margin-bottom: 8px; }
+
+    /* Badge count */
+    .count {
+      margin-left: auto; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 1px 5px; font-size: 10px; color: var(--text-2);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-icon">⚛</div>
+    <div>
+      <h1>Atomic Generator</h1>
+      <p>plugin-02a — 16 Atoms</p>
+    </div>
+  </div>
+
+  <!-- Generate All -->
+  <div class="btn-all-wrap">
+    <button class="btn primary" onclick="send('generate-all')">
+      ⚡ Generate All Atoms (15)
+    </button>
+  </div>
+
+  <!-- Core Atoms -->
+  <div class="section">
+    <div class="section-label">Core Atoms</div>
+    <div class="grid">
+      <button class="btn" onclick="send('generate-button')">
+        <span class="icon">🔲</span> Button
+        <span class="count">48</span>
+      </button>
+      <button class="btn" onclick="send('generate-input')">
+        <span class="icon">📝</span> Input
+        <span class="count">12</span>
+      </button>
+      <button class="btn" onclick="send('generate-badge')">
+        <span class="icon">🏷</span> Badge
+        <span class="count">5</span>
+      </button>
+      <button class="btn" onclick="send('generate-checkbox')">
+        <span class="icon">☑</span> Checkbox
+        <span class="count">3</span>
+      </button>
+      <button class="btn" onclick="send('generate-radio')">
+        <span class="icon">⊙</span> Radio
+        <span class="count">3</span>
+      </button>
+      <button class="btn" onclick="send('generate-switcher')">
+        <span class="icon">⇌</span> Switcher
+        <span class="count">3</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Form Atoms -->
+  <div class="section">
+    <div class="section-label">Form Atoms</div>
+    <div class="grid">
+      <button class="btn" onclick="send('generate-select')">
+        <span class="icon">▾</span> Select
+        <span class="count">12</span>
+      </button>
+      <button class="btn" onclick="send('generate-search-field')">
+        <span class="icon">⊕</span> Search Field
+        <span class="count">12</span>
+      </button>
+      <button class="btn" onclick="send('generate-progress')">
+        <span class="icon">▬</span> Progress
+        <span class="count">20</span>
+      </button>
+      <button class="btn" onclick="send('generate-toggle')">
+        <span class="icon">⊞</span> Toggle
+        <span class="count">12</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Display Atoms -->
+  <div class="section">
+    <div class="section-label">Display Atoms</div>
+    <div class="grid">
+      <button class="btn" onclick="send('generate-avatar')">
+        <span class="icon">◉</span> Avatar
+        <span class="count">8</span>
+      </button>
+      <button class="btn" onclick="send('generate-alert')">
+        <span class="icon">⚑</span> Alert
+        <span class="count">4</span>
+      </button>
+      <button class="btn" onclick="send('generate-spinner')">
+        <span class="icon">↻</span> Spinner
+        <span class="count">3</span>
+      </button>
+      <button class="btn" onclick="send('generate-separator')">
+        <span class="icon">─</span> Separator
+        <span class="count">2</span>
+      </button>
+      <button class="btn" onclick="send('generate-tooltip')">
+        <span class="icon">◈</span> Tooltip
+        <span class="count">4</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function send(type) {
+      parent.postMessage({ pluginMessage: { type } }, '*');
+    }
+  </script>
+</body>
+</html>
