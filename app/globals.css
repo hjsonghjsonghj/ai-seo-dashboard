@@ -350,6 +350,7 @@
     @apply outline-brand-deep/50;
   }
 
+
   body {
     @apply bg-background text-foreground-primary antialiased;
     -webkit-font-smoothing: antialiased;

@@ -86,16 +86,13 @@ export function Sidebar() {
               onClick={() => setActiveItem(item.label)}
               className={cn(
                 "relative flex flex-col items-center justify-center gap-1 px-4 py-2 transition-colors",
-                isActive
-                  ? "text-primary-default"
-                  : "text-foreground-muted"
+                isActive ? "text-primary-default" : "text-foreground-muted"
               )}
               aria-label={item.label}
               aria-current={isActive ? "page" : undefined}
             >
               <Icon className="h-5 w-5" />
               <span className="text-label-micro-medium font-semibold">{item.label}</span>
-              {/* Active indicator - top bar */}
               {isActive && (
                 <span className="absolute -top-0.5 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-primary-default" aria-hidden="true" />
               )}

@@ -1,0 +1,10 @@
+{
+  "name": "Molecule Locator (03a)",
+  "id": "molecule-locator-03a",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "capabilities": [],
+  "enableProposedApi": true
+}

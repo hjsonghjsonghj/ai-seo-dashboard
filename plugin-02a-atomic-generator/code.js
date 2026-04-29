@@ -7,10 +7,22 @@
 //  - combineAsVariants(nodes, parent) -- correct API name
 //  - x,y set inline before combine (bounds required)
 //  - buildAtomFrame wraps ComponentSet in white Frame + overlay
+//
+// ── SSOT BINDING NOTE ────────────────────────────────────────
+// All atom paints (fills + strokes + text fills) bind to Figma
+// local Variables via the `boundVariables.color` field whenever
+// a matching Variable is found at runtime. The runtime variable
+// cache (_variableByName) is rebuilt at the start of every
+// generator via resolveVariablesFromFigma(). RGB values are kept
+// only as a static fallback (FALLBACK_TOKENS). This makes atoms
+// reactive: editing a Variable in Figma propagates into every
+// instance, satisfying bidirectional Code <-> Design sync.
 // ============================================================
 
-// ── COLOR TOKENS ─────────────────────────────────────────────
-const TOKENS = {
+// ── FALLBACK COLOR TOKENS ────────────────────────────────────
+// Static RGB last-resort. Used only when neither runtime _tokenMap
+// nor _variableByName carries an entry for the requested token name.
+const FALLBACK_TOKENS = {
   'background':           { r: 0.008, g: 0.024, b: 0.090 },
   'surface-default':      { r: 0.059, g: 0.090, b: 0.165 },
   'surface-hover':        { r: 0.118, g: 0.161, b: 0.231 },
@@ -59,10 +71,108 @@ const TYPOGRAPHY_MAP = {
 
 const LINE_H = { 30:36, 20:28, 18:27, 16:24, 14:20, 13:18, 12:16, 11:14, 10:14, 9:12 };
 
+// ── RUNTIME TOKEN + VARIABLE MAPS ────────────────────────────
+// Both maps are populated by resolveVariablesFromFigma() at the
+// start of every generator. Keys are normalized token names (e.g.
+// 'primary-default'). _tokenMap stores resolved RGB; _variableByName
+// stores Figma Variable references for binding.
+var _tokenMap        = {};
+var _variableByName  = {};
+
+// Resolve one COLOR Variable to {r,g,b}. Follows VARIABLE_ALIAS chain.
+function resolveVariableColor(variable) {
+  try {
+    var collection = figma.variables.getVariableCollectionById(variable.variableCollectionId);
+    if (!collection || !collection.modes || collection.modes.length === 0) return null;
+    var modeId = collection.modes[0].modeId;
+    var value  = variable.valuesByMode[modeId];
+    var depth  = 0;
+    while (value && value.type === 'VARIABLE_ALIAS' && depth < 5) {
+      var aliasVar = figma.variables.getVariableById(value.id);
+      if (!aliasVar) break;
+      var aliasCol = figma.variables.getVariableCollectionById(aliasVar.variableCollectionId);
+      if (!aliasCol || !aliasCol.modes || aliasCol.modes.length === 0) break;
+      value = aliasVar.valuesByMode[aliasCol.modes[0].modeId];
+      depth++;
+    }
+    if (value && typeof value.r !== 'undefined') {
+      return { r: value.r, g: value.g, b: value.b };
+    }
+  } catch (_) {}
+  return null;
+}
+
+// Build runtime _tokenMap (RGB) and _variableByName (Variable refs)
+// from Figma local COLOR variables. Each entry registered under
+// multiple normalized name forms so config tokens like 'primary-default'
+// match regardless of how the Variable collection is structured
+// (e.g. 'Primary/Default' or 'colors/primary-default').
+async function resolveVariablesFromFigma() {
+  var rgbMap = {};
+  var varMap = {};
+  try {
+    var vars = await figma.variables.getLocalVariablesAsync('COLOR');
+    if (!vars || vars.length === 0) {
+      _tokenMap = rgbMap; _variableByName = varMap; return;
+    }
+    for (var i = 0; i < vars.length; i++) {
+      var v        = vars[i];
+      var rgb      = resolveVariableColor(v);
+      var rawName  = v.name;
+      var segments = rawName.split('/');
+
+      var leaf  = segments[segments.length - 1].toLowerCase().replace(/\s+/g, '-');
+      var full  = rawName.toLowerCase().replace(/\//g, '-').replace(/\s+/g, '-');
+      var noPfx = segments.length > 1
+        ? segments.slice(1).join('/').toLowerCase().replace(/\//g, '-').replace(/\s+/g, '-')
+        : full;
+
+      if (rgb) {
+        if (!rgbMap[leaf])  rgbMap[leaf]  = rgb;
+        if (!rgbMap[full])  rgbMap[full]  = rgb;
+        if (!rgbMap[noPfx]) rgbMap[noPfx] = rgb;
+      }
+      if (!varMap[leaf])  varMap[leaf]  = v;
+      if (!varMap[full])  varMap[full]  = v;
+      if (!varMap[noPfx]) varMap[noPfx] = v;
+    }
+  } catch (_) {}
+  _tokenMap       = rgbMap;
+  _variableByName = varMap;
+}
+
 // ── BASE HELPERS ──────────────────────────────────────────────
-function tok(name) { return TOKENS[name] || { r:1, g:1, b:1 }; }
-function solid(color) { return [{ type: 'SOLID', color: color }]; }
-function solidOpacity(color, opacity) { return [{ type: 'SOLID', color: color, opacity: opacity }]; }
+// tok() priority: runtime variable RGB -> static fallback -> magenta.
+// Magenta (1,0,1) is a deliberate "missing token" sentinel to surface
+// typos visually instead of failing silently.
+function tok(name) {
+  return _tokenMap[name] || FALLBACK_TOKENS[name] || { r: 1, g: 0, b: 1 };
+}
+
+// Build a single SOLID Paint with optional Variable binding on
+// the color field. Falls back to a static RGB-only paint when no
+// variable matches the token name.
+function paint(tokenName, opacity) {
+  var op  = (opacity === undefined) ? 1 : opacity;
+  var rgb = tok(tokenName);
+  var p   = { type: 'SOLID', color: rgb, opacity: op };
+  var v   = _variableByName[tokenName];
+  if (v) {
+    p.boundVariables = {
+      color: { type: 'VARIABLE_ALIAS', id: v.id },
+    };
+  }
+  return p;
+}
+
+// Convenience: paint as a single-element array, ready to assign
+// to node.fills or node.strokes.
+function paints(tokenName, opacity) { return [paint(tokenName, opacity)]; }
+
+// Legacy raw-RGB helpers kept for spots that pass an already-resolved
+// {r,g,b} (e.g. PURPLE constants) and never bind to a Variable.
+function solid(color)                  { return [{ type: 'SOLID', color: color }]; }
+function solidOpacity(color, opacity)  { return [{ type: 'SOLID', color: color, opacity: opacity }]; }
 
 async function loadFonts() {
   var fallback = [
@@ -130,20 +240,25 @@ function makeText(chars, opts) {
     // Same: no textCase override on explicit path either.
   }
 
-  t.fills          = solid(tok(colorTok));
+  // Bind text fill to the Variable (when present) instead of baking
+  // a static RGB. This is what makes designer-side Variable edits
+  // propagate into already-instantiated text nodes.
+  t.fills          = paints(colorTok);
   t.textAutoResize = 'WIDTH_AND_HEIGHT';
   return t;
 }
 
-// Empty icon placeholder frame with dashed slate-400 outline.
+// Empty icon placeholder frame with dashed foreground-muted outline.
 // Designers replace the slot manually with the real lucide icon.
+// Stroke is bound to the foreground-muted Variable, so theme edits
+// propagate without re-running this generator.
 function makeIconSlot(size) {
   var slot = figma.createFrame();
   slot.name = 'Icon-Slot';
   slot.resize(size, size);
   slot.layoutMode = 'NONE';
   slot.fills = [];
-  slot.strokes = [{ type: 'SOLID', color: tok('foreground-muted'), opacity: 1 }];
+  slot.strokes = paints('foreground-muted');
   slot.strokeWeight = 1;
   slot.strokeAlign = 'INSIDE';
   slot.dashPattern = [4, 4];
@@ -158,19 +273,20 @@ function viewportCenter() {
 }
 
 // Snapshot canvas slot BEFORE new nodes are added to the page.
+// Positions new frames LEFT-TO-RIGHT (rightmost edge + 80px gap).
 function getNextPosition() {
   var visible = figma.currentPage.children.filter(function(n) { return n.x > -1000 && n.y > -1000; });
   if (visible.length === 0) {
     var vc = viewportCenter();
     return { x: Math.round(vc.x), y: Math.round(vc.y) };
   }
-  var maxBottom = -Infinity, refX = 0;
+  var maxRight = -Infinity, refY = 0;
   for (var i = 0; i < visible.length; i++) {
     var n = visible[i];
-    var b = n.y + (n.height || 0);
-    if (b > maxBottom) { maxBottom = b; refX = n.x; }
+    var r = n.x + (n.width || 0);
+    if (r > maxRight) { maxRight = r; refY = n.y; }
   }
-  return { x: refX, y: maxBottom + 80 };
+  return { x: maxRight + 80, y: refY };
 }
 
 async function deleteExistingNode(name) {
@@ -239,7 +355,7 @@ function buildAtomFrame(cs, title, config) {
   var COL_HDR_H   = 36;
   // ROW_HDR_W = size-group column (80) + state-label column (80, if present)
   var ROW_HDR_W   = (HAS_ROW_HDR ? 80 : 0) + (HAS_ROW_LBL ? 80 : 0);
-  var PURPLE      = tok('brand-deep');
+  var PURPLE_PAINT = paint('brand-deep');   // bound to brand-deep variable
 
   // Overlay dimensions: uniform cells, independent of cs.width/height
   var rowStep  = vGap > 0 ? vGap : cs.height;
@@ -259,8 +375,8 @@ function buildAtomFrame(cs, title, config) {
   wrapper.name         = title;
   wrapper.resize(wrapW, wrapH);
   wrapper.layoutMode   = 'NONE';
-  wrapper.fills        = solid(tok('background'));   // #020617
-  wrapper.strokes      = [{ type: 'SOLID', color: tok('border-secondary'), opacity: 1 }];
+  wrapper.fills        = paints('background');         // bound to background var
+  wrapper.strokes      = paints('border-secondary');   // bound to border-secondary var
   wrapper.strokeWeight = 1;
   wrapper.strokeAlign  = 'INSIDE';
   wrapper.cornerRadius = RADIUS.xl;
@@ -318,7 +434,7 @@ function buildAtomFrame(cs, title, config) {
       cell.resize(hGap, rowStep);   // all cells same size
       cell.layoutMode   = 'NONE';
       cell.fills        = [];
-      cell.strokes      = [{ type: 'SOLID', color: PURPLE, opacity: 1 }];
+      cell.strokes      = [PURPLE_PAINT];
       cell.strokeWeight = 1;
       cell.strokeAlign  = 'INSIDE';
       cell.dashPattern  = [4, 4];
@@ -342,32 +458,51 @@ function buildAtomFrame(cs, title, config) {
 }
 
 // ══════════════════════════════════════════════════════════════
-// ── ATOM 1: BUTTON  (4 variants × 4 states × 3 sizes = 48) ──
+// ── ATOM 1: BUTTON  (5 variants × 4 states × 3 sizes = 60) ──
 // ══════════════════════════════════════════════════════════════
+// React source: components/ui/button.tsx (cva variants)
+//   default     → primary
+//   secondary   → secondary
+//   ghost       → ghost
+//   destructive → destructive
+//   outline     → outline           (mapped from dark-mode resolution)
+//   link        → not represented (text-only, lives in typography scale)
+//
+// outline variant resolved against dark theme (project default):
+//   default:  bg = input @ 30%,  border = input,        text = foreground-primary
+//   hover:    bg = input @ 50%,  border = input,        text = foreground-strong
+//   focus:    bg = input @ 30%,  border = brand-deep,   text = foreground-primary
+//   disabled: bg = input @ 30%,  border = input,        text = foreground-muted (opacity 0.5)
 const BUTTON_VARIANTS = {
   primary: {
-    default:  { bg: 'primary-default', bgOp: 1, text: 'foreground-strong',    stroke: null,             strokeW: 0 },
-    hover:    { bg: 'primary-default', bgOp: 1, text: 'foreground-strong',    stroke: 'border-primary', strokeW: 2 },
-    focus:    { bg: 'primary-default', bgOp: 1, text: 'foreground-strong',    stroke: 'brand-deep',     strokeW: 2 },
-    disabled: { bg: 'surface-hover',   bgOp: 1, text: 'foreground-muted',     stroke: null,             strokeW: 0, compOpacity: 0.5 },
+    default:  { bg: 'primary-default', bgOp: 1,    text: 'foreground-strong',    stroke: null,               strokeW: 0 },
+    hover:    { bg: 'primary-default', bgOp: 1,    text: 'foreground-strong',    stroke: 'border-primary',   strokeW: 2 },
+    focus:    { bg: 'primary-default', bgOp: 1,    text: 'foreground-strong',    stroke: 'brand-deep',       strokeW: 2 },
+    disabled: { bg: 'surface-hover',   bgOp: 1,    text: 'foreground-muted',     stroke: null,               strokeW: 0, compOpacity: 0.5 },
   },
   secondary: {
-    default:  { bg: 'surface-hover',   bgOp: 1, text: 'foreground-secondary', stroke: 'border-secondary', strokeW: 1 },
-    hover:    { bg: 'surface-default', bgOp: 1, text: 'foreground-primary',   stroke: 'border-primary',   strokeW: 1 },
-    focus:    { bg: 'surface-default', bgOp: 1, text: 'foreground-primary',   stroke: 'brand-deep',       strokeW: 2 },
-    disabled: { bg: 'surface-hover',   bgOp: 1, text: 'foreground-muted',     stroke: 'border-secondary', strokeW: 1, compOpacity: 0.5 },
+    default:  { bg: 'surface-hover',   bgOp: 1,    text: 'foreground-secondary', stroke: 'border-secondary', strokeW: 1 },
+    hover:    { bg: 'surface-default', bgOp: 1,    text: 'foreground-primary',   stroke: 'border-primary',   strokeW: 1 },
+    focus:    { bg: 'surface-default', bgOp: 1,    text: 'foreground-primary',   stroke: 'brand-deep',       strokeW: 2 },
+    disabled: { bg: 'surface-hover',   bgOp: 1,    text: 'foreground-muted',     stroke: 'border-secondary', strokeW: 1, compOpacity: 0.5 },
+  },
+  outline: {
+    default:  { bg: 'input',           bgOp: 0.3,  text: 'foreground-primary',   stroke: 'input',            strokeW: 1 },
+    hover:    { bg: 'input',           bgOp: 0.5,  text: 'foreground-strong',    stroke: 'input',            strokeW: 1 },
+    focus:    { bg: 'input',           bgOp: 0.3,  text: 'foreground-primary',   stroke: 'brand-deep',       strokeW: 2 },
+    disabled: { bg: 'input',           bgOp: 0.3,  text: 'foreground-muted',     stroke: 'input',            strokeW: 1, compOpacity: 0.5 },
   },
   ghost: {
-    default:  { bg: null,              bgOp: 1, text: 'foreground-primary',   stroke: null,             strokeW: 0 },
-    hover:    { bg: 'surface-hover',   bgOp: 1, text: 'foreground-primary',   stroke: null,             strokeW: 0 },
-    focus:    { bg: 'surface-hover',   bgOp: 1, text: 'foreground-primary',   stroke: 'brand-deep',     strokeW: 2 },
-    disabled: { bg: null,              bgOp: 1, text: 'foreground-muted',     stroke: null,             strokeW: 0, compOpacity: 0.5 },
+    default:  { bg: null,              bgOp: 1,    text: 'foreground-primary',   stroke: null,               strokeW: 0 },
+    hover:    { bg: 'surface-hover',   bgOp: 1,    text: 'foreground-primary',   stroke: null,               strokeW: 0 },
+    focus:    { bg: 'surface-hover',   bgOp: 1,    text: 'foreground-primary',   stroke: 'brand-deep',       strokeW: 2 },
+    disabled: { bg: null,              bgOp: 1,    text: 'foreground-muted',     stroke: null,               strokeW: 0, compOpacity: 0.5 },
   },
   destructive: {
-    default:  { bg: 'danger-default',  bgOp: 1, text: 'foreground-strong',    stroke: null,             strokeW: 0 },
-    hover:    { bg: 'danger-deep',     bgOp: 1, text: 'foreground-strong',    stroke: null,             strokeW: 0 },
-    focus:    { bg: 'danger-default',  bgOp: 1, text: 'foreground-strong',    stroke: 'danger-soft',    strokeW: 2 },
-    disabled: { bg: 'surface-hover',   bgOp: 1, text: 'foreground-muted',     stroke: null,             strokeW: 0, compOpacity: 0.5 },
+    default:  { bg: 'danger-default',  bgOp: 1,    text: 'foreground-strong',    stroke: null,               strokeW: 0 },
+    hover:    { bg: 'danger-deep',     bgOp: 1,    text: 'foreground-strong',    stroke: null,               strokeW: 0 },
+    focus:    { bg: 'danger-default',  bgOp: 1,    text: 'foreground-strong',    stroke: 'danger-soft',      strokeW: 2 },
+    disabled: { bg: 'surface-hover',   bgOp: 1,    text: 'foreground-muted',     stroke: null,               strokeW: 0, compOpacity: 0.5 },
   },
 };
 
@@ -382,6 +517,7 @@ async function generateButtonAtom() {
   try {
     step = 'delete'; await deleteExistingNode('Button');
     step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
 
     var BTN_H_GAP = 240;
     var BTN_V_GAP = 140;
@@ -423,11 +559,11 @@ async function generateButtonAtom() {
           comp.cornerRadius  = RADIUS.md;
 
           if (stConf.bg) {
-            comp.fills = stConf.bgOp < 1 ? solidOpacity(tok(stConf.bg), stConf.bgOp) : solid(tok(stConf.bg));
+            comp.fills = paints(stConf.bg, stConf.bgOp);
           } else { comp.fills = []; }
 
           if (stConf.stroke && stConf.strokeW > 0) {
-            comp.strokes = solid(tok(stConf.stroke));
+            comp.strokes = paints(stConf.stroke);
             comp.strokeWeight = stConf.strokeW;
             comp.strokeAlign  = 'INSIDE';
           } else { comp.strokes = []; }
@@ -500,6 +636,7 @@ async function generateInputAtom() {
   try {
     step = 'delete'; await deleteExistingNode('Input');
     step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
 
     var INP_H_GAP = 380;
     var INP_V_GAP = 140;
@@ -549,8 +686,8 @@ async function generateInputAtom() {
         inputBox.paddingTop   = 0;        inputBox.paddingBottom = 0;
         inputBox.itemSpacing  = 8;
         inputBox.cornerRadius = RADIUS.md;
-        inputBox.fills   = solid(tok(stConf.bg));
-        inputBox.strokes = solid(tok(stConf.border));
+        inputBox.fills   = paints(stConf.bg);
+        inputBox.strokes = paints(stConf.border);
         inputBox.strokeWeight = stConf.borderW;
         inputBox.strokeAlign  = 'INSIDE';
 
@@ -612,6 +749,7 @@ async function generateBadgeAtom() {
   try {
     step = 'delete'; await deleteExistingNode('Badge');
     step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
 
     var BADGE_H_GAP = 140;
 
@@ -638,7 +776,7 @@ async function generateBadgeAtom() {
       comp.itemSpacing   = 4;
       comp.cornerRadius  = 9999;
       comp.strokes       = [];
-      comp.fills = solidOpacity(tok(vConf.bgColor), vConf.bgOpacity);
+      comp.fills = paints(vConf.bgColor, vConf.bgOpacity);
 
       var lbl = makeText(vConf.label, { colorTok: vConf.textColor, typographyKey: 'label-xs-caps-semibold' });
       comp.appendChild(lbl);
@@ -685,6 +823,7 @@ async function generateCheckboxAtom() {
   try {
     step = 'delete'; await deleteExistingNode('Checkbox');
     step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
 
     var CB_H_GAP = 240;
     var components = [];
@@ -717,8 +856,8 @@ async function generateCheckboxAtom() {
       box.primaryAxisSizingMode = 'FIXED';
       box.counterAxisSizingMode = 'FIXED';
       box.cornerRadius  = 4;
-      box.fills   = solid(tok(sConf.bg));
-      box.strokes = solid(tok(sConf.border));
+      box.fills   = paints(sConf.bg);
+      box.strokes = paints(sConf.border);
       box.strokeWeight = 1.5;
       box.strokeAlign  = 'INSIDE';
 
@@ -775,6 +914,7 @@ async function generateRadioAtom() {
   try {
     step = 'delete'; await deleteExistingNode('Radio');
     step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
 
     var RADIO_H_GAP = 240;
     var components = [];
@@ -803,15 +943,15 @@ async function generateRadioAtom() {
       circle.resize(16, 16);
       circle.layoutMode   = 'NONE';
       circle.cornerRadius = 8;
-      circle.fills   = solid(tok(sConf.bg));
-      circle.strokes = solid(tok(sConf.border));
+      circle.fills   = paints(sConf.bg);
+      circle.strokes = paints(sConf.border);
       circle.strokeWeight = 1.5;
       circle.strokeAlign  = 'INSIDE';
 
       if (sConf.hasDot) {
         var dot = figma.createEllipse();
         dot.resize(6, 6);
-        dot.fills = solid(tok('foreground-strong'));
+        dot.fills = paints('foreground-strong');
         dot.x = 5; dot.y = 5;
         circle.appendChild(dot);
       }
@@ -863,6 +1003,7 @@ async function generateSwitcherAtom() {
   try {
     step = 'delete'; await deleteExistingNode('Switcher');
     step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
 
     var SW_H_GAP = 240;
     var components = [];
@@ -891,7 +1032,7 @@ async function generateSwitcherAtom() {
       track.resize(32, 18);
       track.layoutMode   = 'NONE';
       track.cornerRadius = 9;
-      track.fills   = solid(tok(sConf.trackBg));
+      track.fills   = paints(sConf.trackBg);
       track.strokes = [];
 
       var thumb = figma.createFrame();
@@ -899,7 +1040,7 @@ async function generateSwitcherAtom() {
       thumb.resize(14, 14);
       thumb.layoutMode   = 'NONE';
       thumb.cornerRadius = 7;
-      thumb.fills = solid(tok('foreground-strong'));
+      thumb.fills = paints('foreground-strong');
       thumb.x = sConf.thumbX;
       thumb.y = 2;
       track.appendChild(thumb);
@@ -957,6 +1098,7 @@ async function generateSelectAtom() {
   try {
     step = 'delete'; await deleteExistingNode('Select');
     step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
     var SEL_H = 360, SEL_V = 140;
     var components = [];
     var stKeys    = Object.keys(SELECT_STATES);
@@ -976,8 +1118,8 @@ async function generateSelectAtom() {
         comp.paddingLeft = zC.ph; comp.paddingRight = zC.ph;
         comp.paddingTop = 0; comp.paddingBottom = 0; comp.itemSpacing = 8;
         comp.cornerRadius = RADIUS.md;
-        comp.fills   = solid(tok(stC.bg));
-        comp.strokes = solid(tok(stC.border)); comp.strokeWeight = stC.borderW; comp.strokeAlign = 'INSIDE';
+        comp.fills   = paints(stC.bg);
+        comp.strokes = paints(stC.border); comp.strokeWeight = stC.borderW; comp.strokeAlign = 'INSIDE';
         var valStr = (stN === 'selected') ? 'Option selected' : 'Select option...';
         var val = makeText(valStr, { colorTok: stC.textColor, typographyKey: 'body-sm-medium' });
         comp.appendChild(val);
@@ -1025,6 +1167,7 @@ async function generateSearchFieldAtom() {
   try {
     step = 'delete'; await deleteExistingNode('SearchField');
     step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
     var SRC_H = 380, SRC_V = 140;
     var components = [];
     var stKeys    = Object.keys(SEARCH_STATES);
@@ -1044,8 +1187,8 @@ async function generateSearchFieldAtom() {
         comp.paddingLeft = zC.ph; comp.paddingRight = zC.ph;
         comp.paddingTop = 0; comp.paddingBottom = 0; comp.itemSpacing = 8;
         comp.cornerRadius = RADIUS.md;
-        comp.fills   = solid(tok(stC.bg));
-        comp.strokes = solid(tok(stC.border)); comp.strokeWeight = stC.borderW; comp.strokeAlign = 'INSIDE';
+        comp.fills   = paints(stC.bg);
+        comp.strokes = paints(stC.border); comp.strokeWeight = stC.borderW; comp.strokeAlign = 'INSIDE';
         var iconTxt = makeIconSlot(16);
         comp.appendChild(iconTxt);
         var phStr = (stN === 'filled') ? 'Search results...' : 'Search...';
@@ -1091,6 +1234,7 @@ async function generateProgressAtom() {
   try {
     step = 'delete'; await deleteExistingNode('Progress');
     step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
     var PRG_H = 300, PRG_V = 100;
     var components = [];
     var colorKeys = Object.keys(PROGRESS_COLORS);
@@ -1105,7 +1249,7 @@ async function generateProgressAtom() {
         comp.layoutMode = 'NONE';
         comp.resize(PROGRESS_BAR_W, PROGRESS_BAR_H);
         comp.cornerRadius = 4;
-        comp.fills   = solid(tok('surface-hover'));
+        comp.fills   = paints('surface-hover');
         comp.strokes = [];
         if (pct > 0) {
           var fill = figma.createFrame();
@@ -1113,7 +1257,7 @@ async function generateProgressAtom() {
           fill.resize(Math.max(1, Math.round(PROGRESS_BAR_W * pct / 100)), PROGRESS_BAR_H);
           fill.layoutMode = 'NONE';
           fill.cornerRadius = 4;
-          fill.fills   = solid(tok(cC.fillColor));
+          fill.fills   = paints(cC.fillColor);
           fill.strokes = [];
           fill.x = 0; fill.y = 0;
           comp.appendChild(fill);
@@ -1158,6 +1302,7 @@ async function generateAvatarAtom() {
   try {
     step = 'delete'; await deleteExistingNode('Avatar');
     step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
     var AVT_H = 160, AVT_V = 120;
     var components = [];
     var sizeKeys  = Object.keys(AVATAR_SIZES);
@@ -1173,8 +1318,8 @@ async function generateAvatarAtom() {
         comp.layoutMode = 'NONE';
         comp.resize(sC.d, sC.d);
         comp.cornerRadius = sC.d / 2;
-        comp.fills   = solidOpacity(tok('brand-default'), 0.25);
-        comp.strokes = [{ type: 'SOLID', color: tok('brand-soft'), opacity: 0.4 }];
+        comp.fills   = paints('brand-default', 0.25);
+        comp.strokes = paints('brand-soft', 0.4);
         comp.strokeWeight = 1; comp.strokeAlign = 'INSIDE';
         var initials = makeText('HJ', { size: sC.fontSize, weight: sC.weight, colorTok: 'brand-soft' });
         comp.appendChild(initials);
@@ -1185,8 +1330,8 @@ async function generateAvatarAtom() {
           var dot = figma.createEllipse();
           dot.name = 'indicator';
           dot.resize(dotD, dotD);
-          dot.fills   = solid(tok('positive-default'));
-          dot.strokes = solid(tok('background'));
+          dot.fills   = paints('positive-default');
+          dot.strokes = paints('background');
           dot.strokeWeight = 1.5;
           dot.x = sC.d - dotD;
           dot.y = sC.d - dotD;
@@ -1227,6 +1372,7 @@ async function generateAlertAtom() {
   try {
     step = 'delete'; await deleteExistingNode('Alert');
     step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
     var ALT_H = 360, ALT_V = 120;
     var components = [];
     var varKeys = Object.keys(ALERT_VARIANTS);
@@ -1244,8 +1390,8 @@ async function generateAlertAtom() {
       comp.paddingTop = 14; comp.paddingBottom = 14;
       comp.itemSpacing = 12;
       comp.cornerRadius = RADIUS.lg;
-      comp.fills   = solidOpacity(tok(vC.bgColor), vC.bgOpacity);
-      comp.strokes = solid(tok(vC.border)); comp.strokeWeight = 1; comp.strokeAlign = 'INSIDE';
+      comp.fills   = paints(vC.bgColor, vC.bgOpacity);
+      comp.strokes = paints(vC.border); comp.strokeWeight = 1; comp.strokeAlign = 'INSIDE';
 
       // Icon slot — designer drops in the real lucide icon
       var iconBox = makeIconSlot(16);
@@ -1296,6 +1442,7 @@ async function generateSpinnerAtom() {
   try {
     step = 'delete'; await deleteExistingNode('Spinner');
     step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
     var SPN_H = 120, SPN_V = 80;
     var components = [];
     var szKeys = Object.keys(SPINNER_SIZES);
@@ -1312,7 +1459,7 @@ async function generateSpinnerAtom() {
       var track = figma.createEllipse();
       track.name = 'track';
       track.resize(sC.d, sC.d);
-      track.fills   = solid(tok('border-primary'));
+      track.fills   = paints('border-primary');
       track.strokes = [];
       track.arcData = { startingAngle: 0, endingAngle: 0, innerRadius: 0.75 };
       track.x = 0; track.y = 0;
@@ -1321,7 +1468,7 @@ async function generateSpinnerAtom() {
       var arc = figma.createEllipse();
       arc.name = 'arc';
       arc.resize(sC.d, sC.d);
-      arc.fills   = solid(tok('brand-default'));
+      arc.fills   = paints('brand-default');
       arc.strokes = [];
       arc.arcData = { startingAngle: -Math.PI / 2, endingAngle: Math.PI, innerRadius: 0.75 };
       arc.x = 0; arc.y = 0;
@@ -1352,6 +1499,7 @@ async function generateSeparatorAtom() {
   try {
     step = 'delete'; await deleteExistingNode('Separator');
     step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
     var SEP_H = 280, SEP_V = 100;
     var components = [];
     var hComp = figma.createComponent();
@@ -1359,7 +1507,7 @@ async function generateSeparatorAtom() {
     hComp.x = 0; hComp.y = 0;
     hComp.layoutMode = 'NONE';
     hComp.resize(240, 1);
-    hComp.fills   = solid(tok('border-secondary'));
+    hComp.fills   = paints('border-secondary');
     hComp.strokes = [];
     components.push(hComp);
     var vComp = figma.createComponent();
@@ -1367,7 +1515,7 @@ async function generateSeparatorAtom() {
     vComp.x = SEP_H; vComp.y = 0;
     vComp.layoutMode = 'NONE';
     vComp.resize(1, 80);
-    vComp.fills   = solid(tok('border-secondary'));
+    vComp.fills   = paints('border-secondary');
     vComp.strokes = [];
     components.push(vComp);
     step = 'combine';
@@ -1406,6 +1554,7 @@ async function generateToggleAtom() {
   try {
     step = 'delete'; await deleteExistingNode('Toggle');
     step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
     var TGL_H = 140, TGL_V = 120;
     var components = [];
     var stKeys    = Object.keys(TOGGLE_STATES);
@@ -1425,8 +1574,8 @@ async function generateToggleAtom() {
         comp.paddingLeft = 0; comp.paddingRight = 0;
         comp.paddingTop = 0;  comp.paddingBottom = 0;
         comp.cornerRadius = RADIUS.md;
-        comp.fills   = stC.bg ? solid(tok(stC.bg)) : [];
-        comp.strokes = solid(tok(stC.stroke)); comp.strokeWeight = stC.strokeW; comp.strokeAlign = 'INSIDE';
+        comp.fills   = stC.bg ? paints(stC.bg) : [];
+        comp.strokes = paints(stC.stroke); comp.strokeWeight = stC.strokeW; comp.strokeAlign = 'INSIDE';
         var icon = makeIconSlot(zC.iconSize);
         comp.appendChild(icon);
         if (stC.compOpacity < 1) { comp.opacity = stC.compOpacity; }
@@ -1460,6 +1609,7 @@ async function generateTooltipAtom() {
   try {
     step = 'delete'; await deleteExistingNode('Tooltip');
     step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
     var TIP_W = 160, TIP_H_INNER = 32, ARROW = 8;
     var TTP_H = 260, TTP_V = 100;
     var components = [];
@@ -1485,8 +1635,8 @@ async function generateTooltipAtom() {
       bubble.paddingLeft = 10; bubble.paddingRight = 10;
       bubble.paddingTop = 6;   bubble.paddingBottom = 6;
       bubble.cornerRadius = RADIUS.md;
-      bubble.fills   = solid(tok('surface-hover'));
-      bubble.strokes = solid(tok('border-primary')); bubble.strokeWeight = 1; bubble.strokeAlign = 'INSIDE';
+      bubble.fills   = paints('surface-hover');
+      bubble.strokes = paints('border-primary'); bubble.strokeWeight = 1; bubble.strokeAlign = 'INSIDE';
       var tipTxt = makeText('Tooltip label', { colorTok: 'foreground-secondary', typographyKey: 'label-xs-medium' });
       bubble.appendChild(tipTxt);
       if (placement === 'top')    { bubble.x = 0; bubble.y = 0; }
@@ -1497,7 +1647,7 @@ async function generateTooltipAtom() {
       // Arrow: proper triangle vector for each placement direction
       var arrowVec = figma.createVector();
       arrowVec.name = 'arrow';
-      arrowVec.fills   = solid(tok('border-primary'));
+      arrowVec.fills   = paints('border-primary');
       arrowVec.strokes = [];
       if (placement === 'top') {
         // Downward triangle — base at top, tip at bottom
@@ -1543,6 +1693,117 @@ async function generateTooltipAtom() {
 }
 
 // ══════════════════════════════════════════════════════════════
+// ── ATOM 16: PROGRESS RING  (3 state x 2 size = 6 variants) ──
+// SVG-arc ring using Figma ellipse arcData + innerRadius.
+// Mirrors the ProgressRing molecule (MOLECULES.md #03) as a
+// self-contained atom so 03b can createInstance() it directly.
+//
+// States : critical (20%, danger)  moderate (55%, caution)  good (85%, positive)
+// Sizes  : sm (40px -- desktop table)  lg (44px -- mobile card)
+// Arc    : startingAngle = -PI/2 (12 o'clock), sweeps clockwise
+//          endingAngle   = -PI/2 + (progress/100) * 2*PI
+// Track  : startingAngle=0 endingAngle=0 -> full circle
+// innerRadius: (radius - strokePx) / radius  where strokePx = 3
+// ══════════════════════════════════════════════════════════════
+async function generateProgressRingAtom() {
+  var step = 'init';
+  try {
+    step = 'delete'; await deleteExistingNode('ProgressRing');
+    step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
+
+    var RING_STATES = [
+      { key: 'critical', progress: 20, arcTok: 'danger-default',   textTok: 'danger-soft'   },
+      { key: 'moderate', progress: 55, arcTok: 'caution-default',  textTok: 'caution-soft'  },
+      { key: 'good',     progress: 85, arcTok: 'positive-default', textTok: 'positive-soft' },
+    ];
+    var RING_SIZES = [
+      { key: 'sm', d: 40 },
+      { key: 'lg', d: 44 },
+    ];
+
+    var H_GAP = 120;
+    var V_GAP = 100;
+    var components = [];
+
+    for (var si = 0; si < RING_SIZES.length; si++) {
+      var sz = RING_SIZES[si];
+      var d  = sz.d;
+      // innerRadius so ring wall = 3px: (r - 3) / r
+      var ir = (d / 2 - 3) / (d / 2);
+
+      for (var ti = 0; ti < RING_STATES.length; ti++) {
+        var st = RING_STATES[ti];
+        step = 'comp[' + sz.key + '/' + st.key + ']';
+
+        var comp = figma.createComponent();
+        comp.name = 'size=' + sz.key + ', state=' + st.key;
+        comp.x    = ti * H_GAP;
+        comp.y    = si * V_GAP;
+        comp.layoutMode = 'NONE';
+        comp.resize(d, d);
+        comp.fills   = [];
+        comp.strokes = [];
+        comp.clipsContent = false;
+
+        // Track -- full circle (startingAngle === endingAngle means 360 deg)
+        var track = figma.createEllipse();
+        track.name   = 'track';
+        track.resize(d, d);
+        track.fills   = paints('border-secondary');
+        track.strokes = [];
+        track.arcData = { startingAngle: 0, endingAngle: 0, innerRadius: ir };
+        comp.appendChild(track);
+        track.x = 0; track.y = 0;
+
+        // Arc -- progress slice, starts at 12 o'clock, sweeps clockwise
+        var endAngle = -Math.PI / 2 + (st.progress / 100) * 2 * Math.PI;
+        var arc = figma.createEllipse();
+        arc.name   = 'arc';
+        arc.resize(d, d);
+        arc.fills   = paints(st.arcTok);
+        arc.strokes = [];
+        arc.arcData = { startingAngle: -Math.PI / 2, endingAngle: endAngle, innerRadius: ir };
+        comp.appendChild(arc);
+        arc.x = 0; arc.y = 0;
+
+        // Percentage label -- centered
+        var lbl = makeText(st.progress + '%', {
+          colorTok: st.textTok,
+          typographyKey: 'label-micro-medium',
+        });
+        comp.appendChild(lbl);
+        lbl.x = Math.round((d - lbl.width)  / 2);
+        lbl.y = Math.round((d - lbl.height) / 2);
+
+        components.push(comp);
+      }
+    }
+
+    step = 'combine';
+    var pos = getNextPosition();
+    var cs  = figma.combineAsVariants(components, figma.currentPage);
+    cs.name = 'ProgressRing';
+    try { cs.layoutMode = 'NONE'; } catch (_) {}
+    centerInCells(cs, components, H_GAP, V_GAP, cs.height);
+
+    step = 'wrap';
+    var wrapper = buildAtomFrame(cs, 'ProgressRing', {
+      hGap: H_GAP, vGap: V_GAP,
+      numCols: RING_STATES.length,
+      numRows: RING_SIZES.length,
+      colHeaders: RING_STATES.map(function(s) { return s.key; }),
+      rowGroups:  RING_SIZES.map(function(s, i) { return { label: s.key.toUpperCase(), rowIndex: i }; }),
+    });
+    wrapper.x = pos.x; wrapper.y = pos.y;
+    figma.viewport.scrollAndZoomIntoView([wrapper]);
+    figma.notify('✅ ProgressRing 생성 완료!');
+  } catch (err) {
+    figma.notify('❌ ProgressRing[' + step + ']: ' + ((err && err.message) || err), { error: true });
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
 // ── GENERATE ALL ─────────────────────────────────────────────
 // ══════════════════════════════════════════════════════════════
 async function generateAllAtoms() {
@@ -1563,7 +1824,8 @@ async function generateAllAtoms() {
     await generateSeparatorAtom();
     await generateToggleAtom();
     await generateTooltipAtom();
-    figma.notify('✅ 모든 Atomic Components 생성 완료! (15개)');
+    await generateProgressRingAtom();
+    figma.notify('✅ 모든 Atomic Components 생성 완료! (16개)');
   } catch (err) {
     var msg = (err && err.message) ? err.message : String(err);
     figma.notify('❌ generateAllAtoms: ' + msg, { error: true });
@@ -1594,7 +1856,8 @@ figma.ui.onmessage = async function(msg) {
       case 'generate-spinner':      await generateSpinnerAtom();       break;
       case 'generate-separator':    await generateSeparatorAtom();     break;
       case 'generate-toggle':       await generateToggleAtom();        break;
-      case 'generate-tooltip':      await generateTooltipAtom();       break;
+      case 'generate-tooltip':       await generateTooltipAtom();       break;
+      case 'generate-progress-ring': await generateProgressRingAtom();  break;
       default: figma.notify('Unknown action: ' + msg.type, { error: true });
     }
   } catch (err) {

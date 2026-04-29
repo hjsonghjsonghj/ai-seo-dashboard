@@ -1,8 +1,10 @@
 "use client"
 
-function ShimmerBlock({ className }: { className: string }) {
+import React from 'react'
+
+function ShimmerBlock({ className, style }: { className: string; style?: React.CSSProperties }) {
   return (
-    <div className={`relative overflow-hidden ${className}`}>
+    <div className={`relative overflow-hidden ${className}`} style={style}>
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-border-secondary/35 to-transparent" style={{ transform: "translateX(-100%)", animation: "citations-shimmer 1.2s ease-in-out infinite" }} />
     </div>
   )
@@ -18,7 +20,7 @@ export function CitationsDetailTableSkeleton({ rows = 25 }: { rows?: number }) {
           <thead>
             <tr className="border-b border-border-secondary/50 bg-surface-default/30">
               <th className="w-10 px-3 py-3 text-center">
-                <ShimmerBlock className="mx-auto h-4 w-4 rounded border border-border-primary bg-surface-hover/30" />
+                <ShimmerBlock className="mx-auto h-4 w-4 border border-border-primary bg-surface-hover/30" style={{ borderRadius: '4px' }} />
               </th>
               <th className="px-4 py-3 text-center text-label-xs-caps-semibold text-foreground-tertiary">
                 <ShimmerBlock className="mx-auto h-4 w-20 rounded bg-surface-hover/35" />
@@ -48,7 +50,7 @@ export function CitationsDetailTableSkeleton({ rows = 25 }: { rows?: number }) {
             {Array.from({ length: rows }).map((_, idx) => (
               <tr key={idx} className="transition-colors">
                 <td className="w-10 px-3 py-2.5 text-center">
-                  <ShimmerBlock className="mx-auto h-4 w-4 rounded border border-border-primary bg-surface-hover/30" />
+                  <ShimmerBlock className="mx-auto h-4 w-4 border border-border-primary bg-surface-hover/30" style={{ borderRadius: '4px' }} />
                 </td>
                 <td className="px-4 py-2.5">
                   <ShimmerBlock className="h-4 w-24 rounded bg-surface-hover/35" />

@@ -1,0 +1,133 @@
+{
+  "version": "1",
+  "molecules": {
+    "ChecklistItem": {
+      "hGap": 360,
+      "textWidth": 220,
+      "sampleText": "Add structured data markup for better AI comprehension",
+      "textTypography": "body-sm-medium",
+      "variants": [
+        { "key": "undone", "checkState": "unchecked", "textTok": "foreground-primary"  },
+        { "key": "done",   "checkState": "checked",   "textTok": "foreground-tertiary" }
+      ]
+    },
+    "ChartLegendItem": {
+      "hGap": 180,
+      "dotSize": 8,
+      "labelTypography": "body-micro-medium",
+      "labelTok": "foreground-secondary",
+      "variants": [
+        { "key": "ai-discovery",   "dotTok": "brand-default",    "label": "AI Discovery"   },
+        { "key": "organic-search", "dotTok": "positive-default", "label": "Organic Search" },
+        { "key": "citations",      "dotTok": "chart-citations",  "label": "Citations"      }
+      ]
+    },
+    "NavItem": {
+      "hGap": 120,
+      "vGap": 100,
+      "platforms": ["desktop", "mobile"],
+      "states":    ["default", "active"],
+      "desktop": {
+        "size": 40,
+        "iconSize": 20,
+        "cornerRadius": 8,
+        "activeBgTok": "surface-hover",
+        "activeBarW": 4,
+        "activeBarH": 20,
+        "activeBarOffsetX": -8,
+        "activeBarTok": "primary-default",
+        "activeIconTok": "primary-default",
+        "defaultIconTok": "foreground-muted"
+      },
+      "mobile": {
+        "width": 72,
+        "iconSize": 20,
+        "paddingBottom": 8,
+        "itemSpacing": 4,
+        "paddingTopActive": 0,
+        "paddingTopInactive": 11,
+        "indicatorW": 32,
+        "indicatorH": 2,
+        "indicatorTok": "primary-default",
+        "activeIconTok": "primary-default",
+        "defaultIconTok": "foreground-muted",
+        "sampleLabel": "Overview",
+        "labelTypography": "label-micro-medium",
+        "labelWeight": "Semi Bold"
+      }
+    },
+    "BulkActionBar": {
+      "_ssotNote": "React Export uses variant=outline, but Figma Button atom (plugin-02a) currently has only primary|secondary|ghost|destructive. Until plugin-02a adds an outline variant, this falls back to secondary (closest visual match).",
+      "hGap": 640,
+      "gap": 12,
+      "paddingH": 16,
+      "paddingV": 12,
+      "cornerRadius": 16,
+      "bgTok": "background",
+      "borderTok": "border-secondary",
+      "countLabel": "3 citations selected",
+      "countLabelTypography": "body-md-medium",
+      "countLabelTok": "foreground-secondary",
+      "buttons": [
+        { "variant": "secondary", "size": "sm", "state": "default", "label": "Export",           "fallbackW": 80,  "fallbackH": 32, "_reactVariant": "outline" },
+        { "variant": "primary",   "size": "sm", "state": "default", "label": "Mark as Resolved", "fallbackW": 140, "fallbackH": 32, "_reactVariant": "default" },
+        { "variant": "ghost",     "size": "sm", "state": "default", "label": "Clear Selection",  "fallbackW": 120, "fallbackH": 32, "_reactVariant": "ghost"   }
+      ]
+    },
+    "FilterBar": {
+      "hGap": 680,
+      "cornerRadius": 12,
+      "bgOpacity": 0.6,
+      "bgTok": "surface-default",
+      "borderTok": "border-secondary",
+      "headerTitle": "Filters",
+      "headerTypography": "title-sub-semibold",
+      "headerTitleTok": "foreground-secondary",
+      "headerPaddingTop": 20,
+      "headerPaddingBottom": 12,
+      "contentPaddingBottom": 20,
+      "contentGap": 16,
+      "filters": [
+        { "externalIcon": true,  "iconSize": 16, "atomName": "Select",      "props": { "state": "default", "size": "sm" }, "fallbackW": 200, "fallbackH": 32 },
+        { "externalIcon": true,  "iconSize": 16, "atomName": "Select",      "props": { "state": "default", "size": "sm" }, "fallbackW": 200, "fallbackH": 32 },
+        { "externalIcon": false, "iconSize": 16, "atomName": "SearchField", "props": { "state": "default", "size": "md" }, "fallbackW": 280, "fallbackH": 36 }
+      ]
+    },
+    "HeaderActionGroup": {
+      "hGap": 580,
+      "gap": 8,
+      "searchInput": {
+        "iconSize": 16,
+        "bgOpacity": 0.3,
+        "bgTok": "surface-default",
+        "borderTok": "border-secondary",
+        "cornerRadius": 8,
+        "atomName": "Input",
+        "atomProps": { "state": "default", "size": "sm" },
+        "placeholder": "Search metrics...",
+        "fallbackW": 200,
+        "fallbackH": 32
+      },
+      "dateButton": {
+        "variant": "secondary",
+        "size": "sm",
+        "state": "default",
+        "label": "Last 30 days",
+        "fallbackW": 120,
+        "fallbackH": 32
+      },
+      "notifButton": {
+        "size": 36,
+        "iconSize": 16,
+        "bgOpacity": 0.3,
+        "bgTok": "surface-default",
+        "borderTok": "border-secondary",
+        "cornerRadius": 8,
+        "badgeCount": "3",
+        "badgeTok": "primary-default",
+        "badgeBorderTok": "background",
+        "badgeTextTok": "foreground-strong"
+      }
+    }
+  }
+}

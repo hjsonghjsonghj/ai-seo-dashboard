@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Download, CheckCircle2, Share2 } from "lucide-react"
+import { Download, Share2, CheckCircle2 } from "lucide-react"
+import { ChecklistItem } from "@/components/ui/checklist-item"
 import { Button } from "@/components/ui/button"
 import {
     Sheet,
@@ -58,15 +59,25 @@ interface CitationDetailsDrawerProps {
 
 export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, onResolve }: CitationDetailsDrawerProps) {
     const [currentUrl, setCurrentUrl] = useState("")
+    const [checklist, setChecklist] = useState<{ text: string; done: boolean }[]>([])
 
     useEffect(() => {
         setCurrentUrl(window.location.href)
     }, [])
 
+    useEffect(() => {
+        if (selectedCitation) {
+            setChecklist(getOptimizationChecklist(selectedCitation))
+        }
+    }, [selectedCitation])
+
     if (!selectedCitation) return null
 
-    const checklist = getOptimizationChecklist(selectedCitation)
     const severity = getSeverityLabel(selectedCitation.optimizationProgress)
+
+    function handleToggleItem(index: number, done: boolean) {
+        setChecklist(prev => prev.map((item, i) => i === index ? { ...item, done } : item))
+    }
 
     function handleShare() {
         const url = `${window.location.origin}${window.location.pathname}?id=${selectedCitation.id}&sidebar=true`
@@ -76,6 +87,18 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
 
     function handlePrint() {
         toast.info('Export functionality coming soon')
+    }
+
+    function handleResolve() {
+        // Check all items sequentially, then close
+        checklist.forEach((_, i) => {
+            setTimeout(() => {
+                setChecklist(prev => prev.map((item, idx) => idx === i ? { ...item, done: true } : item))
+            }, i * 120)
+        })
+        setTimeout(() => {
+            onResolve?.(selectedCitation)
+        }, checklist.length * 120 + 400)
     }
 
     return (
@@ -108,20 +131,12 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
                             </h3>
                             <div className="space-y-3">
                                 {checklist.map((item, index) => (
-                                    <div key={index} className="flex items-start gap-3">
-                                        <CheckCircle2
-                                            className={cn(
-                                                "h-5 w-5 mt-0.5 shrink-0",
-                                                item.done ? "text-positive-default" : "text-border-primary"
-                                            )}
-                                        />
-                                        <span className={cn(
-                                            "text-body-md-regular font-medium",
-                                            item.done ? "text-foreground-tertiary" : "text-border-primary"
-                                        )}>
-                                            {item.text}
-                                        </span>
-                                    </div>
+                                    <ChecklistItem
+                                        key={index}
+                                        text={item.text}
+                                        done={item.done}
+                                        onCheckedChange={(checked) => handleToggleItem(index, !!checked)}
+                                    />
                                 ))}
                             </div>
                         </div>
@@ -177,7 +192,7 @@ export function CitationDetailsDrawer({ open, onOpenChange, selectedCitation, on
                         <Button
                             variant="outline"
                             className="w-full gap-2 border-border-secondary bg-surface-hover/50 text-foreground-tertiary hover:bg-surface-hover hover:text-foreground-primary text-body-md-regular font-semibold"
-                            onClick={() => onResolve?.(selectedCitation)}
+                            onClick={handleResolve}
                         >
                             <CheckCircle2 className="h-4 w-4" />
                             Mark as Resolved

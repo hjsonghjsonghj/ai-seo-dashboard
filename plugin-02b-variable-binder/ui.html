@@ -84,9 +84,10 @@
     .stage-dot {
       width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
     }
-    .dot-color  { background: var(--brand); }
-    .dot-radius { background: var(--positive); }
-    .dot-scope  { background: var(--caution); }
+    .dot-color   { background: var(--brand); }
+    .dot-radius  { background: var(--positive); }
+    .dot-spacing { background: var(--caution); }
+    .dot-opacity { background: var(--border-2); }
     .stage-item span { color: var(--text-2); font-size: 11px; }
     .stage-item strong { color: var(--text-1); font-weight: 600; }
 
@@ -120,7 +121,7 @@
     .results { display: none; }
     .results.visible { display: block; }
 
-    .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 5px; }
     .result-cell {
       background: var(--surface-2); border-radius: 5px;
       padding: 8px 6px; text-align: center;
@@ -155,6 +156,32 @@
       padding: 1px 0; opacity: 0.9;
     }
 
+    /* ── Unmatched spacing report ────────────────────────── */
+    .unmatched-box { display: none; }
+    .unmatched-box.visible { display: block; margin-top: 7px; }
+    .unmatched-header {
+      font-size: 9px; font-weight: 600; color: var(--caution);
+      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 5px;
+    }
+    .unmatched-scroll {
+      max-height: 100px; overflow-y: auto;
+      background: rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 5px; padding: 5px 7px;
+    }
+    .unmatched-row {
+      display: flex; align-items: baseline; gap: 6px;
+      padding: 2px 0; border-bottom: 1px solid rgba(245,158,11,0.08);
+    }
+    .unmatched-row:last-child { border-bottom: none; }
+    .unmatched-px {
+      font-size: 11px; font-weight: 700; color: var(--caution);
+      font-family: 'Courier New', monospace; flex-shrink: 0; min-width: 34px;
+    }
+    .unmatched-nodes {
+      font-size: 10px; color: var(--text-3);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
     /* ── Fatal error ─────────────────────────────────────── */
     .fatal { display: none; }
     .fatal.visible { display: block; margin-bottom: 8px; }
@@ -182,7 +209,7 @@
     <div class="header-icon">🔗</div>
     <div class="header-text">
       <h1>Variable Binder</h1>
-      <p>plugin-02b &mdash; Color + Radius token binding</p>
+      <p>plugin-02b &mdash; Color + Radius + Spacing binding</p>
     </div>
   </div>
 
@@ -190,10 +217,10 @@
   <div class="card" id="scope-card">
     <div class="card-label">Binding Scope</div>
     <div class="scope-row">
-      <button class="scope-btn active" id="btn-all" onclick="setScope('all-atoms')">
+      <button class="scope-btn active" id="btn-all" onclick="setScope('page')">
         <span class="icon">⬡</span>
-        <span class="lbl">All Atoms</span>
-        <span class="sub">15 atom frames on page</span>
+        <span class="lbl">Full Page</span>
+        <span class="sub">All auto-layout nodes</span>
       </button>
       <button class="scope-btn" id="btn-sel" onclick="setScope('selection')">
         <span class="icon">▣</span>
@@ -209,14 +236,18 @@
     <div class="stage-list">
       <div class="stage-item">
         <div class="stage-dot dot-color"></div>
-        <span><strong>Colors</strong> &mdash; fills + strokes bound to Semantic variables</span>
+        <span><strong>Colors</strong> &mdash; fills + strokes &rarr; Semantic variables</span>
       </div>
       <div class="stage-item">
         <div class="stage-dot dot-radius"></div>
-        <span><strong>Radius</strong> &mdash; 6 / 8 / 12 / 16 px bound to Radius variables</span>
+        <span><strong>Radius</strong> &mdash; 6/8/12/16px &rarr; Radius variables</span>
       </div>
       <div class="stage-item">
-        <div class="stage-dot dot-scope"></div>
+        <div class="stage-dot dot-spacing"></div>
+        <span><strong>Spacing</strong> &mdash; padding + gap &rarr; Spacing variables</span>
+      </div>
+      <div class="stage-item">
+        <div class="stage-dot dot-opacity"></div>
         <span><strong>Opacity</strong> &mdash; fill-level opacity preserved after binding</span>
       </div>
     </div>
@@ -248,13 +279,27 @@
         <span class="lbl">Radii</span>
       </div>
       <div class="result-cell">
+        <span class="num" style="color:var(--caution)" id="res-spacing">0</span>
+        <span class="lbl">Spacing</span>
+      </div>
+      <div class="result-cell">
         <span class="num text-3" id="res-nodes">0</span>
         <span class="lbl">Nodes</span>
       </div>
     </div>
+    <!-- Diagnostic row: AL nodes found vs spacing bound -->
+    <div id="diag-row" style="display:none; margin-top:6px; background:var(--surface-2); border-radius:5px; padding:5px 8px; font-size:10px; color:var(--text-3);">
+      AL nodes found: <span id="diag-al" style="color:var(--caution); font-weight:600;">0</span>
+      &nbsp;|&nbsp; Spacing vars loaded: <span id="diag-sv" style="color:var(--caution); font-weight:600;">0</span>
+      &nbsp;|&nbsp; <span style="color:var(--text-3);">Check Figma console (Plugins &rarr; Dev Tools) for details</span>
+    </div>
     <div class="error-box" id="error-box">
       <div class="error-header" id="error-header"></div>
       <div class="error-scroll" id="error-scroll"></div>
+    </div>
+    <div class="unmatched-box" id="unmatched-box">
+      <div class="unmatched-header">Unmatched Spacing — fix manually</div>
+      <div class="unmatched-scroll" id="unmatched-scroll"></div>
     </div>
     <div class="rerun-row">
       <button class="rerun-link" onclick="reset()">Run again</button>
@@ -267,11 +312,11 @@
   </button>
 
   <script>
-    var scope = 'all-atoms';
+    var scope = 'page';
 
     function setScope(s) {
       scope = s;
-      document.getElementById('btn-all').classList.toggle('active', s === 'all-atoms');
+      document.getElementById('btn-all').classList.toggle('active', s === 'page');
       document.getElementById('btn-sel').classList.toggle('active', s === 'selection');
     }
 
@@ -325,9 +370,16 @@
         setTimeout(function() {
           document.getElementById('progress-wrap').classList.remove('visible');
           document.getElementById('results').classList.add('visible');
-          document.getElementById('res-colors').textContent = msg.colors || 0;
-          document.getElementById('res-radii').textContent  = msg.radii  || 0;
-          document.getElementById('res-nodes').textContent  = msg.nodes  || 0;
+          document.getElementById('res-colors').textContent  = msg.colors  || 0;
+          document.getElementById('res-radii').textContent   = msg.radii   || 0;
+          document.getElementById('res-spacing').textContent = msg.spacing || 0;
+          document.getElementById('res-nodes').textContent   = msg.nodes   || 0;
+
+          // Diagnostic row — always show after run
+          var diagRow = document.getElementById('diag-row');
+          diagRow.style.display = 'block';
+          document.getElementById('diag-al').textContent = msg.alNodes || 0;
+          document.getElementById('diag-sv').textContent = msg.spacingVars || 0;
 
           var errorBox    = document.getElementById('error-box');
           var errorScroll = document.getElementById('error-scroll');
@@ -346,6 +398,36 @@
             }
           } else {
             errorBox.classList.remove('visible');
+          }
+
+          // Unmatched spacing report
+          var unmatchedBox    = document.getElementById('unmatched-box');
+          var unmatchedScroll = document.getElementById('unmatched-scroll');
+          var unmatched = msg.unmatchedSpacing || {};
+          var unmatchedKeys = Object.keys(unmatched);
+          if (unmatchedKeys.length > 0) {
+            unmatchedBox.classList.add('visible');
+            unmatchedScroll.innerHTML = '';
+            // Sort numerically
+            unmatchedKeys.sort(function(a, b) { return Number(a) - Number(b); });
+            for (var uk = 0; uk < unmatchedKeys.length; uk++) {
+              var px    = unmatchedKeys[uk];
+              var nodes = unmatched[px];
+              var row   = document.createElement('div');
+              row.className = 'unmatched-row';
+              var pxEl = document.createElement('span');
+              pxEl.className = 'unmatched-px';
+              pxEl.textContent = px + 'px';
+              var nodesEl = document.createElement('span');
+              nodesEl.className = 'unmatched-nodes';
+              nodesEl.title = nodes.join(', ');
+              nodesEl.textContent = nodes.join(', ');
+              row.appendChild(pxEl);
+              row.appendChild(nodesEl);
+              unmatchedScroll.appendChild(row);
+            }
+          } else {
+            unmatchedBox.classList.remove('visible');
           }
 
           document.getElementById('run-btn').disabled = false;

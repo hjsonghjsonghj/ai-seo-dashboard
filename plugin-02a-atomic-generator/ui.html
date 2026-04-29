@@ -90,14 +90,14 @@
     <div class="header-icon">⚛</div>
     <div>
       <h1>Atomic Generator</h1>
-      <p>plugin-02a — 16 Atoms</p>
+      <p>plugin-02a — 16 Atoms (+ ProgressRing)</p>
     </div>
   </div>
 
   <!-- Generate All -->
   <div class="btn-all-wrap">
     <button class="btn primary" onclick="send('generate-all')">
-      ⚡ Generate All Atoms (15)
+      ⚡ Generate All Atoms (16)
     </button>
   </div>
 
@@ -178,6 +178,17 @@
       <button class="btn" onclick="send('generate-tooltip')">
         <span class="icon">◈</span> Tooltip
         <span class="count">4</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Molecule Atom -->
+  <div class="section">
+    <div class="section-label">Molecule Atoms</div>
+    <div class="grid">
+      <button class="btn" onclick="send('generate-progress-ring')" style="grid-column: span 2;">
+        <span class="icon">◎</span> ProgressRing
+        <span class="count">6</span>
       </button>
     </div>
   </div>

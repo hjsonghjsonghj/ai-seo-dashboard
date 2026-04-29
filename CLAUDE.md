@@ -18,4 +18,5 @@
 - Use `figma.combineAsVariants(nodes, figma.currentPage)` — NOT `combineAsComponentSet` (does not exist).
 - `counterAxisSizingMode` only accepts `'FIXED'` or `'AUTO'`. Never set it to `'FILL'` — use `layoutSizingHorizontal = 'FILL'` on child nodes instead.
 - Never override `textCase` after setting `textStyleId` — it breaks the style binding in Figma's properties panel. Caps styles must have UPPER set inside the Figma text style itself.
-- Refer to DS-COMPONENTS.md for the full atom inventory, plugin architecture, and verified API patterns.
+- Use `node.setBoundVariable(field, variable)` for ALL variable binding including Auto Layout spacing fields (paddingTop/Right/Bottom/Left, itemSpacing, counterAxisSpacing). `setBoundVariableForLayout` does NOT exist in the current Figma API and will silently fail.
+- Refer to ATOMS.md for the full atom inventory, plugin architecture, and verified API patterns.

@@ -1,0 +1,10 @@
+{
+  "name": "Molecule Assembler (03b)",
+  "id": "molecule-assembler-03b",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma"],
+  "capabilities": [],
+  "enableProposedApi": true
+}

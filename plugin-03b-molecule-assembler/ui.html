@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Molecule Assembler 03b</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:         #020617;
+      --surface:    #0f172a;
+      --surface-2:  #1e293b;
+      --border:     #334155;
+      --border-2:   #475569;
+      --text-1:     #f1f5f9;
+      --text-2:     #94a3b8;
+      --text-3:     #CBD5E1;
+      --primary:    #3b82f6;
+      --brand:      #8b5cf6;
+      --brand-deep: #7c3aed;
+      --positive:   #10b981;
+      --caution:    #f59e0b;
+      --radius:     8px;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text-1);
+      font-size: 12px;
+      padding: 12px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .header-icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--brand-deep), var(--brand));
+      border-radius: 6px; display: grid; place-items: center;
+      font-size: 14px; flex-shrink: 0;
+    }
+    .header h1 { font-size: 13px; font-weight: 600; color: var(--text-1); }
+    .header p  { font-size: 10px; color: var(--text-2); margin-top: 2px; }
+
+    /* Status banners */
+    .banner {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px; padding: 7px 10px; margin-bottom: 6px;
+      font-size: 11px;
+    }
+    .banner-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .banner-dot.ok      { background: var(--positive); }
+    .banner-dot.missing { background: var(--caution); }
+    .banner-text { color: var(--text-2); flex: 1; }
+    .banner-text strong { color: var(--text-1); font-weight: 600; }
+
+    /* Config load button inside banner */
+    .banner-btn {
+      background: var(--surface-2); color: var(--text-2);
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 3px 7px; font-size: 10px; font-weight: 500;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: background 0.12s, color 0.12s;
+    }
+    .banner-btn:hover { background: var(--border); color: var(--text-1); }
+
+    /* Section */
+    .section {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 10px; margin-bottom: 8px;
+    }
+    .section-label {
+      font-size: 10px; font-weight: 600; color: var(--text-2);
+      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 7px;
+    }
+
+    /* Button grid */
+    .grid      { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    .grid-full { display: grid; grid-template-columns: 1fr;     gap: 5px; }
+
+    /* Buttons */
+    .btn {
+      display: flex; align-items: center; gap: 5px;
+      background: var(--surface-2); color: var(--text-1);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 6px 9px; font-size: 11px; font-weight: 500;
+      cursor: pointer; transition: background 0.12s, border-color 0.12s;
+      line-height: 1; white-space: nowrap; width: 100%;
+    }
+    .btn:hover  { background: var(--border); border-color: var(--border-2); }
+    .btn:active { background: var(--border-2); }
+    .btn.primary {
+      background: linear-gradient(135deg, var(--brand-deep), var(--brand));
+      border-color: transparent; color: #fff;
+      justify-content: center; padding: 8px 12px; font-size: 12px;
+    }
+    .btn.primary:hover { opacity: 0.9; }
+    .btn .icon  { font-size: 11px; flex-shrink: 0; }
+    .count {
+      margin-left: auto; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 1px 5px; font-size: 10px; color: var(--text-2);
+    }
+    .tag-atom {
+      margin-left: auto; font-size: 9px; font-weight: 600; padding: 1px 5px;
+      border-radius: 4px; background: rgba(139,92,246,0.15); color: #a78bfa;
+    }
+    .tag-prim {
+      margin-left: auto; font-size: 9px; font-weight: 600; padding: 1px 5px;
+      border-radius: 4px; background: rgba(148,163,184,0.15); color: var(--text-2);
+    }
+
+    /* Generate All */
+    .btn-all-wrap { margin-bottom: 8px; }
+
+    /* Footer hint */
+    .hint {
+      font-size: 10px; color: var(--text-2); text-align: center; margin-top: 10px;
+      line-height: 1.4;
+    }
+    .hint a { color: var(--brand); cursor: default; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-icon">🧬</div>
+    <div>
+      <h1>Molecule Assembler</h1>
+      <p>plugin-03b - Universal Assembly Engine</p>
+    </div>
+  </div>
+
+  <!-- Config status -->
+  <div class="banner" id="config-banner">
+    <div class="banner-dot missing" id="config-dot"></div>
+    <div class="banner-text" id="config-text">Checking config status...</div>
+    <button class="banner-btn" id="config-load-btn" onclick="triggerFileLoad()">Load JSON</button>
+  </div>
+  <input type="file" id="config-file-input" accept=".json" style="display:none" />
+
+  <!-- Atom index status -->
+  <div class="banner" id="index-banner">
+    <div class="banner-dot missing" id="index-dot"></div>
+    <div class="banner-text" id="index-text">Checking atom index status...</div>
+  </div>
+
+  <!-- Generate All -->
+  <div class="btn-all-wrap">
+    <button class="btn primary" onclick="send('generate-all')">
+      Generate All Molecules (6)
+    </button>
+  </div>
+
+  <!-- Primitive molecules (no atom instances needed) -->
+  <div class="section">
+    <div class="section-label">Primitive Composite</div>
+    <div class="grid">
+      <button class="btn" onclick="send('generate-chart-legend-item')">
+        <span class="icon">&#9679;</span> ChartLegendItem
+        <span class="count">3</span>
+      </button>
+      <button class="btn" onclick="send('generate-nav-item')" style="grid-column: span 2;">
+        <span class="icon">&#9672;</span> NavItem
+        <span class="count">4</span>
+        <span class="tag-prim">desktop + mobile</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Atom-instance molecules (require 03a index) -->
+  <div class="section">
+    <div class="section-label">Atom Instance Composite</div>
+    <div class="grid-full">
+      <button class="btn" onclick="send('generate-checklist-item')">
+        <span class="icon">&#9745;</span> ChecklistItem
+        <span class="count">2</span>
+        <span class="tag-atom">Checkbox x2</span>
+      </button>
+      <button class="btn" onclick="send('generate-bulk-action-bar')">
+        <span class="icon">&#8862;</span> BulkActionBar
+        <span class="count">1</span>
+        <span class="tag-atom">Button x3</span>
+      </button>
+      <button class="btn" onclick="send('generate-filter-bar')">
+        <span class="icon">&#8863;</span> FilterBar
+        <span class="count">1</span>
+        <span class="tag-atom">Select x2 + Input</span>
+      </button>
+      <button class="btn" onclick="send('generate-header-action-group')">
+        <span class="icon">&#8865;</span> HeaderActionGroup
+        <span class="count">1</span>
+        <span class="tag-atom">Input + Button x2</span>
+      </button>
+    </div>
+  </div>
+
+  <p class="hint">
+    Falls back to defaults when <a>config</a> is missing - falls back to placeholders when <a>atom</a> is missing.<br>
+    Config JSON: <a>molecule-config.json</a>
+  </p>
+
+<script>
+  function send(type) {
+    parent.postMessage({ pluginMessage: { type: type } }, '*');
+  }
+
+  function triggerFileLoad() {
+    document.getElementById('config-file-input').click();
+  }
+
+  document.getElementById('config-file-input').addEventListener('change', function(e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(evt) {
+      try {
+        var parsed = JSON.parse(evt.target.result);
+        parent.postMessage({ pluginMessage: { type: 'load-config', config: parsed } }, '*');
+        setConfigStatus('loading', null);
+      } catch (err) {
+        setConfigStatus('error', null);
+      }
+    };
+    reader.readAsText(file);
+    // reset so same file can be reloaded
+    e.target.value = '';
+  });
+
+  function setConfigStatus(state, count) {
+    var dot  = document.getElementById('config-dot');
+    var text = document.getElementById('config-text');
+    if (state === 'ok') {
+      dot.className = 'banner-dot ok';
+      text.innerHTML = '<strong>' + count + ' molecules</strong> config loaded';
+    } else if (state === 'missing') {
+      dot.className = 'banner-dot missing';
+      text.innerHTML = 'Config not found - running with defaults';
+    } else if (state === 'loading') {
+      dot.className = 'banner-dot missing';
+      text.innerHTML = 'Loading config...';
+    } else if (state === 'error') {
+      dot.className = 'banner-dot missing';
+      text.innerHTML = 'JSON parse failed - check the file';
+    }
+  }
+
+  window.onload = function() {
+    parent.postMessage({ pluginMessage: { type: 'check-config' } }, '*');
+    parent.postMessage({ pluginMessage: { type: 'check-index'  } }, '*');
+  };
+
+  window.onmessage = function(event) {
+    var msg = event.data.pluginMessage;
+    if (!msg) return;
+
+    if (msg.type === 'config-status') {
+      if (msg.found) {
+        setConfigStatus('ok', msg.count);
+      } else {
+        setConfigStatus('missing', null);
+      }
+    }
+
+    if (msg.type === 'config-loaded') {
+      setConfigStatus('ok', msg.count);
+    }
+
+    if (msg.type === 'index-status') {
+      var dot  = document.getElementById('index-dot');
+      var text = document.getElementById('index-text');
+      if (msg.found) {
+        dot.className = 'banner-dot ok';
+        text.innerHTML = '<strong>' + msg.atomCount + ' atoms</strong> index loaded';
+      } else {
+        dot.className = 'banner-dot missing';
+        text.innerHTML = 'Run 03a Scan - using <strong>placeholders</strong> for now';
+      }
+    }
+  };
+</script>
+</body>
+</html>

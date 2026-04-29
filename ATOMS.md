@@ -3,7 +3,10 @@
 ## Plugin: plugin-02b-variable-binder
 
 Scans atom frames produced by plugin-02a and binds Local Variables to every
-color fill/stroke and cornerRadius property in one pass.
+cornerRadius and spacing property in one pass. Color fills/strokes are now
+bound at creation time inside plugin-02a (see "Variable binding" section
+below), so the color stage of 02b acts as a top-up sweep - it covers any
+nodes built before the 02a binding refactor or imported from elsewhere.
 
 ### Stages
 
@@ -11,13 +14,14 @@ color fill/stroke and cornerRadius property in one pass.
 |---|-------|--------|
 | 1 | Load colorMap | Reads Semantic COLOR collection; matches vars by name using SEM_MAP hex table |
 | 2 | Ensure Radius vars | Get-or-creates "Radius" FLOAT collection with radius/sm(6) md(8) lg(12) xl(16) |
-| 3 | Walk atoms | Recursive tree walk over wrapper FRAME -> ComponentSet -> children |
-| 4 | Bind | fills, strokes via `setBoundVariableForPaint`; cornerRadius via `setBoundVariable` |
+| 3 | Load spacingMap | Reads existing "Spacing" FLOAT collection (plugin-01c); builds value -> Variable map |
+| 4 | Walk atoms | Recursive tree walk over wrapper FRAME -> ComponentSet -> children |
+| 5 | Bind | fills/strokes via `setBoundVariableForPaint`; cornerRadius + padding/gap via `setBoundVariable` |
 
 ### Scope modes
 
-- **All Atoms** (default) -- finds every top-level FRAME whose name matches an atom name
-- **Selection** -- walks only the currently selected layers
+- **Full Page** (default) -- walks ALL nodes on the current page with no name filtering; new components are picked up automatically
+- **Selection** -- walks only the currently selected layers and their descendants
 
 ### Radius token table
 
@@ -38,18 +42,27 @@ restore the original opacity value, matching the approach used in plugin-01.
 
 ### Pre-condition
 
-plugin-01-color-sync must have run first so the "Semantic" COLOR collection exists.
-If no Semantic variables are found the plugin surfaces an error before touching any nodes.
+plugin-01-color-sync should have run first so the "Semantic" COLOR collection exists.
+If no Semantic variables are found, color binding is skipped with a console warning — radius and spacing binding still run.
 
 ### Verified API patterns
 
 ```js
-// Color binding (fill)
+// Color binding (fill / stroke)
 var bound = figma.variables.setBoundVariableForPaint(paint, 'color', variable);
 node.fills = [...newFills];  // then re-apply opacity if < 0.99
 
 // cornerRadius binding (uniform only -- never figma.mixed)
 node.setBoundVariable('cornerRadius', radiusVariable);
+
+// Auto Layout spacing binding (padding + gap)
+// setBoundVariableForLayout does NOT exist in the current Figma API -- always fails silently.
+// Use the same setBoundVariable used for cornerRadius. Pass the Variable object, NOT .id.
+node.setBoundVariable('paddingTop', spacingVariable);
+node.setBoundVariable('paddingLeft', spacingVariable);
+node.setBoundVariable('itemSpacing', spacingVariable);
+// Fields: paddingTop/Right/Bottom/Left, itemSpacing, counterAxisSpacing (WRAP only)
+// Unmatched values (not in the Spacing collection) are collected and reported -- not thrown as errors.
 
 // Async variable loading (requires enableProposedApi: true)
 var allVars = await figma.variables.getLocalVariablesAsync('COLOR');
@@ -99,16 +112,59 @@ All icon placeholder frames inside components are named `Icon-Slot`:
 - Size matches the icon context (12px, 16px, etc.)
 - Designer replaces manually with the real lucide icon
 
+### Variable binding (built into plugin-02a)
+
+Atom paints are bound to Figma local Variables at creation time, not after the fact.
+
+Helpers in `code.js`:
+- `resolveVariablesFromFigma()` - runs at the start of every generator. Reads `figma.variables.getLocalVariablesAsync('COLOR')`, follows VARIABLE_ALIAS chains, populates two runtime caches keyed by normalized token name (leaf, full, and no-prefix forms): `_tokenMap` for resolved RGB and `_variableByName` for Variable references.
+- `paint(tokenName, opacity?)` - returns one SOLID Paint with `boundVariables.color = { type: 'VARIABLE_ALIAS', id: variable.id }` when a Variable exists for the token. Falls back to `FALLBACK_TOKENS` RGB when the Variable is missing. The static color is always set as well, so the paint stays valid even if the binding can't resolve.
+- `paints(tokenName, opacity?)` - single-paint array, ready to assign to `node.fills` or `node.strokes`.
+
+All generators (16) call `await resolveVariablesFromFigma()` after `loadFonts()`. Every fill/stroke (component bg, border, text fill, icon-slot stroke, dot, indicator, arc, track, etc.) goes through `paints(...)`. The legacy `solid()` / `solidOpacity()` helpers are kept only for the rare spots that pass an already-resolved RGB and intentionally never bind (e.g. inline `PURPLE_PAINT` reused across QA grid cells).
+
+**SSOT consequence:** editing a Variable in the Figma collection updates every atom instance immediately - no plugin re-run needed. plugin-02b is therefore now optional for color binding (still useful for Radius / Spacing). When plugin-01-color-sync hasn't run yet, atoms render with `FALLBACK_TOKENS` RGB and the bindings simply stay unbound until variables exist.
+
 ---
 
-## Atoms (15 total)
+## Atoms (16 total - 169 component variants)
 
-### Button — 48 variants (4 variant x 4 state x 3 size)
-- **Variants**: primary, secondary, ghost, destructive
+| Atom | Variants | Formula |
+|------|----------|---------|
+| Button | **60** | 5 variant × 4 state × 3 size |
+| Input | 12 | 4 state × 3 size |
+| Badge | 5 | 5 variant |
+| Checkbox | 3 | 3 state |
+| Radio | 3 | 3 state |
+| Switcher | 3 | 3 state |
+| Select | 12 | 4 state × 3 size |
+| SearchField | 12 | 4 state × 3 size |
+| Progress | 20 | 4 color × 5 value |
+| Avatar | 8 | 4 size × 2 state |
+| Alert | 4 | 4 variant |
+| Spinner | 3 | 3 size |
+| Separator | 2 | 2 orientation |
+| Toggle | 12 | 4 state × 3 size |
+| Tooltip | 4 | 4 placement |
+| ProgressRing | 6 | 3 state × 2 size |
+
+(Was 157 before adding the Button `outline` variant; +12 Button components -> 169.)
+
+
+### Button — 60 variants (5 variant x 4 state x 3 size)
+- **Variants**: primary, secondary, outline, ghost, destructive
 - **States**: default, hover, focus, disabled
 - **Sizes**: sm (h32 / px12), md (h36 / px16), lg (h40 / px24)
 - **Typography**: `body-sm-medium`
 - **Table**: colHeaders=variants, rowGroups=sizes, rowLabels=states
+- **outline variant tokens** (resolved against dark theme — project default):
+  - default:  bg `input` @ 30%,  border `input` 1px,        text `foreground-primary`
+  - hover:    bg `input` @ 50%,  border `input` 1px,        text `foreground-strong`
+  - focus:    bg `input` @ 30%,  border `brand-deep` 2px,   text `foreground-primary`
+  - disabled: bg `input` @ 30%,  border `input` 1px,        text `foreground-muted` (component opacity 0.5)
+- **React mapping** (components/ui/button.tsx cva):
+  - `default → primary`, `secondary → secondary`, `outline → outline`,
+    `ghost → ghost`, `destructive → destructive`, `link → not represented` (text-only)
 
 ### Input — 12 variants (4 state x 3 size)
 - **States**: default, focus, error, disabled
@@ -124,6 +180,7 @@ All icon placeholder frames inside components are named `Icon-Slot`:
 ### Checkbox — 3 variants
 - **States**: unchecked, checked, disabled
 - **Box**: 16x16px, cornerRadius:4; checkmark '✓' when checked
+- **Colors**: unchecked → `border-primary` border + `surface-hover` bg / checked → `primary-default` fill + white checkmark
 - **Typography**: `body-sm-medium`
 
 ### Radio — 3 variants
@@ -195,6 +252,20 @@ All icon placeholder frames inside components are named `Icon-Slot`:
   - right:  `'M 6 0 L 6 8 L 0 4 Z'` (pointing left)
 - **Positioning**: right arrow `x = bubble.x - 6` so base touches bubble edge
 
+### ProgressRing — 6 variants (3 state x 2 size)
+- **States**: critical (progress=20, danger-default arc), moderate (progress=55, caution-default arc), good (progress=85, positive-default arc)
+- **Sizes**: sm (40px -- desktop CitationTableRow), lg (44px -- mobile CitationCard)
+- **Structure**: NONE-layout component frame containing track ellipse + arc ellipse + centered label text
+  - Track: `border-secondary` fill, `arcData: { startingAngle:0, endingAngle:0, innerRadius:ir }` (full circle)
+  - Arc: semantic color fill, `arcData: { startingAngle:-Math.PI/2, endingAngle:(-PI/2 + progress/100*2PI), innerRadius:ir }`
+  - innerRadius formula: `(d/2 - 3) / (d/2)` so ring wall = 3px
+  - Label: `label-micro-medium`, color matches arc state (danger-soft / caution-soft / positive-soft)
+- **Arc color map**: critical=danger-default  moderate=caution-default  good=positive-default
+- **Text color map**: critical=danger-soft     moderate=caution-soft     good=positive-soft
+- **Note**: Classified as atom (not molecule) in Figma because it is a self-contained,
+  single-responsibility drawable that plugin-03b creates instances of during molecule assembly.
+  In MOLECULES.md it is documented as molecule #03 for web-component reference only.
+
 ---
 
 ## RADIUS Constants (Figma plugin cornerRadius)
@@ -249,7 +320,7 @@ child.layoutSizingHorizontal = 'FILL';
 ```js
 var v = figma.createVector();
 v.vectorPaths = [{ windingRule: 'NONZERO', data: 'M 0 0 L 8 0 L 4 6 Z' }];
-v.fills = solid(tok('border-primary'));
+v.fills = paints('border-primary');   // bound to border-primary variable
 v.strokes = [];
 parent.appendChild(v);
 v.x = xPos; v.y = yPos; // position after append

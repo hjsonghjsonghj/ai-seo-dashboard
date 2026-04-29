@@ -155,14 +155,6 @@ async function applyToLayers() {
 
           console.log("[SpacingSync] Layer:", frame.name, "| field:", field, "| value:", rawValue, "| Attempting match...");
 
-          if (typeof frame.setBoundVariableForLayout !== "function") {
-            console.warn("[SpacingSync] setBoundVariableForLayout not available on:", frame.name);
-            continue;
-          }
-
-          // Force-clear any existing binding before applying new one
-          frame.setBoundVariableForLayout(field, null);
-
           var matchVar = valueMap.get(rawValue);
           if (!matchVar || !matchVar.id) {
             console.log("[SpacingSync] No matching variable for value:", rawValue, "on field:", field);
@@ -171,8 +163,9 @@ async function applyToLayers() {
 
           console.log("[SpacingSync] Matched variable id:", matchVar.id, "(", matchVar.name, ")");
 
+          // setBoundVariableForLayout no longer exists — use setBoundVariable for all fields.
           try {
-            frame.setBoundVariableForLayout(field, matchVar.id);
+            frame.setBoundVariable(field, matchVar);
             boundCount++;
             console.log("[SpacingSync] Binding result: SUCCESS -", frame.name, field, "->", matchVar.name);
           } catch (bindErr) {

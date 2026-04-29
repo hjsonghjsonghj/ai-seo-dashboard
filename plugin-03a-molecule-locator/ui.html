@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Molecule Locator 03a</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:         #020617;
+      --surface:    #0f172a;
+      --surface-2:  #1e293b;
+      --border:     #334155;
+      --border-2:   #475569;
+      --text-1:     #f1f5f9;
+      --text-2:     #94a3b8;
+      --text-3:     #CBD5E1;
+      --brand:      #8b5cf6;
+      --brand-deep: #7c3aed;
+      --positive:   #10b981;
+      --positive-s: #34d399;
+      --danger:     #ef4444;
+      --danger-s:   #f87171;
+      --caution:    #f59e0b;
+      --radius:     8px;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text-1);
+      font-size: 12px;
+      padding: 12px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .header-icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--brand-deep), var(--brand));
+      border-radius: 6px; display: grid; place-items: center;
+      font-size: 14px; flex-shrink: 0;
+    }
+    .header h1 { font-size: 13px; font-weight: 600; color: var(--text-1); }
+    .header p  { font-size: 10px; color: var(--text-2); margin-top: 2px; }
+
+    /* Buttons */
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      border-radius: 6px; padding: 8px 12px;
+      font-size: 12px; font-weight: 500; cursor: pointer;
+      transition: opacity 0.12s, background 0.12s;
+      border: none; width: 100%;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand-deep), var(--brand));
+      color: #fff;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-secondary {
+      background: var(--surface-2); color: var(--text-1);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-ghost {
+      background: transparent; color: var(--text-2);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { color: var(--text-1); }
+
+    /* Button row */
+    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+    .btn-row-single { margin-bottom: 10px; }
+
+    /* Summary bar */
+    .summary {
+      display: none;
+      align-items: center; justify-content: space-between;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 8px 10px; margin-bottom: 8px;
+    }
+    .summary.visible { display: flex; }
+    .summary-count { font-size: 13px; font-weight: 600; color: var(--text-1); }
+    .summary-sub   { font-size: 10px; color: var(--text-2); margin-top: 2px; }
+
+    /* Pills */
+    .pills { display: flex; gap: 4px; }
+    .pill {
+      font-size: 10px; font-weight: 600; padding: 2px 7px;
+      border-radius: 9999px;
+    }
+    .pill-ok      { background: rgba(16,185,129,0.15); color: var(--positive-s); }
+    .pill-missing { background: rgba(239,68,68,0.15);  color: var(--danger-s); }
+    .pill-extra   { background: rgba(245,158,11,0.15); color: var(--caution); }
+
+    /* Result list */
+    .section-label {
+      font-size: 10px; font-weight: 600; color: var(--text-2);
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-bottom: 5px; margin-top: 10px;
+    }
+    .result-list {
+      display: none; flex-direction: column; gap: 2px;
+      max-height: 280px; overflow-y: auto;
+    }
+    .result-list.visible { display: flex; }
+    .result-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 5px 8px; border-radius: 5px;
+      background: var(--surface);
+    }
+    .dot {
+      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+    }
+    .dot-ok      { background: var(--positive); }
+    .dot-missing { background: var(--danger); }
+    .dot-extra   { background: var(--caution); }
+    .item-name {
+      flex: 1; font-size: 12px; font-weight: 500; color: var(--text-1);
+    }
+    .item-name.muted { color: var(--text-2); }
+    .item-count {
+      font-size: 10px; color: var(--text-2);
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1px 5px;
+    }
+    .item-badge {
+      font-size: 10px; font-weight: 600; padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .item-badge.missing { background: rgba(239,68,68,0.12); color: var(--danger-s); }
+    .item-badge.extra   { background: rgba(245,158,11,0.12); color: var(--caution); }
+
+    /* Scrollbar */
+    .result-list::-webkit-scrollbar { width: 4px; }
+    .result-list::-webkit-scrollbar-track { background: var(--surface); }
+    .result-list::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 2px; }
+
+    /* State */
+    .state-idle    { display: block; }
+    .state-loading { display: none; color: var(--text-2); font-size: 11px; text-align: center; padding: 8px; }
+    .loading .state-idle    { display: none; }
+    .loading .state-loading { display: block; }
+
+    /* Cache status */
+    .cache-status {
+      font-size: 10px; color: var(--text-2);
+      text-align: center; margin-top: 8px;
+    }
+    .cache-status span { color: var(--positive-s); }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-icon">🔍</div>
+    <div>
+      <h1>Molecule Locator</h1>
+      <p>plugin-03a — Atom Index Builder</p>
+    </div>
+  </div>
+
+  <!-- Primary action -->
+  <div class="btn-row-single state-idle" id="scan-wrap">
+    <button class="btn btn-primary" id="btn-scan" onclick="scan()">
+      🔍 Scan Page for Atoms
+    </button>
+  </div>
+  <div class="state-loading" id="loading-msg">Scanning…</div>
+
+  <!-- Summary bar (hidden until scan) -->
+  <div class="summary" id="summary">
+    <div>
+      <div class="summary-count" id="summary-count">—</div>
+      <div class="summary-sub" id="summary-sub">Scan the page to start</div>
+    </div>
+    <div class="pills" id="summary-pills"></div>
+  </div>
+
+  <!-- Secondary actions (hidden until scan) -->
+  <div class="btn-row" id="secondary-btns" style="display:none;">
+    <button class="btn btn-secondary" onclick="buildFrame()">
+      🖼 Build Index Frame
+    </button>
+    <button class="btn btn-ghost" onclick="clearCache()">
+      🗑 Clear Cache
+    </button>
+  </div>
+
+  <!-- Result list -->
+  <div id="list-present-label"  class="section-label" style="display:none;">Found</div>
+  <div class="result-list" id="list-present"></div>
+
+  <div id="list-missing-label"  class="section-label" style="display:none;">Missing</div>
+  <div class="result-list" id="list-missing"></div>
+
+  <div id="list-extra-label"  class="section-label" style="display:none;">Extra (not in ATOMS.md)</div>
+  <div class="result-list" id="list-extra"></div>
+
+  <div class="cache-status" id="cache-status"></div>
+
+<script>
+  var scanning = false;
+
+  function scan() {
+    if (scanning) return;
+    scanning = true;
+    document.body.classList.add('loading');
+    parent.postMessage({ pluginMessage: { type: 'scan' } }, '*');
+  }
+
+  function buildFrame() {
+    parent.postMessage({ pluginMessage: { type: 'build-frame' } }, '*');
+  }
+
+  function clearCache() {
+    parent.postMessage({ pluginMessage: { type: 'clear-cache' } }, '*');
+    document.getElementById('summary').classList.remove('visible');
+    document.getElementById('secondary-btns').style.display = 'none';
+    document.getElementById('list-present-label').style.display = 'none';
+    document.getElementById('list-missing-label').style.display = 'none';
+    document.getElementById('list-extra-label').style.display = 'none';
+    document.getElementById('list-present').classList.remove('visible');
+    document.getElementById('list-missing').classList.remove('visible');
+    document.getElementById('list-extra').classList.remove('visible');
+    document.getElementById('cache-status').textContent = '';
+  }
+
+  function renderRow(name, statusClass, dotClass, count, badgeClass, badgeLabel) {
+    var dot      = '<div class="dot ' + dotClass + '"></div>';
+    var nameEl   = '<div class="item-name' + (statusClass === 'missing' ? ' muted' : '') + '">' + name + '</div>';
+    var right    = '';
+    if (count > 0) {
+      right = '<div class="item-count">' + count + ' variants</div>';
+    }
+    if (badgeClass) {
+      right = '<div class="item-badge ' + badgeClass + '">' + badgeLabel + '</div>' + right;
+    }
+    return '<div class="result-item">' + dot + nameEl + right + '</div>';
+  }
+
+  window.onmessage = function(event) {
+    var msg = event.data.pluginMessage;
+    if (!msg) return;
+
+    if (msg.type === 'scan-result') {
+      scanning = false;
+      document.body.classList.remove('loading');
+
+      // Summary
+      var found = msg.present.length;
+      var total = msg.total;
+      document.getElementById('summary').classList.add('visible');
+      document.getElementById('summary-count').textContent = found + ' / ' + total + ' atoms found';
+      document.getElementById('summary-sub').textContent =
+        (msg.missing.length > 0 ? msg.missing.length + ' missing, ' : '') +
+        (msg.extra.length > 0   ? msg.extra.length   + ' extra'    : found === total ? 'All atoms present!' : '');
+
+      // Pills
+      var pillsEl = document.getElementById('summary-pills');
+      pillsEl.innerHTML = '';
+      if (found > 0) {
+        pillsEl.innerHTML += '<div class="pill pill-ok">' + found + ' ok</div>';
+      }
+      if (msg.missing.length > 0) {
+        pillsEl.innerHTML += '<div class="pill pill-missing">' + msg.missing.length + ' missing</div>';
+      }
+      if (msg.extra.length > 0) {
+        pillsEl.innerHTML += '<div class="pill pill-extra">' + msg.extra.length + ' extra</div>';
+      }
+
+      // Secondary buttons
+      document.getElementById('secondary-btns').style.display = 'grid';
+
+      // Present list
+      var presEl = document.getElementById('list-present');
+      presEl.innerHTML = '';
+      if (msg.present.length > 0) {
+        document.getElementById('list-present-label').style.display = 'block';
+        presEl.classList.add('visible');
+        for (var i = 0; i < msg.present.length; i++) {
+          var p = msg.present[i];
+          presEl.innerHTML += renderRow(p.name, 'found', 'dot-ok', p.variantCount, null, null);
+        }
+      } else {
+        document.getElementById('list-present-label').style.display = 'none';
+      }
+
+      // Missing list
+      var missEl = document.getElementById('list-missing');
+      missEl.innerHTML = '';
+      if (msg.missing.length > 0) {
+        document.getElementById('list-missing-label').style.display = 'block';
+        missEl.classList.add('visible');
+        for (var j = 0; j < msg.missing.length; j++) {
+          missEl.innerHTML += renderRow(msg.missing[j], 'missing', 'dot-missing', 0, 'missing', 'missing');
+        }
+      } else {
+        document.getElementById('list-missing-label').style.display = 'none';
+      }
+
+      // Extra list
+      var extraEl = document.getElementById('list-extra');
+      extraEl.innerHTML = '';
+      if (msg.extra.length > 0) {
+        document.getElementById('list-extra-label').style.display = 'block';
+        extraEl.classList.add('visible');
+        for (var k = 0; k < msg.extra.length; k++) {
+          extraEl.innerHTML += renderRow(msg.extra[k], 'extra', 'dot-extra', 0, 'extra', 'extra');
+        }
+      } else {
+        document.getElementById('list-extra-label').style.display = 'none';
+      }
+
+      document.getElementById('cache-status').innerHTML =
+        'Index cached — <span>ready for plugin-03b</span>';
+    }
+
+    if (msg.type === 'scan-error') {
+      scanning = false;
+      document.body.classList.remove('loading');
+    }
+
+    if (msg.type === 'cache-cleared') {
+      document.getElementById('cache-status').textContent = 'Cache cleared';
+    }
+  };
+</script>
+</body>
+</html>

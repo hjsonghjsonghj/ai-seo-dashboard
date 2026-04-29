@@ -169,6 +169,44 @@ context-specific dimension that does not belong in the shared spacing system.
 
 ---
 
+## Figma Variable Binding (plugin-01c / plugin-02b)
+
+Spacing tokens are mirrored as Figma FLOAT variables in the **"Spacing"** collection so that Auto Layout padding and gap values can be bound to variables.
+
+### Token table (matches 4px base grid above)
+
+| Variable name | Value |
+|---------------|-------|
+| `layout/0` | 0px |
+| `layout/2` | 2px |
+| `layout/4` | 4px |
+| `layout/6` | 6px |
+| `layout/8` | 8px |
+| `layout/10` | 10px |
+| `layout/12` | 12px |
+| `layout/16` | 16px |
+| `layout/20` | 20px |
+| `layout/24` | 24px |
+| `layout/32` | 32px |
+
+### Binding API
+
+```js
+// CORRECT -- same setBoundVariable used for cornerRadius
+node.setBoundVariable('paddingTop', spacingVariable);    // Variable object
+node.setBoundVariable('paddingLeft', spacingVariable);
+node.setBoundVariable('itemSpacing', spacingVariable);
+node.setBoundVariable('counterAxisSpacing', spacingVariable); // WRAP only
+
+// WRONG -- this method does not exist in the current Figma API
+node.setBoundVariableForLayout(field, variable);  // always fails silently
+```
+
+Values NOT in the token table (e.g. 13px, 18px) cannot be auto-bound.
+plugin-02b collects and surfaces these as an "Unmatched Spacing" report for manual correction.
+
+---
+
 ## Rules for New Spacing Values
 
 1. **Use the 4px grid.** All spacing must be a multiple of 4px.
