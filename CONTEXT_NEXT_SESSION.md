@@ -1,178 +1,78 @@
-# Context — Next Session Handoff
-# Project: ai-seo-dashboard / plugin-03b Molecule Assembler
+# 📄 Next Session Handoff: Edition 05 Ready
 
----
+**Project:** ai-seo-dashboard / Design System Pipeline
 
-## Big Picture (Keep in mind throughout all work)
+## 🎯 Project Big Picture
 
-This plugin suite is the **SSOT (Single Source of Truth)** foundation for the design system.
+- **SSOT:** React Code → Figma Design (Current Target: 1:1 Parity).
+    
+- **Architecture:** Atomic Design (Atoms → Molecules).
+    
+- **Mechanism:** Every color, spacing, and radius must be **physically bound** to Figma Local Variables via `setBoundVariable`. No static RGB fills allowed.
+    
 
-Current direction: **Code → Design** (React code is source of truth; Figma must match it)
-Future direction: **Design → Code** (once Figma is locked as SSOT, changes in Figma propagate back to code)
+## ✅ Completed Last Session (Edition 04 Final)
 
-This means every molecule spec must be precise enough to support bidirectional sync. Every layout value, token name, spacing, and variant in the Figma plugin output must be 1:1 with the React implementation. The JSON config (`molecule-config.json`) is the bridge — it should eventually be derivable from either the React codebase or the Figma file.
+1. **Atom Builder (plugin-02a) Overhaul:**
+    
+    - **New Variant:** Added `outline` button (12 variants: 4 states × 3 sizes).
+        
+    - **Binding Engine:** Replaced all `solid(tok())` calls with a new `paints(tokenName)` helper that performs **Variable Alias Binding** at runtime.
+        
+    - **Resolution:** Added `resolveVariablesFromFigma()` to scan Local Variables and build a 5-level deep alias map.
+        
+2. **Atom Scanner (plugin-03a):**
+    
+    - Updated to index **16 atoms (169 components total)**, including the new `outline` buttons.
+        
+3. **Molecule Assembler (03b) Refactor:**
+    
+    - Fully English UI & English `MOLECULES.md` spec.
+        
+    - `FilterBar` structure corrected to use `SearchField` atom instead of manual Icon+Input.
+        
 
----
+## ⚠️ CRITICAL ISSUE: `outline` Button Mismatch
 
-## Plugin Suite Overview
+`plugin-02a`에서 생성된 `outline` 버튼이 현재 React의 실제 디자인과 일치하지 않음. **다음 세션 시작 시 이 부분의 스펙(Border width, Color mapping, Hover state)을 먼저 교정해야 함.**
 
-Located in `/Users/milchreis/Desktop/ai-seo-dashboard/`
+## 🚀 Next Session Must-Do (Action Items)
 
-```
-plugin-01-token-exporter/        — exports design tokens from CSS to Figma
-plugin-02a-atom-builder/         — builds atom components in Figma
-plugin-03a-atom-scanner/         — scans built atoms, writes index to sharedPluginData
-plugin-03b-molecule-assembler/   — assembles molecules from atom index (THIS PLUGIN)
-```
+### 1. Fix `outline` Button Specification (in `plugin-02a/code.js`)
 
-### plugin-03b files
-```
-code.js               — Universal Assembly Engine (refactored — project-agnostic)
-ui.html               — Plugin UI (refactored — English, config status, Load JSON button)
-molecule-config.json  — Molecule definitions (new — project-specific config)
-```
+- **Inspect React:** `components/ui/button.tsx` (cva variant: outline)의 정확한 Tailwind 값을 확인할 것.
+    
+- **Update Code:** `BUTTON_VARIANTS.outline` 객체의 `bg`, `border`, `text` 토큰 매핑 및 `opacity` 값 수정.
+    
+- **Regenerate:** Delete old buttons → Run `02a` → Run `03a` (Index Refresh).
+    
 
-Shared plugin data namespace: `ds_plugin_suite`
-- Atom index key:    `atomIndex_v1`   (written by 03a)
-- Molecule config key: `moleculeConfig_v1` (written by 03b ui via Load JSON)
+### 2. Complete Molecule Assembly (in `plugin-03b`)
 
----
+- **BulkActionBar:** `secondary`로 임시 설정된 'Export' 버튼을 신규 `outline` 아톰으로 교체.
+    
+- **HeaderActionGroup:** 'DateRange' 버튼을 `outline` 아톰으로 교체.
+    
+- **Variable Binding Check:** 모든 분자의 텍스트와 배경이 `paints()` 헬퍼를 통해 Variable에 정상적으로 바운딩되어 생성되는지 최종 확인.
+    
 
-## What Was Done Last Session
+## 📂 Key File Locations
 
-### 1. Universal Engine Refactor (COMPLETED)
-- Removed hardcoded `TOKENS` map → replaced with `FALLBACK_TOKENS` (fallback only)
-- Added `resolveTokensFromFigma()`: reads Figma Local Variables (COLOR type) at runtime, builds `_tokenMap`, follows VARIABLE_ALIAS chains up to 5 levels
-- Added `getMoleculeCfg(name)`: loads `molecule-config.json` data from sharedPluginData
-- Each generator now: loads tokens at start, reads all values from config with hardcoded defaults as fallback
-- New message handlers: `load-config`, `check-config`
-- UI updated: config status banner, "Load JSON" file picker button
+- `plugin-02a-atom-builder/code.js`: The "Material Factory" (Binding logic & `outline` spec).
+    
+- `plugin-03b-molecule-assembler/molecule-config.json`: The "Blueprint" (Molecule composition).
+    
+- `ATOMS.md`: Updated inventory (16 atoms / 169 variants).
+    
+- `MOLECULES.md`: English spec for 13 molecules.
+    
 
-### 2. molecule-config.json (CREATED)
-All 6 molecules defined: ChecklistItem, ChartLegendItem, NavItem, BulkActionBar, FilterBar, HeaderActionGroup
+## 🛠 Tech Stack Constraints (Strict)
 
-### 3. NavItem (COMPLETED in prior sessions)
-- Desktop active indicator: `w-1`(4px) bar, right corners only rounded (`rounded-r-full`), positioned at `x=-8` (outside button bounds, matches `-left-2`)
-- Mobile active indicator: `absolute -top-0.5`, `h-0.5 w-8`, `rounded-full`
-- Figma spacer trick: `itemSpacing=4`, bar(2px)[4px]spacer(1px)[4px]icon = 9px gap matching React
-
----
-
-## PENDING FIXES (Next Session Must-Do)
-
-### Fix 1: Translate plugin UI and MOLECULES.md to English
-**Files to change:**
-- `plugin-03b-molecule-assembler/ui.html` — Korean text in banners and hints → English
-- `MOLECULES.md` — Entire file is in Korean → translate to English
-
-MOLECULES.md is a large spec file (~700+ lines). It covers 13 molecules with layout structure, token tables, props interfaces. Translate all Korean prose, headings, and comments to English. Keep code blocks, token names, and class names unchanged.
-
----
-
-### Fix 2: BulkActionBar — "3 citations selected" text color and "Export" button color don't match React
-
-**React implementation** (`components/dashboard/search-visibility/page.tsx` or similar):
-- Check actual BulkActionBar component for:
-  - Text color of the count label ("3 citations selected")
-  - Exact variant of the "Export" button
-
-**Current Figma plugin config** (`molecule-config.json`):
-```json
-"countLabelTok": "foreground-secondary",
-"buttons": [
-  { "variant": "secondary", ... "label": "Export" },
-  ...
-]
-```
-
-**Action:** Find the React component, check exact Tailwind classes for:
-1. Count label text color — is it `foreground-secondary` or something else?
-2. "Export" button — is it `secondary` or `ghost` variant?
-
-Then update `molecule-config.json` accordingly (no code.js changes needed, config-only fix).
-
----
-
-### Fix 3: FilterBar — search field uses wrong atom (Input instead of SearchInput pattern)
-
-**Problem:** The third filter group uses `Input` atom directly, but the React implementation has a search field with a built-in icon slot (not a separate icon + plain Input). The current config puts an `Icon-Slot` + `Input` atom side by side, but the React search field is a single composited component.
-
-**React implementation** — check `components/dashboard/search-visibility/page.tsx` for the actual FilterBar search field structure.
-
-**Relevant config section** (`molecule-config.json`):
-```json
-"filters": [
-  { "iconSize": 16, "atomName": "Select", ... },
-  { "iconSize": 16, "atomName": "Select", ... },
-  { "iconSize": 16, "atomName": "Input",  "props": { "state": "default", "size": "lg" }, ... }
-]
-```
-
-The third filter group needs to match whatever the React code actually renders — possibly an `Input` atom that already contains an icon, or a different structure entirely. Investigate and fix both `molecule-config.json` and the FilterBar generator in `code.js` if the structure needs to change.
-
----
-
-## Key File Locations
-
-| File | Purpose |
-|------|---------|
-| `plugin-03b-molecule-assembler/code.js` | Universal engine — token resolution, molecule generators |
-| `plugin-03b-molecule-assembler/ui.html` | Plugin UI — config/index status, molecule buttons |
-| `plugin-03b-molecule-assembler/molecule-config.json` | Project-specific molecule definitions |
-| `components/dashboard/sidebar.tsx` | NavItem React source of truth |
-| `components/dashboard/search-visibility/page.tsx` | BulkActionBar + FilterBar React source of truth |
-| `MOLECULES.md` | Molecule spec (needs full English translation) |
-| `ATOMS.md` | Atom inventory and verified Figma API patterns |
-| `CLAUDE.md` | Project rules including Figma API constraints |
-
----
-
-## Critical Figma API Rules (from CLAUDE.md)
-
-- No `?.` or `??` — use `&&` and explicit null checks, use `||` instead of `??`
-- `figma.combineAsVariants(nodes, figma.currentPage)` — NOT `combineAsComponentSet`
-- `counterAxisSizingMode`: only `'FIXED'` or `'AUTO'` — never `'FILL'`
-- Use `layoutSizingHorizontal = 'FILL'` on child nodes for fill-parent behavior
-- `setBoundVariable(field, variable)` for ALL variable binding including spacing
-- Never override `textCase` after setting `textStyleId`
-- No em dash character in comments or docs
-
----
-
-## Token System
-
-Runtime resolution priority:
-1. `_tokenMap` — built from Figma Local Variables at runtime via `resolveTokensFromFigma()`
-2. `FALLBACK_TOKENS` — hardcoded RGB values, used only when variable not found
-
-Variable name normalization (handles all common formats):
-- `"Primary/Default"` → stores as `"default"`, `"primary-default"`, `"primary-default"`
-- `"colors/primary-default"` → stores as `"primary-default"`, `"colors-primary-default"`, `"primary-default"`
-
-Token names used across molecules (all must exist in Figma Local Variables):
-`background`, `surface-default`, `surface-hover`, `foreground-primary`, `foreground-secondary`,
-`foreground-tertiary`, `foreground-strong`, `foreground-muted`, `primary-default`,
-`brand-deep`, `brand-default`, `brand-soft`, `brand-faint`, `positive-default`,
-`danger-default`, `caution-default`, `border-primary`, `border-secondary`, `chart-citations`
-
----
-
-## React Component → Figma Molecule Mapping
-
-| React Component | Figma Molecule | Generator Function |
-|----------------|---------------|-------------------|
-| `<NavItem>` in sidebar.tsx | NavItem (4 variants) | `generateNavItemMolecule()` |
-| BulkActionBar in search-visibility | BulkActionBar (1 variant) | `generateBulkActionBarMolecule()` |
-| FilterBar in search-visibility | FilterBar (1 variant) | `generateFilterBarMolecule()` |
-| `<Header>` action group | HeaderActionGroup (1 variant) | `generateHeaderActionGroupMolecule()` |
-| Checklist items in drawer | ChecklistItem (2 variants) | `generateChecklistItemMolecule()` |
-| Chart legend | ChartLegendItem (3 variants) | `generateChartLegendItemMolecule()` |
-
----
-
-## Session Work Order (Recommended)
-
-1. Fix 2: BulkActionBar colors — read React component, update `molecule-config.json`
-2. Fix 3: FilterBar search field — read React component, update config + generator if needed
-3. Fix 1: Translate `ui.html` banners/hints to English
-4. Fix 1: Translate `MOLECULES.md` (~700 lines) to English — large task, do in sections
+- **No `?.` or `??`:** Use `&&` and `||`.
+    
+- **No Em-dash (`—`):** Do not use in code or docs.
+    
+- **Variable Binding:** Use `setBoundVariable(field, variable)` for all styles.
+    
+- **React-First:** If Figma looks different from React, Figma code (`02a` or `03b`) must be updated.
