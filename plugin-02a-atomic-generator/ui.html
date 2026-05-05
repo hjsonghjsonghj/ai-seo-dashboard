@@ -90,7 +90,7 @@
     <div class="header-icon">⚛</div>
     <div>
       <h1>Atomic Generator</h1>
-      <p>plugin-02a — 16 Atoms (+ ProgressRing)</p>
+      <p>plugin-02a — 15 Atoms (+ ProgressRing)</p>
     </div>
   </div>
 
@@ -136,10 +136,6 @@
   <div class="section">
     <div class="section-label">Form Atoms</div>
     <div class="grid">
-      <button class="btn" onclick="send('generate-select')">
-        <span class="icon">▾</span> Select
-        <span class="count">12</span>
-      </button>
       <button class="btn" onclick="send('generate-search-field')">
         <span class="icon">⊕</span> Search Field
         <span class="count">12</span>
@@ -182,13 +178,17 @@
     </div>
   </div>
 
-  <!-- Molecule Atom -->
+  <!-- Molecule Atoms -->
   <div class="section">
     <div class="section-label">Molecule Atoms</div>
     <div class="grid">
       <button class="btn" onclick="send('generate-progress-ring')" style="grid-column: span 2;">
         <span class="icon">◎</span> ProgressRing
         <span class="count">6</span>
+      </button>
+      <button class="btn" onclick="send('generate-icon-slot')" style="grid-column: span 2;">
+        <span class="icon">&#9633;</span> IconSlot
+        <span class="count">5</span>
       </button>
     </div>
   </div>

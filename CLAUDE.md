@@ -11,6 +11,10 @@
 - Dev: npm run dev
 - Lint: npm run lint
 
+## Communication Rules
+- Never use em-dashes (—) in any response, document, or code comment.
+- Write in a friendly conversational tone. Do not use formal declarative sentence endings.
+
 ## Figma Plugin Development Rules
 - Always use safe ES6 JavaScript syntax for code.js files inside Figma plugin folders.
 - Avoid nullish coalescing (`??`) and optional chaining (`?.`) — they cause syntax errors in the Figma plugin environment. Use `||` and explicit `&&` checks instead.

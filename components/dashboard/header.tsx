@@ -1,7 +1,9 @@
 "use client"
 
+import { Bell, Calendar, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Calendar, ChevronDown, Bell, Search } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export function Header() {
   return (
@@ -18,29 +20,33 @@ export function Header() {
         {/* Search */}
         <div className="relative hidden md:block">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground-muted" />
-          <input
-            type="text"
+          <Input
             placeholder="Search metrics..."
-            className="h-9 w-64 rounded-lg border border-border-secondary bg-surface-default/30 pl-9 pr-4 text-body-md-medium text-foreground-primary placeholder:text-foreground-muted focus:border-primary-default focus:outline-none focus:ring-1 focus:ring-primary-default"
+            className="h-9 w-64 pl-10 bg-surface-hover/50 border-border-secondary placeholder:text-foreground-muted"
           />
         </div>
 
         {/* Date Range */}
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-1.5 md:gap-2 border-border-secondary bg-surface-default/30 text-foreground-primary hover:bg-surface-default/50"
-        >
-          <Calendar className="h-4 w-4" />
-          <span className="hidden sm:inline text-label-xs-medium md:text-body-micro-medium">Last 30 days</span>
-          <ChevronDown className="h-3.5 w-3.5" />
-        </Button>
+        <Select defaultValue="30d">
+          <SelectTrigger className="h-9 w-[160px] border-border-secondary bg-surface-hover/50">
+            <div className="flex items-center gap-2 min-w-0">
+              <Calendar className="h-4 w-4 text-foreground-muted shrink-0" />
+              <SelectValue />
+            </div>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="7d">Last 7 days</SelectItem>
+            <SelectItem value="30d">Last 30 days</SelectItem>
+            <SelectItem value="90d">Last 90 days</SelectItem>
+            <SelectItem value="1y">Last year</SelectItem>
+          </SelectContent>
+        </Select>
 
         {/* Notifications */}
         <Button
           variant="outline"
           size="icon"
-          className="relative h-8 w-8 md:h-9 md:w-9 border-border-secondary bg-surface-default/30 text-foreground-primary hover:bg-surface-default/50"
+          className="relative h-9 w-9 border-border-secondary bg-surface-hover/50 text-foreground-primary hover:bg-surface-hover"
         >
           <Bell className="h-4 w-4" />
           <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary-default text-label-micro-medium leading-none text-foreground-strong">

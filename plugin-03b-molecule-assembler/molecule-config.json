@@ -57,7 +57,6 @@
       }
     },
     "BulkActionBar": {
-      "_ssotNote": "React Export uses variant=outline, but Figma Button atom (plugin-02a) currently has only primary|secondary|ghost|destructive. Until plugin-02a adds an outline variant, this falls back to secondary (closest visual match).",
       "hGap": 640,
       "gap": 12,
       "paddingH": 16,
@@ -69,9 +68,27 @@
       "countLabelTypography": "body-md-medium",
       "countLabelTok": "foreground-secondary",
       "buttons": [
-        { "variant": "secondary", "size": "sm", "state": "default", "label": "Export",           "fallbackW": 80,  "fallbackH": 32, "_reactVariant": "outline" },
-        { "variant": "primary",   "size": "sm", "state": "default", "label": "Mark as Resolved", "fallbackW": 140, "fallbackH": 32, "_reactVariant": "default" },
-        { "variant": "ghost",     "size": "sm", "state": "default", "label": "Clear Selection",  "fallbackW": 120, "fallbackH": 32, "_reactVariant": "ghost"   }
+        { "variant": "outline",  "size": "sm", "state": "default", "label": "Export",           "fallbackW": 80,  "fallbackH": 32 },
+        { "variant": "primary",  "size": "sm", "state": "default", "label": "Mark as Resolved", "fallbackW": 140, "fallbackH": 32 },
+        { "variant": "ghost",    "size": "sm", "state": "default", "label": "Clear Selection",  "fallbackW": 120, "fallbackH": 32 }
+      ]
+    },
+    "SelectDropdown": {
+      "hGap": 240,
+      "triggerW": 200,
+      "triggerH": 36,
+      "placeholder": "Select period",
+      "selectedValue": "Last 30 days",
+      "menuPadding": 4,
+      "menuItemPaddingV": 6,
+      "menuItemPaddingL": 8,
+      "menuItemPaddingR": 8,
+      "menuCornerRadius": 6,
+      "items": [
+        { "label": "Last 7 days",  "focused": true  },
+        { "label": "Last 30 days", "focused": false },
+        { "label": "Last 90 days", "focused": false },
+        { "label": "Last year",    "focused": false }
       ]
     },
     "FilterBar": {
@@ -88,33 +105,25 @@
       "contentPaddingBottom": 20,
       "contentGap": 16,
       "filters": [
-        { "externalIcon": true,  "iconSize": 16, "atomName": "Select",      "props": { "state": "default", "size": "sm" }, "fallbackW": 200, "fallbackH": 32 },
-        { "externalIcon": true,  "iconSize": 16, "atomName": "Select",      "props": { "state": "default", "size": "sm" }, "fallbackW": 200, "fallbackH": 32 },
-        { "externalIcon": false, "iconSize": 16, "atomName": "SearchField", "props": { "state": "default", "size": "md" }, "fallbackW": 280, "fallbackH": 36 }
+        { "externalIcon": false, "iconSize": 16, "atomName": "SelectDropdown", "props": { "state": "closed" }, "fallbackW": 200, "fallbackH": 36 },
+        { "externalIcon": false, "iconSize": 16, "atomName": "SelectDropdown", "props": { "state": "closed" }, "fallbackW": 200, "fallbackH": 36 },
+        { "externalIcon": false, "iconSize": 16, "atomName": "SearchField",    "props": { "state": "default", "size": "md" }, "fallbackW": 280, "fallbackH": 36 }
       ]
     },
     "HeaderActionGroup": {
       "hGap": 580,
       "gap": 8,
       "searchInput": {
-        "iconSize": 16,
-        "bgOpacity": 0.3,
-        "bgTok": "surface-default",
-        "borderTok": "border-secondary",
-        "cornerRadius": 8,
-        "atomName": "Input",
-        "atomProps": { "state": "default", "size": "sm" },
+        "atomName": "SearchField",
+        "atomProps": { "state": "default", "size": "md" },
         "placeholder": "Search metrics...",
         "fallbackW": 200,
-        "fallbackH": 32
+        "fallbackH": 36
       },
       "dateButton": {
-        "variant": "secondary",
-        "size": "sm",
-        "state": "default",
-        "label": "Last 30 days",
-        "fallbackW": 120,
-        "fallbackH": 32
+        "state": "closed",
+        "fallbackW": 160,
+        "fallbackH": 36
       },
       "notifButton": {
         "size": 36,

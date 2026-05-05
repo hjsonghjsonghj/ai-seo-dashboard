@@ -79,6 +79,26 @@ const LINE_H = { 30:36, 20:28, 18:27, 16:24, 14:20, 13:18, 12:16, 11:14, 10:14, 
 var _tokenMap        = {};
 var _variableByName  = {};
 
+// ── NOTIFICATION HELPER ───────────────────────────────────────
+// Dismisses the previous notification before showing the next one,
+// so intermediate success banners disappear immediately when the next
+// generator fires. The final notification carries { timeout: 5000 }
+// so it auto-dismisses even when no further generator runs.
+// _batchMode suppresses per-atom success notifications during generateAllAtoms().
+// Errors always show regardless of batch mode.
+var _lastNotif   = null;
+var _batchMode   = false;
+// Cached reference to the IconSlot component set on the current page.
+// Reset to null whenever generateIconSlotAtom() regenerates the set.
+var _iconSlotCS  = null;
+function notify(msg, opts) {
+  var isError = opts && opts.error;
+  if (_batchMode && !isError) { return { dismiss: function() {} }; }
+  if (_lastNotif) { try { _lastNotif.dismiss(); } catch (_0) {} }
+  _lastNotif = figma.notify(msg, opts || {});
+  return _lastNotif;
+}
+
 // Resolve one COLOR Variable to {r,g,b}. Follows VARIABLE_ALIAS chain.
 function resolveVariableColor(variable) {
   try {
@@ -253,16 +273,43 @@ function makeText(chars, opts) {
 // Stroke is bound to the foreground-muted Variable, so theme edits
 // propagate without re-running this generator.
 function makeIconSlot(size) {
+  // Prefer a real IconSlot component instance so designers can swap icons later.
+  // Falls back to a plain dashed frame when the component set is not on the page yet.
+  if (!_iconSlotCS) {
+    _iconSlotCS = figma.currentPage.findOne(function(n) {
+      return n.name === 'IconSlot' && n.type === 'COMPONENT_SET';
+    });
+  }
+  if (_iconSlotCS) {
+    for (var i = 0; i < _iconSlotCS.children.length; i++) {
+      var cName = _iconSlotCS.children[i].name;
+      if (cName === 'size=' + size) {
+        return _iconSlotCS.children[i].createInstance();
+      }
+    }
+    if (_iconSlotCS.children.length > 0) { return _iconSlotCS.children[0].createInstance(); }
+  }
   var slot = figma.createFrame();
-  slot.name = 'Icon-Slot';
+  slot.name         = 'Icon-Slot';
   slot.resize(size, size);
-  slot.layoutMode = 'NONE';
-  slot.fills = [];
-  slot.strokes = paints('foreground-muted');
+  slot.layoutMode   = 'NONE';
+  slot.fills        = [];
+  slot.strokes      = paints('foreground-muted');
   slot.strokeWeight = 1;
-  slot.strokeAlign = 'INSIDE';
-  slot.dashPattern = [4, 4];
+  slot.strokeAlign  = 'INSIDE';
+  slot.dashPattern  = [4, 4];
   return slot;
+}
+
+// Binds an INSTANCE_SWAP component property to iconNode so designers can
+// swap icons via the Properties panel. No-ops if iconNode is not an instance.
+function tryAddIconSwapProp(comp, iconNode, propName) {
+  if (!iconNode || iconNode.type !== 'INSTANCE') return;
+  if (!iconNode.mainComponent) return;
+  try {
+    var key = comp.addComponentProperty(propName, 'INSTANCE_SWAP', iconNode.mainComponent.id);
+    iconNode.componentPropertyReferences = { mainComponent: key };
+  } catch (_) {}
 }
 
 function viewportCenter() {
@@ -468,11 +515,18 @@ function buildAtomFrame(cs, title, config) {
 //   outline     → outline           (mapped from dark-mode resolution)
 //   link        → not represented (text-only, lives in typography scale)
 //
-// outline variant resolved against dark theme (project default):
-//   default:  bg = input @ 30%,  border = input,        text = foreground-primary
-//   hover:    bg = input @ 50%,  border = input,        text = foreground-strong
-//   focus:    bg = input @ 30%,  border = brand-deep,   text = foreground-primary
-//   disabled: bg = input @ 30%,  border = input,        text = foreground-muted (opacity 0.5)
+// outline variant resolved against actual running app (no .dark class on HTML element):
+//   app/layout.tsx does NOT add .dark class, so dark: utilities are dead code.
+//   button.tsx outline: 'border bg-background shadow-xs hover:bg-brand-default hover:text-foreground-strong'
+//   'border' without color = currentColor = inherits text color = foreground-primary (near-white)
+//   default:  bg = background,    border = foreground-primary, text = foreground-primary, shadow-xs
+//   hover:    bg = brand-default, border = foreground-primary, text = foreground-strong,  shadow-xs
+//   focus:    bg = background,    border = brand-deep,         text = foreground-primary, shadow-xs
+//   disabled: bg = background,    border = foreground-primary, text = foreground-muted (opacity 0.5)
+//
+// shadow-xs: box-shadow 0 1px 2px 0 rgb(0 0 0 / 0.05)
+// -- outline is the only button variant that carries this shadow (React source).
+// -- Figma: DROP_SHADOW { color: black@5%, offset: {x:0,y:1}, radius:2, spread:0 }
 const BUTTON_VARIANTS = {
   primary: {
     default:  { bg: 'primary-default', bgOp: 1,    text: 'foreground-strong',    stroke: null,               strokeW: 0 },
@@ -487,10 +541,10 @@ const BUTTON_VARIANTS = {
     disabled: { bg: 'surface-hover',   bgOp: 1,    text: 'foreground-muted',     stroke: 'border-secondary', strokeW: 1, compOpacity: 0.5 },
   },
   outline: {
-    default:  { bg: 'input',           bgOp: 0.3,  text: 'foreground-primary',   stroke: 'input',            strokeW: 1 },
-    hover:    { bg: 'input',           bgOp: 0.5,  text: 'foreground-strong',    stroke: 'input',            strokeW: 1 },
-    focus:    { bg: 'input',           bgOp: 0.3,  text: 'foreground-primary',   stroke: 'brand-deep',       strokeW: 2 },
-    disabled: { bg: 'input',           bgOp: 0.3,  text: 'foreground-muted',     stroke: 'input',            strokeW: 1, compOpacity: 0.5 },
+    default:  { bg: 'background',    bgOp: 1, text: 'foreground-primary', stroke: 'foreground-primary', strokeW: 1, shadowXs: true },
+    hover:    { bg: 'brand-default', bgOp: 1, text: 'foreground-strong',  stroke: 'foreground-primary', strokeW: 1, shadowXs: true },
+    focus:    { bg: 'background',    bgOp: 1, text: 'foreground-primary', stroke: 'brand-deep',         strokeW: 2, shadowXs: true },
+    disabled: { bg: 'background',    bgOp: 1, text: 'foreground-muted',   stroke: 'foreground-primary', strokeW: 1, compOpacity: 0.5 },
   },
   ghost: {
     default:  { bg: null,              bgOp: 1,    text: 'foreground-primary',   stroke: null,               strokeW: 0 },
@@ -568,6 +622,20 @@ async function generateButtonAtom() {
             comp.strokeAlign  = 'INSIDE';
           } else { comp.strokes = []; }
 
+          if (stConf.shadowXs) {
+            comp.effects = [{
+              type: 'DROP_SHADOW',
+              color: { r: 0, g: 0, b: 0, a: 0.05 },
+              offset: { x: 0, y: 1 },
+              radius: 2,
+              spread: 0,
+              visible: true,
+              blendMode: 'NORMAL',
+            }];
+          } else {
+            comp.effects = [];
+          }
+
           var lbl = makeText('Button', { colorTok: stConf.text, typographyKey: zConf.typoKey });
           comp.appendChild(lbl);
           if (stConf.compOpacity) { comp.opacity = stConf.compOpacity; }
@@ -607,10 +675,10 @@ async function generateButtonAtom() {
     wrapper.x = pos.x;
     wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ Button 시스템 생성 및 정렬 완료!');
+    notify('✅ Button system generated.', { timeout: 5000 });
   } catch (err) {
     var msg = (err && err.message) ? err.message : String(err);
-    figma.notify('❌ Button[' + step + ']: ' + msg, { error: true });
+    notify('❌ Button[' + step + ']: ' + msg, { error: true });
     console.error('[Button][' + step + ']', err);
   }
 }
@@ -725,10 +793,10 @@ async function generateInputAtom() {
     wrapper.x = pos.x;
     wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ Input 시스템 생성 및 정렬 완료!');
+    notify('✅ Input system generated.', { timeout: 5000 });
   } catch (err) {
     var msg = (err && err.message) ? err.message : String(err);
-    figma.notify('❌ Input[' + step + ']: ' + msg, { error: true });
+    notify('❌ Input[' + step + ']: ' + msg, { error: true });
     console.error('[Input][' + step + ']', err);
   }
 }
@@ -777,6 +845,13 @@ async function generateBadgeAtom() {
       comp.cornerRadius  = 9999;
       comp.strokes       = [];
       comp.fills = paints(vConf.bgColor, vConf.bgOpacity);
+      // Figma variable binding resets paint opacity to 1.0 on assignment.
+      // JSON round-trip re-applies the intended opacity after binding is set.
+      if (vConf.bgOpacity < 1) {
+        var ff = JSON.parse(JSON.stringify(comp.fills));
+        ff[0].opacity = vConf.bgOpacity;
+        comp.fills = ff;
+      }
 
       var lbl = makeText(vConf.label, { colorTok: vConf.textColor, typographyKey: 'label-xs-caps-semibold' });
       comp.appendChild(lbl);
@@ -801,10 +876,10 @@ async function generateBadgeAtom() {
     wrapper.x = pos.x;
     wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ Badge 시스템 생성 및 정렬 완료!');
+    notify('✅ Badge system generated.', { timeout: 5000 });
   } catch (err) {
     var msg = (err && err.message) ? err.message : String(err);
-    figma.notify('❌ Badge[' + step + ']: ' + msg, { error: true });
+    notify('❌ Badge[' + step + ']: ' + msg, { error: true });
     console.error('[Badge][' + step + ']', err);
   }
 }
@@ -892,10 +967,10 @@ async function generateCheckboxAtom() {
     wrapper.x = pos.x;
     wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ Checkbox 시스템 생성 및 정렬 완료!');
+    notify('✅ Checkbox system generated.', { timeout: 5000 });
   } catch (err) {
     var msg = (err && err.message) ? err.message : String(err);
-    figma.notify('❌ Checkbox[' + step + ']: ' + msg, { error: true });
+    notify('❌ Checkbox[' + step + ']: ' + msg, { error: true });
     console.error('[Checkbox][' + step + ']', err);
   }
 }
@@ -981,10 +1056,10 @@ async function generateRadioAtom() {
     wrapper.x = pos.x;
     wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ Radio 시스템 생성 및 정렬 완료!');
+    notify('✅ Radio system generated.', { timeout: 5000 });
   } catch (err) {
     var msg = (err && err.message) ? err.message : String(err);
-    figma.notify('❌ Radio[' + step + ']: ' + msg, { error: true });
+    notify('❌ Radio[' + step + ']: ' + msg, { error: true });
     console.error('[Radio][' + step + ']', err);
   }
 }
@@ -1070,91 +1145,23 @@ async function generateSwitcherAtom() {
     wrapper.x = pos.x;
     wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ Switcher 시스템 생성 및 정렬 완료!');
+    notify('✅ Switcher system generated.', { timeout: 5000 });
   } catch (err) {
     var msg = (err && err.message) ? err.message : String(err);
-    figma.notify('❌ Switcher[' + step + ']: ' + msg, { error: true });
+    notify('❌ Switcher[' + step + ']: ' + msg, { error: true });
     console.error('[Switcher][' + step + ']', err);
   }
 }
 
 // ══════════════════════════════════════════════════════════════
-// ── ATOM 7: SELECT / DROPDOWN  (4 states × 3 sizes = 12) ─────
-// ══════════════════════════════════════════════════════════════
-const SELECT_STATES = {
-  default:  { border: 'border-secondary', borderW: 1, bg: 'input',           textColor: 'foreground-muted',   compOpacity: 1   },
-  open:     { border: 'brand-deep',       borderW: 2, bg: 'input',           textColor: 'foreground-primary', compOpacity: 1   },
-  selected: { border: 'border-secondary', borderW: 1, bg: 'input',           textColor: 'foreground-primary', compOpacity: 1   },
-  disabled: { border: 'border-secondary', borderW: 1, bg: 'surface-default', textColor: 'foreground-muted',   compOpacity: 0.5 },
-};
-const SELECT_SIZES = {
-  sm: { w: 200, h: 32, ph: 10 },
-  md: { w: 240, h: 36, ph: 12 },
-  lg: { w: 280, h: 40, ph: 16 },
-};
-
-async function generateSelectAtom() {
-  var step = 'init';
-  try {
-    step = 'delete'; await deleteExistingNode('Select');
-    step = 'fonts';  await loadFonts();
-    step = 'tokens'; await resolveVariablesFromFigma();
-    var SEL_H = 360, SEL_V = 140;
-    var components = [];
-    var stKeys    = Object.keys(SELECT_STATES);
-    var szEntries = Object.entries(SELECT_SIZES);
-    for (var si = 0; si < stKeys.length; si++) {
-      var stN = stKeys[si]; var stC = SELECT_STATES[stN];
-      for (var zi = 0; zi < szEntries.length; zi++) {
-        var zN = szEntries[zi][0]; var zC = szEntries[zi][1];
-        step = 'comp[' + stN + '/' + zN + ']';
-        var comp = figma.createComponent();
-        comp.name = 'state=' + stN + ', size=' + zN;
-        comp.x = si * SEL_H; comp.y = zi * SEL_V;
-        comp.layoutMode = 'HORIZONTAL';
-        comp.primaryAxisAlignItems = 'CENTER'; comp.counterAxisAlignItems = 'CENTER';
-        comp.primaryAxisSizingMode = 'FIXED';  comp.counterAxisSizingMode = 'FIXED';
-        comp.resize(zC.w, zC.h);
-        comp.paddingLeft = zC.ph; comp.paddingRight = zC.ph;
-        comp.paddingTop = 0; comp.paddingBottom = 0; comp.itemSpacing = 8;
-        comp.cornerRadius = RADIUS.md;
-        comp.fills   = paints(stC.bg);
-        comp.strokes = paints(stC.border); comp.strokeWeight = stC.borderW; comp.strokeAlign = 'INSIDE';
-        var valStr = (stN === 'selected') ? 'Option selected' : 'Select option...';
-        var val = makeText(valStr, { colorTok: stC.textColor, typographyKey: 'body-sm-medium' });
-        comp.appendChild(val);
-        try { val.layoutSizingHorizontal = 'FILL'; } catch (_) {}
-        var chev = makeIconSlot(12);
-        comp.appendChild(chev);
-        if (stC.compOpacity < 1) { comp.opacity = stC.compOpacity; }
-        components.push(comp);
-      }
-    }
-    step = 'combine';
-    var pos = getNextPosition();
-    var cs = figma.combineAsVariants(components, figma.currentPage);
-    cs.name = 'Select'; try { cs.layoutMode = 'NONE'; } catch (_) {}
-    centerInCells(cs, components, SEL_H, SEL_V, cs.height);
-    step = 'wrap';
-    var wrapper = buildAtomFrame(cs, 'Select', {
-      hGap: SEL_H, vGap: SEL_V, numCols: stKeys.length, numRows: szEntries.length,
-      colHeaders: stKeys,
-      rowGroups: [{ label: 'SM', rowIndex: 0 }, { label: 'MD', rowIndex: 1 }, { label: 'LG', rowIndex: 2 }],
-    });
-    wrapper.x = pos.x; wrapper.y = pos.y;
-    figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ Select 생성 완료!');
-  } catch (err) { figma.notify('❌ Select[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
-}
-
 // ══════════════════════════════════════════════════════════════
 // ── ATOM 8: SEARCH FIELD  (4 states × 3 sizes = 12) ──────────
 // ══════════════════════════════════════════════════════════════
 const SEARCH_STATES = {
-  default:  { border: 'border-secondary', borderW: 1, bg: 'input',           phColor: 'foreground-muted',   compOpacity: 1   },
-  focus:    { border: 'brand-deep',       borderW: 2, bg: 'input',           phColor: 'foreground-muted',   compOpacity: 1   },
-  filled:   { border: 'border-secondary', borderW: 1, bg: 'input',           phColor: 'foreground-primary', compOpacity: 1   },
-  disabled: { border: 'border-secondary', borderW: 1, bg: 'surface-default', phColor: 'foreground-muted',   compOpacity: 0.5 },
+  default:  { border: 'border-secondary', borderW: 1, bg: 'surface-hover', bgOp: 0.5, phColor: 'foreground-muted',   compOpacity: 1   },
+  focus:    { border: 'brand-deep',       borderW: 2, bg: 'surface-hover', bgOp: 0.5, phColor: 'foreground-muted',   compOpacity: 1   },
+  filled:   { border: 'border-secondary', borderW: 1, bg: 'surface-hover', bgOp: 0.5, phColor: 'foreground-primary', compOpacity: 1   },
+  disabled: { border: 'border-secondary', borderW: 1, bg: 'surface-hover', bgOp: 0.3, phColor: 'foreground-muted',   compOpacity: 0.5 },
 };
 const SEARCH_SIZES = {
   sm: { w: 240, h: 32, ph: 10 },
@@ -1188,9 +1195,15 @@ async function generateSearchFieldAtom() {
         comp.paddingTop = 0; comp.paddingBottom = 0; comp.itemSpacing = 8;
         comp.cornerRadius = RADIUS.md;
         comp.fills   = paints(stC.bg);
+        if (stC.bgOp !== undefined && stC.bgOp < 1) {
+          var sfFills = JSON.parse(JSON.stringify(comp.fills));
+          sfFills[0].opacity = stC.bgOp;
+          comp.fills = sfFills;
+        }
         comp.strokes = paints(stC.border); comp.strokeWeight = stC.borderW; comp.strokeAlign = 'INSIDE';
         var iconTxt = makeIconSlot(16);
         comp.appendChild(iconTxt);
+        tryAddIconSwapProp(comp, iconTxt, 'Icon');
         var phStr = (stN === 'filled') ? 'Search results...' : 'Search...';
         var ph = makeText(phStr, { colorTok: stC.phColor, typographyKey: 'body-sm-medium' });
         comp.appendChild(ph);
@@ -1212,8 +1225,8 @@ async function generateSearchFieldAtom() {
     });
     wrapper.x = pos.x; wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ SearchField 생성 완료!');
-  } catch (err) { figma.notify('❌ SearchField[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
+    notify('✅ SearchField generated.', { timeout: 5000 });
+  } catch (err) { notify('❌ SearchField[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1279,8 +1292,8 @@ async function generateProgressAtom() {
     });
     wrapper.x = pos.x; wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ Progress 생성 완료!');
-  } catch (err) { figma.notify('❌ Progress[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
+    notify('✅ Progress generated.', { timeout: 5000 });
+  } catch (err) { notify('❌ Progress[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1353,8 +1366,8 @@ async function generateAvatarAtom() {
     });
     wrapper.x = pos.x; wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ Avatar 생성 완료!');
-  } catch (err) { figma.notify('❌ Avatar[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
+    notify('✅ Avatar generated.', { timeout: 5000 });
+  } catch (err) { notify('❌ Avatar[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1396,6 +1409,7 @@ async function generateAlertAtom() {
       // Icon slot — designer drops in the real lucide icon
       var iconBox = makeIconSlot(16);
       comp.appendChild(iconBox);
+      tryAddIconSwapProp(comp, iconBox, 'Icon');
 
       // Content column
       var textCol = figma.createFrame();
@@ -1424,8 +1438,8 @@ async function generateAlertAtom() {
     });
     wrapper.x = pos.x; wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ Alert 생성 완료!');
-  } catch (err) { figma.notify('❌ Alert[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
+    notify('✅ Alert generated.', { timeout: 5000 });
+  } catch (err) { notify('❌ Alert[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1487,8 +1501,8 @@ async function generateSpinnerAtom() {
     });
     wrapper.x = pos.x; wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ Spinner 생성 완료!');
-  } catch (err) { figma.notify('❌ Spinner[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
+    notify('✅ Spinner generated.', { timeout: 5000 });
+  } catch (err) { notify('❌ Spinner[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1530,8 +1544,8 @@ async function generateSeparatorAtom() {
     });
     wrapper.x = pos.x; wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ Separator 생성 완료!');
-  } catch (err) { figma.notify('❌ Separator[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
+    notify('✅ Separator generated.', { timeout: 5000 });
+  } catch (err) { notify('❌ Separator[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1578,6 +1592,7 @@ async function generateToggleAtom() {
         comp.strokes = paints(stC.stroke); comp.strokeWeight = stC.strokeW; comp.strokeAlign = 'INSIDE';
         var icon = makeIconSlot(zC.iconSize);
         comp.appendChild(icon);
+        tryAddIconSwapProp(comp, icon, 'Icon');
         if (stC.compOpacity < 1) { comp.opacity = stC.compOpacity; }
         components.push(comp);
       }
@@ -1595,8 +1610,8 @@ async function generateToggleAtom() {
     });
     wrapper.x = pos.x; wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ Toggle 생성 완료!');
-  } catch (err) { figma.notify('❌ Toggle[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
+    notify('✅ Toggle generated.', { timeout: 5000 });
+  } catch (err) { notify('❌ Toggle[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1688,8 +1703,8 @@ async function generateTooltipAtom() {
     });
     wrapper.x = pos.x; wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ Tooltip 생성 완료!');
-  } catch (err) { figma.notify('❌ Tooltip[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
+    notify('✅ Tooltip generated.', { timeout: 5000 });
+  } catch (err) { notify('❌ Tooltip[' + step + ']: ' + ((err && err.message) || err), { error: true }); }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1797,9 +1812,67 @@ async function generateProgressRingAtom() {
     });
     wrapper.x = pos.x; wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
-    figma.notify('✅ ProgressRing 생성 완료!');
+    notify('✅ ProgressRing generated.', { timeout: 5000 });
   } catch (err) {
-    figma.notify('❌ ProgressRing[' + step + ']: ' + ((err && err.message) || err), { error: true });
+    notify('❌ ProgressRing[' + step + ']: ' + ((err && err.message) || err), { error: true });
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// ── ATOM 17: ICONSLOT  (5 sizes) ─────────────────────────────
+// A component set with one variant per standard icon size.
+// Designers swap these instances for real icon components later.
+// Sizes match Tailwind size-3 / size-3.5 / size-4 / size-5 / size-6
+// (12 / 14 / 16 / 20 / 24 px) used throughout the design system.
+// ══════════════════════════════════════════════════════════════
+async function generateIconSlotAtom() {
+  var step = 'init';
+  try {
+    step = 'delete';
+    _iconSlotCS = null;
+    await deleteExistingNode('IconSlot');
+    step = 'fonts';  await loadFonts();
+    step = 'tokens'; await resolveVariablesFromFigma();
+
+    var SIZES    = [12, 14, 16, 20, 24];
+    var H_GAP    = 60;
+    var components = [];
+
+    for (var i = 0; i < SIZES.length; i++) {
+      var sz   = SIZES[i];
+      var comp = figma.createComponent();
+      comp.name         = 'size=' + sz;
+      comp.x            = i * H_GAP;
+      comp.y            = 0;
+      comp.resize(sz, sz);
+      comp.layoutMode   = 'NONE';
+      comp.fills        = [];
+      comp.strokes      = paints('foreground-muted');
+      comp.strokeWeight = 1;
+      comp.strokeAlign  = 'INSIDE';
+      comp.dashPattern  = [4, 4];
+      comp.cornerRadius = 0;
+      components.push(comp);
+    }
+
+    step = 'combine';
+    var pos = getNextPosition();
+    var cs  = figma.combineAsVariants(components, figma.currentPage);
+    cs.name = 'IconSlot';
+    _iconSlotCS = cs;
+    try { cs.layoutMode = 'NONE'; } catch (_) {}
+
+    step = 'wrap';
+    var colH = SIZES.map(function(s) { return s + 'px'; });
+    var wrapper = buildAtomFrame(cs, 'IconSlot', {
+      hGap: H_GAP, vGap: 0, numCols: SIZES.length, numRows: 1,
+      colHeaders: colH,
+    });
+    wrapper.x = pos.x; wrapper.y = pos.y;
+    figma.viewport.scrollAndZoomIntoView([wrapper]);
+    notify('✅ IconSlot atom generated (' + SIZES.length + ' sizes).', { timeout: 5000 });
+  } catch (err) {
+    notify('❌ IconSlot[' + step + ']: ' + ((err && err.message) || err), { error: true });
   }
 }
 
@@ -1808,14 +1881,15 @@ async function generateProgressRingAtom() {
 // ══════════════════════════════════════════════════════════════
 async function generateAllAtoms() {
   try {
-    figma.notify('⏳ Atomic Components 시스템 생성 중...', { timeout: 60000 });
+    _batchMode = true;
+    notify('⏳ Generating all atoms...', { timeout: 60000 });
+    await generateIconSlotAtom();
     await generateButtonAtom();
     await generateInputAtom();
     await generateBadgeAtom();
     await generateCheckboxAtom();
     await generateRadioAtom();
     await generateSwitcherAtom();
-    await generateSelectAtom();
     await generateSearchFieldAtom();
     await generateProgressAtom();
     await generateAvatarAtom();
@@ -1825,10 +1899,12 @@ async function generateAllAtoms() {
     await generateToggleAtom();
     await generateTooltipAtom();
     await generateProgressRingAtom();
-    figma.notify('✅ 모든 Atomic Components 생성 완료! (16개)');
+    _batchMode = false;
+    notify('✅ All atoms generated (16).', { timeout: 5000 });
   } catch (err) {
+    _batchMode = false;
     var msg = (err && err.message) ? err.message : String(err);
-    figma.notify('❌ generateAllAtoms: ' + msg, { error: true });
+    notify('❌ generateAllAtoms: ' + msg, { error: true });
     console.error('[generateAllAtoms]', err);
   }
 }
@@ -1848,7 +1924,6 @@ figma.ui.onmessage = async function(msg) {
       case 'generate-checkbox':     await generateCheckboxAtom();      break;
       case 'generate-radio':        await generateRadioAtom();         break;
       case 'generate-switcher':     await generateSwitcherAtom();      break;
-      case 'generate-select':       await generateSelectAtom();        break;
       case 'generate-search-field': await generateSearchFieldAtom();   break;
       case 'generate-progress':     await generateProgressAtom();      break;
       case 'generate-avatar':       await generateAvatarAtom();        break;
@@ -1858,11 +1933,12 @@ figma.ui.onmessage = async function(msg) {
       case 'generate-toggle':       await generateToggleAtom();        break;
       case 'generate-tooltip':       await generateTooltipAtom();       break;
       case 'generate-progress-ring': await generateProgressRingAtom();  break;
-      default: figma.notify('Unknown action: ' + msg.type, { error: true });
+      case 'generate-icon-slot':     await generateIconSlotAtom();      break;
+      default: notify('Unknown action: ' + msg.type, { error: true });
     }
   } catch (err) {
     var m = (err && err.message) ? err.message : String(err);
-    figma.notify('❌ 오류: ' + m, { error: true });
+    notify('❌ Error: ' + m, { error: true });
     console.error('[Atomic Generator 02a]', err);
   }
 };

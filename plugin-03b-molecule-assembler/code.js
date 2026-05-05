@@ -234,6 +234,23 @@ function makeText(chars, opts) {
 }
 
 function makeIconSlot(size) {
+  // Prefer a real IconSlot component instance from the atom index.
+  // Falls back to a plain dashed frame when the atom is not available.
+  var atomIndex = loadAtomIndex();
+  if (atomIndex) {
+    var entry = atomIndex['IconSlot'];
+    if (entry) {
+      var cs = figma.getNodeById(entry.id);
+      if (cs && cs.type === 'COMPONENT_SET') {
+        for (var i = 0; i < cs.children.length; i++) {
+          if (variantMatch(cs.children[i].name, 'size', String(size))) {
+            return cs.children[i].createInstance();
+          }
+        }
+        if (cs.children.length > 0) { return cs.children[0].createInstance(); }
+      }
+    }
+  }
   var slot = figma.createFrame();
   slot.name         = 'Icon-Slot';
   slot.resize(size, size);
@@ -244,6 +261,17 @@ function makeIconSlot(size) {
   slot.strokeAlign  = 'INSIDE';
   slot.dashPattern  = [4, 4];
   return slot;
+}
+
+// Binds an INSTANCE_SWAP component property to iconNode so designers can
+// swap icons via the Properties panel. No-ops if iconNode is not an instance.
+function tryAddIconSwapProp(comp, iconNode, propName) {
+  if (!iconNode || iconNode.type !== 'INSTANCE') return;
+  if (!iconNode.mainComponent) return;
+  try {
+    var key = comp.addComponentProperty(propName, 'INSTANCE_SWAP', iconNode.mainComponent.id);
+    iconNode.componentPropertyReferences = { mainComponent: key };
+  } catch (_) {}
 }
 
 function viewportCenter() {
@@ -312,7 +340,11 @@ function buildAtomFrame(cs, title, config) {
   var PURPLE    = tok('brand-deep');
 
   var rowStep  = vGap > 0 ? vGap : cs.height;
-  var overlayW = numCols * hGap;
+  // overrideOverlayW: for AUTO-sized molecules the component width can exceed numCols * hGap.
+  // Pass cs.width from the caller so the _property-table and wrapper frame cover the actual component.
+  var overlayW = (config.overrideOverlayW && config.overrideOverlayW > numCols * hGap)
+    ? config.overrideOverlayW
+    : numCols * hGap;
   var overlayH = numRows * rowStep;
   var csX  = WRAP_PAD + ROW_HDR_W;
   var csY  = WRAP_PAD + TITLE_H + COL_HDR_H;
@@ -369,18 +401,19 @@ function buildAtomFrame(cs, title, config) {
   overlay.strokes      = [];
   overlay.clipsContent = false;
 
+  var cellW = numCols > 0 ? Math.round(overlayW / numCols) : overlayW;
   for (var col = 0; col < numCols; col++) {
     for (var row = 0; row < numRows; row++) {
       var cell = figma.createFrame();
       cell.name         = 'cell';
-      cell.resize(hGap, rowStep);
+      cell.resize(cellW, rowStep);
       cell.layoutMode   = 'NONE';
       cell.fills        = [];
       cell.strokes      = [{ type: 'SOLID', color: PURPLE, opacity: 1 }];
       cell.strokeWeight = 1;
       cell.strokeAlign  = 'INSIDE';
       cell.dashPattern  = [4, 4];
-      cell.x = col * hGap;
+      cell.x = col * cellW;
       cell.y = row * rowStep;
       overlay.appendChild(cell);
     }
@@ -737,6 +770,7 @@ async function generateNavItemMolecule() {
           var icon = makeIconSlot(D_ICON_SZ);
           icon.strokes = [{ type: 'SOLID', color: tok(isActive ? D_ACT_ICON : D_DEF_ICON), opacity: 1 }];
           comp.appendChild(icon);
+          tryAddIconSwapProp(comp, icon, 'Icon');
           icon.x = Math.round((D_SIZE - D_ICON_SZ) / 2);
           icon.y = Math.round((D_SIZE - D_ICON_SZ) / 2);
 
@@ -775,6 +809,7 @@ async function generateNavItemMolecule() {
           var mobileIcon = makeIconSlot(M_ICON_SZ);
           mobileIcon.strokes = [{ type: 'SOLID', color: tok(iconColor), opacity: 1 }];
           comp.appendChild(mobileIcon);
+          tryAddIconSwapProp(comp, mobileIcon, 'Icon');
 
           var lbl = makeText(M_LABEL, { typographyKey: M_LBL_TYPO, weight: M_LBL_WGT, colorTok: iconColor });
           comp.appendChild(lbl);
@@ -885,6 +920,7 @@ async function generateBulkActionBarMolecule() {
     var wrapper = buildAtomFrame(cs, 'BulkActionBar', {
       hGap: H_GAP, vGap: 0, numCols: 1, numRows: 1,
       colHeaders: ['default'],
+      overrideOverlayW: cs.width,
     });
     wrapper.x = pos.x; wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
@@ -1004,7 +1040,14 @@ async function generateFilterBarMolecule() {
         var iconSlot = makeIconSlot(f.iconSize);
         group.appendChild(iconSlot);
 
-        var inst = getVariantInstance(atomIndex, f.atomName, f.props);
+        var inst;
+        if (f.atomName === 'SelectDropdown') {
+          var sdState = (f.props && f.props.state) || 'closed';
+          inst = getSelectDropdownInstance(sdState);
+          if (!inst) { figma.notify('SelectDropdown missing -- generate it first, then regenerate FilterBar', { timeout: 4000 }); }
+        } else {
+          inst = getVariantInstance(atomIndex, f.atomName, f.props);
+        }
         if (inst) {
           group.appendChild(inst);
         } else {
@@ -1012,7 +1055,12 @@ async function generateFilterBarMolecule() {
         }
       } else {
         // No external icon: drop the atom directly into content (it owns its own icon).
-        var instSolo = getVariantInstance(atomIndex, f.atomName, f.props);
+        var instSolo;
+        if (f.atomName === 'SelectDropdown') {
+          instSolo = getSelectDropdownInstance((f.props && f.props.state) || 'closed');
+        } else {
+          instSolo = getVariantInstance(atomIndex, f.atomName, f.props);
+        }
         if (instSolo) {
           content.appendChild(instSolo);
         } else {
@@ -1034,6 +1082,7 @@ async function generateFilterBarMolecule() {
     var wrapper = buildAtomFrame(cs, 'FilterBar', {
       hGap: H_GAP, vGap: 0, numCols: 1, numRows: 1,
       colHeaders: ['default'],
+      overrideOverlayW: cs.width,
     });
     wrapper.x = pos.x; wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
@@ -1064,23 +1113,15 @@ async function generateHeaderActionGroupMolecule() {
     var H_GAP = cfg.hGap || 580;
     var GAP   = cfg.gap  || 8;
 
-    var S_ICON_SZ = sCfg.iconSize       || 16;
-    var S_BG_OP   = sCfg.bgOpacity      !== undefined ? sCfg.bgOpacity  : 0.3;
-    var S_BG_TOK  = sCfg.bgTok          || 'surface-default';
-    var S_BD_TOK  = sCfg.borderTok      || 'border-secondary';
-    var S_RADIUS  = sCfg.cornerRadius   !== undefined ? sCfg.cornerRadius : RADIUS.md;
-    var S_ATOM    = sCfg.atomName       || 'Input';
-    var S_PROPS   = sCfg.atomProps      || { state: 'default', size: 'sm' };
+    var S_ATOM    = sCfg.atomName       || 'SearchField';
+    var S_PROPS   = sCfg.atomProps      || { state: 'default', size: 'md' };
     var S_PH      = sCfg.placeholder    || 'Search metrics...';
     var S_FB_W    = sCfg.fallbackW      || 200;
-    var S_FB_H    = sCfg.fallbackH      || 32;
+    var S_FB_H    = sCfg.fallbackH      || 36;
 
-    var D_VARIANT = dCfg.variant        || 'secondary';
-    var D_SZ      = dCfg.size           || 'sm';
-    var D_STATE   = dCfg.state          || 'default';
-    var D_LABEL   = dCfg.label          || 'Last 30 days';
-    var D_FB_W    = dCfg.fallbackW      || 120;
-    var D_FB_H    = dCfg.fallbackH      || 32;
+    var D_STATE   = dCfg.state          || 'closed';
+    var D_FB_W    = dCfg.fallbackW      || 160;
+    var D_FB_H    = dCfg.fallbackH      || 36;
 
     var N_SIZE    = nCfg.size           || 36;
     var N_ICON_SZ = nCfg.iconSize       || 16;
@@ -1110,42 +1151,21 @@ async function generateHeaderActionGroupMolecule() {
     comp.fills         = [];
     comp.strokes       = [];
 
-    var searchGroup = figma.createFrame();
-    searchGroup.name            = 'search-input';
-    searchGroup.layoutMode      = 'HORIZONTAL';
-    searchGroup.primaryAxisAlignItems = 'MIN';
-    searchGroup.counterAxisAlignItems = 'CENTER';
-    searchGroup.primaryAxisSizingMode = 'AUTO';
-    searchGroup.counterAxisSizingMode = 'AUTO';
-    searchGroup.paddingTop      = 0; searchGroup.paddingBottom = 0;
-    searchGroup.paddingLeft     = 0; searchGroup.paddingRight  = 0;
-    searchGroup.itemSpacing     = 8;
-    searchGroup.fills           = solidOpacity(tok(S_BG_TOK), S_BG_OP);
-    searchGroup.strokes         = [{ type: 'SOLID', color: tok(S_BD_TOK), opacity: 1 }];
-    searchGroup.strokeWeight    = 1;
-    searchGroup.strokeAlign     = 'INSIDE';
-    searchGroup.cornerRadius    = S_RADIUS;
-    comp.appendChild(searchGroup);
-
-    var searchIcon = makeIconSlot(S_ICON_SZ);
-    searchGroup.appendChild(searchIcon);
-
-    step = 'input';
-    var inputInst = getVariantInstance(atomIndex, S_ATOM, S_PROPS);
-    if (inputInst) {
-      searchGroup.appendChild(inputInst);
-      overrideText(inputInst, S_PH);
+    step = 'search';
+    var searchInst = getVariantInstance(atomIndex, S_ATOM, S_PROPS);
+    if (searchInst) {
+      comp.appendChild(searchInst);
+      overrideText(searchInst, S_PH);
     } else {
-      searchGroup.appendChild(makeAtomPlaceholder(S_ATOM + '/sm', S_FB_W, S_FB_H));
+      comp.appendChild(makeAtomPlaceholder(S_ATOM, S_FB_W, S_FB_H));
     }
 
     step = 'btn-date';
-    var dateBtn = getVariantInstance(atomIndex, 'Button', { variant: D_VARIANT, size: D_SZ, state: D_STATE });
+    var dateBtn = getSelectDropdownInstance(D_STATE);
     if (dateBtn) {
       comp.appendChild(dateBtn);
-      overrideText(dateBtn, D_LABEL);
     } else {
-      comp.appendChild(makeAtomPlaceholder('Button/' + D_VARIANT + '/' + D_SZ, D_FB_W, D_FB_H));
+      comp.appendChild(makeAtomPlaceholder('SelectDropdown/' + D_STATE, D_FB_W, D_FB_H));
     }
 
     step = 'btn-notif';
@@ -1166,6 +1186,7 @@ async function generateHeaderActionGroupMolecule() {
 
     var bellSlot = makeIconSlot(N_ICON_SZ);
     notifFrame.appendChild(bellSlot);
+    tryAddIconSwapProp(comp, bellSlot, 'Bell');
     var bellCenter = Math.round((N_SIZE - N_ICON_SZ) / 2);
     bellSlot.x = bellCenter; bellSlot.y = bellCenter;
 
@@ -1195,6 +1216,7 @@ async function generateHeaderActionGroupMolecule() {
     var wrapper = buildAtomFrame(cs, 'HeaderActionGroup', {
       hGap: H_GAP, vGap: 0, numCols: 1, numRows: 1,
       colHeaders: ['default'],
+      overrideOverlayW: cs.width,
     });
     wrapper.x = pos.x; wrapper.y = pos.y;
     figma.viewport.scrollAndZoomIntoView([wrapper]);
@@ -1204,19 +1226,242 @@ async function generateHeaderActionGroupMolecule() {
   }
 }
 
+// ── HELPER: SelectDropdown page-based instance lookup ─────────
+function getSelectDropdownInstance(state) {
+  var cs = figma.currentPage.findOne(function(n) {
+    return n.name === 'SelectDropdown' && n.type === 'COMPONENT_SET';
+  });
+  if (!cs) { return null; }
+  for (var i = 0; i < cs.children.length; i++) {
+    if (variantMatch(cs.children[i].name, 'state', state)) {
+      return cs.children[i].createInstance();
+    }
+  }
+  return cs.children.length > 0 ? cs.children[0].createInstance() : null;
+}
+
+// ══════════════════════════════════════════════════════════════
+// ── MOLECULE 07: SELECTDROPDOWN  (3 variants) ─────────────────
+// Represents React select.tsx in closed / open / selected states.
+//
+// Trigger anatomy (matches FilterBar/HeaderActionGroup React usage):
+//   [paddingLeft=12] [icon-16] [gap-8] [text FILL] [gap-8] [chevron-16] [paddingRight=12]
+//   h-9 rounded-md border-secondary bg-transparent
+//
+// Open state: VERTICAL component (trigger row + 4px gap + menu panel).
+// The trigger frame inside openComp uses counterAxisSizingMode=FIXED
+// (height=36) and layoutSizingHorizontal=FILL (parent controls width).
+// All other variants are standalone FIXED-size components.
+//
+// Property table uses vGap=TRIGGER_H so all columns top-align and
+// only cover the trigger row height in the cell overlay -- the open
+// state menu panel extends below the cells by design.
+// ══════════════════════════════════════════════════════════════
+async function generateSelectDropdownMolecule() {
+  var step = 'init';
+  try {
+    step = 'delete'; await deleteExistingNode('SelectDropdown');
+    step = 'fonts';  await loadFonts();
+    step = 'tokens'; _tokenMap = await resolveTokensFromFigma();
+
+    var cfg       = getMoleculeCfg('SelectDropdown');
+    var H_GAP     = cfg.hGap                             || 240;
+    var TRIGGER_W = cfg.triggerW                         || 200;
+    var TRIGGER_H = cfg.triggerH                         || 36;
+    var PH        = cfg.placeholder                      || 'Select option';
+    var SEL_VAL   = cfg.selectedValue                    || 'Last 30 days';
+    var MENU_PAD  = (cfg.menuPadding      !== undefined) ? cfg.menuPadding      : 4;
+    var ITEM_PV   = (cfg.menuItemPaddingV !== undefined) ? cfg.menuItemPaddingV : 6;
+    var ITEM_PL   = (cfg.menuItemPaddingL !== undefined) ? cfg.menuItemPaddingL : 8;
+    var ITEM_PR   = (cfg.menuItemPaddingR !== undefined) ? cfg.menuItemPaddingR : 8;
+    var MENU_CR   = (cfg.menuCornerRadius !== undefined) ? cfg.menuCornerRadius : 6;
+    var ITEMS     = (cfg.items && cfg.items.length > 0) ? cfg.items : [
+      { label: 'Last 7 days',  focused: true  },
+      { label: 'Last 30 days', focused: false },
+      { label: 'Last 90 days', focused: false },
+      { label: 'Last year',    focused: false },
+    ];
+    var BD_TOK = 'border-secondary';
+    var CR     = 8;
+
+    var components = [];
+
+    // Fills `node` with trigger layout + children.
+    // `node` must already be appended to a parent if it needs FILL sizing
+    // (caller does: node.layoutSizingHorizontal = 'FILL' after this call).
+    // For standalone components pass fixedW=true to use FIXED primary sizing.
+    function applyTrigger(node, textLabel, textColorTok, fixedW) {
+      node.layoutMode            = 'HORIZONTAL';
+      node.primaryAxisAlignItems = 'MIN';
+      node.counterAxisAlignItems = 'CENTER';
+      if (fixedW) { node.primaryAxisSizingMode = 'FIXED'; }
+      node.counterAxisSizingMode = 'FIXED';
+      node.resize(TRIGGER_W, TRIGGER_H);
+      node.paddingLeft   = 12; node.paddingRight  = 12;
+      node.paddingTop    = 0;  node.paddingBottom = 0;
+      node.itemSpacing   = 8;
+      node.fills         = [];
+      node.strokes       = [{ type: 'SOLID', color: tok(BD_TOK), opacity: 1 }];
+      node.strokeWeight  = 1;
+      node.strokeAlign   = 'INSIDE';
+      node.cornerRadius  = CR;
+      node.clipsContent  = false;
+      // Leading icon slot (represents Calendar / Filter / etc.)
+      var leadIcon = makeIconSlot(16);
+      node.appendChild(leadIcon);
+      // Label text (FILL = takes remaining space, chevron pushed to right)
+      var lbl = makeText(textLabel, { size: 14, weight: 'Regular', colorTok: textColorTok });
+      node.appendChild(lbl);
+      lbl.textAutoResize         = 'HEIGHT';
+      lbl.layoutSizingHorizontal = 'FILL';
+      // Trailing chevron
+      var chev = makeIconSlot(16);
+      node.appendChild(chev);
+      return leadIcon;
+    }
+
+    // Builds the floating menu panel shown in the open state.
+    function buildMenu() {
+      var panel = figma.createFrame();
+      panel.name                   = 'menu';
+      panel.layoutMode             = 'VERTICAL';
+      panel.primaryAxisAlignItems  = 'MIN';
+      panel.counterAxisAlignItems  = 'MIN';
+      panel.primaryAxisSizingMode  = 'AUTO';
+      panel.counterAxisSizingMode  = 'FIXED';
+      panel.resize(TRIGGER_W, 10);
+      panel.paddingLeft   = MENU_PAD; panel.paddingRight  = MENU_PAD;
+      panel.paddingTop    = MENU_PAD; panel.paddingBottom = MENU_PAD;
+      panel.itemSpacing   = 0;
+      panel.fills         = solid(tok('background'));
+      panel.strokes       = [{ type: 'SOLID', color: tok(BD_TOK), opacity: 1 }];
+      panel.strokeWeight  = 1;
+      panel.strokeAlign   = 'INSIDE';
+      panel.cornerRadius  = MENU_CR;
+      panel.clipsContent  = false;
+      for (var ii = 0; ii < ITEMS.length; ii++) {
+        var itm     = ITEMS[ii];
+        var focused = (itm.focused === true);
+        var row = figma.createFrame();
+        row.name                  = focused ? 'item-focus' : 'item';
+        row.layoutMode            = 'HORIZONTAL';
+        row.primaryAxisAlignItems = 'MIN';
+        row.counterAxisAlignItems = 'CENTER';
+        row.counterAxisSizingMode = 'AUTO';
+        row.paddingLeft  = ITEM_PL; row.paddingRight  = ITEM_PR;
+        row.paddingTop   = ITEM_PV; row.paddingBottom = ITEM_PV;
+        row.itemSpacing  = 4;
+        row.cornerRadius = 4;
+        row.strokes      = [];
+        row.fills        = focused ? solid(tok('brand-default')) : [];
+        var rowLbl = makeText(itm.label, {
+          size: 14, weight: 'Regular',
+          colorTok: focused ? 'foreground-strong' : 'foreground-primary',
+        });
+        row.appendChild(rowLbl);
+        rowLbl.textAutoResize = 'HEIGHT';
+        if (focused) {
+          var chkSlot = makeIconSlot(16);
+          row.appendChild(chkSlot);
+        }
+        panel.appendChild(row);
+        row.layoutSizingHorizontal = 'FILL';
+        rowLbl.layoutSizingHorizontal = 'FILL';
+      }
+      return panel;
+    }
+
+    // ── state=closed (standalone FIXED component) ─────────────
+    step = 'comp[closed]';
+    var closedComp = figma.createComponent();
+    closedComp.name = 'state=closed';
+    closedComp.x = 0; closedComp.y = 0;
+    var closedLeadIcon = applyTrigger(closedComp, PH, 'foreground-muted', true);
+    tryAddIconSwapProp(closedComp, closedLeadIcon, 'Icon');
+    components.push(closedComp);
+
+    // ── state=open (VERTICAL: trigger row + 4px + menu panel) ─
+    // openComp is FIXED-width, AUTO-height (grows to contain menu).
+    // The trigger frame inside it uses counterAxis-FIXED (height=36)
+    // and FILL from the parent for width.
+    step = 'comp[open]';
+    var openComp = figma.createComponent();
+    openComp.name = 'state=open';
+    openComp.x = H_GAP; openComp.y = 0;
+    openComp.layoutMode            = 'VERTICAL';
+    openComp.primaryAxisAlignItems = 'MIN';
+    openComp.counterAxisAlignItems = 'MIN';
+    openComp.primaryAxisSizingMode = 'AUTO';
+    openComp.counterAxisSizingMode = 'FIXED';
+    openComp.resize(TRIGGER_W, TRIGGER_H);
+    openComp.paddingLeft   = 0; openComp.paddingRight  = 0;
+    openComp.paddingTop    = 0; openComp.paddingBottom = 0;
+    openComp.itemSpacing   = 4;
+    openComp.fills         = [];
+    openComp.strokes       = [];
+    openComp.clipsContent  = false;
+
+    // Build trigger frame BEFORE appending so children get correct parent.
+    var openTrig = figma.createFrame();
+    openTrig.name = 'trigger';
+    // Apply trigger layout without FIXED primary (width will come from FILL).
+    var openLeadIcon = applyTrigger(openTrig, PH, 'foreground-muted', false);
+    openComp.appendChild(openTrig);
+    // After appending, tell the VERTICAL parent to give this child full width.
+    openTrig.layoutSizingHorizontal = 'FILL';
+    tryAddIconSwapProp(openComp, openLeadIcon, 'Icon');
+
+    var menu = buildMenu();
+    openComp.appendChild(menu);
+    menu.layoutSizingHorizontal = 'FILL';
+
+    components.push(openComp);
+
+    // ── state=selected (standalone FIXED component) ───────────
+    step = 'comp[selected]';
+    var selComp = figma.createComponent();
+    selComp.name = 'state=selected';
+    selComp.x = H_GAP * 2; selComp.y = 0;
+    var selLeadIcon = applyTrigger(selComp, SEL_VAL, 'foreground-primary', true);
+    tryAddIconSwapProp(selComp, selLeadIcon, 'Icon');
+    components.push(selComp);
+
+    step = 'combine';
+    var pos = getNextPosition();
+    var cs = figma.combineAsVariants(components, figma.currentPage);
+    cs.name = 'SelectDropdown';
+    try { cs.layoutMode = 'NONE'; } catch (_) {}
+    // Pass TRIGGER_H as vGap so all variants are top-aligned within a 36px
+    // cell row. The open state menu panel extends below the cells by design.
+    centerInCells(cs, components, H_GAP, TRIGGER_H, cs.height);
+
+    step = 'wrap';
+    var wrapper = buildAtomFrame(cs, 'SelectDropdown', {
+      hGap: H_GAP, vGap: TRIGGER_H, numCols: 3, numRows: 1,
+      colHeaders: ['closed', 'open', 'selected'],
+    });
+    wrapper.x = pos.x; wrapper.y = pos.y;
+    figma.viewport.scrollAndZoomIntoView([wrapper]);
+    figma.notify('SelectDropdown generated');
+  } catch (err) {
+    figma.notify('SelectDropdown[' + step + ']: ' + ((err && err.message) || err), { error: true });
+  }
+}
+
 // ══════════════════════════════════════════════════════════════
 // ── GENERATE ALL ─────────────────────────────────────────────
 // ══════════════════════════════════════════════════════════════
 async function generateAllMolecules() {
   try {
-    figma.notify('Generating molecule system... (6 total)', { timeout: 60000 });
+    figma.notify('Generating molecule system... (7 total)', { timeout: 60000 });
     await generateChecklistItemMolecule();
     await generateChartLegendItemMolecule();
     await generateNavItemMolecule();
     await generateBulkActionBarMolecule();
+    await generateSelectDropdownMolecule();
     await generateFilterBarMolecule();
     await generateHeaderActionGroupMolecule();
-    figma.notify('All molecules generated (6 total)');
+    figma.notify('All molecules generated (7 total)');
   } catch (err) {
     var m = (err && err.message) ? err.message : String(err);
     figma.notify('generateAllMolecules: ' + m, { error: true });
@@ -1237,6 +1482,7 @@ figma.ui.onmessage = async function(msg) {
       case 'generate-chart-legend-item':   await generateChartLegendItemMolecule();   break;
       case 'generate-nav-item':            await generateNavItemMolecule();           break;
       case 'generate-bulk-action-bar':     await generateBulkActionBarMolecule();     break;
+      case 'generate-select-dropdown':     await generateSelectDropdownMolecule();    break;
       case 'generate-filter-bar':          await generateFilterBarMolecule();         break;
       case 'generate-header-action-group': await generateHeaderActionGroupMolecule(); break;
 

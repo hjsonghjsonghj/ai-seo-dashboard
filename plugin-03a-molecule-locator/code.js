@@ -85,6 +85,7 @@ function makeText(chars, size, weight, colorTok) {
 }
 
 // ── POSITION HELPER ───────────────────────────────────────────
+// Positions new frames LEFT-TO-RIGHT (rightmost edge + 80px gap).
 function getNextPosition() {
   var visible = figma.currentPage.children.filter(function(n) {
     return n.x > -1000 && n.y > -1000;
@@ -95,13 +96,13 @@ function getNextPosition() {
       return { x: Math.round(b.x + b.width / 2), y: Math.round(b.y + b.height / 2) };
     } catch (_) { return { x: 0, y: 0 }; }
   }
-  var maxB = -Infinity;
-  var refX = 0;
+  var maxRight = -Infinity;
+  var refY = 0;
   for (var i = 0; i < visible.length; i++) {
-    var bottom = visible[i].y + (visible[i].height || 0);
-    if (bottom > maxB) { maxB = bottom; refX = visible[i].x; }
+    var r = visible[i].x + (visible[i].width || 0);
+    if (r > maxRight) { maxRight = r; refY = visible[i].y; }
   }
-  return { x: refX, y: maxB + 80 };
+  return { x: maxRight + 80, y: refY };
 }
 
 // ── CORE: SCAN PAGE ───────────────────────────────────────────
@@ -351,12 +352,13 @@ figma.ui.onmessage = async function(msg) {
       });
 
       figma.notify(
-        '✅ 스캔 완료: ' + report.present.length + '/' + EXPECTED_ATOMS.length + ' 아톰 확인'
-        + (report.missing.length > 0 ? ' (' + report.missing.length + '개 누락)' : '')
+        '✅ Scan complete: ' + report.present.length + '/' + EXPECTED_ATOMS.length + ' atoms found'
+        + (report.missing.length > 0 ? ' (' + report.missing.length + ' missing)' : ''),
+        { timeout: 5000 }
       );
     } catch (err) {
       var m = (err && err.message) ? err.message : String(err);
-      figma.notify('❌ 스캔 오류: ' + m, { error: true });
+      figma.notify('❌ Scan error: ' + m, { error: true });
       figma.ui.postMessage({ type: 'scan-error', message: m });
     }
   }
@@ -366,17 +368,17 @@ figma.ui.onmessage = async function(msg) {
     try {
       var storedRaw = figma.root.getSharedPluginData(SHARED_NS, STORAGE_KEY);
       if (!storedRaw) {
-        figma.notify('⚠️ 먼저 Scan을 실행하세요.', { error: true });
+        figma.notify('⚠️ Run Scan first.', { error: true });
         return;
       }
       var storedMap = JSON.parse(storedRaw);
       var rpt = buildReport(storedMap);
       var indexFrame = await buildIndexFrame(rpt);
       figma.viewport.scrollAndZoomIntoView([indexFrame]);
-      figma.notify('✅ Atom Index 프레임 생성 완료');
+      figma.notify('✅ Atom Index frame built.', { timeout: 5000 });
     } catch (err) {
       var m2 = (err && err.message) ? err.message : String(err);
-      figma.notify('❌ 프레임 생성 오류: ' + m2, { error: true });
+      figma.notify('❌ Frame build error: ' + m2, { error: true });
     }
   }
 
@@ -384,10 +386,10 @@ figma.ui.onmessage = async function(msg) {
   if (msg.type === 'clear-cache') {
     try {
       figma.root.setSharedPluginData(SHARED_NS, STORAGE_KEY, '');
-      figma.notify('🗑 Atom Index 캐시 삭제됨');
+      figma.notify('🗑 Atom Index cache cleared.', { timeout: 3000 });
       figma.ui.postMessage({ type: 'cache-cleared' });
     } catch (err) {
-      figma.notify('❌ 캐시 삭제 오류', { error: true });
+      figma.notify('❌ Cache clear error.', { error: true });
     }
   }
 };

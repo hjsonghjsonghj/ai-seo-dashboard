@@ -157,11 +157,14 @@ All generators (16) call `await resolveVariablesFromFigma()` after `loadFonts()`
 - **Sizes**: sm (h32 / px12), md (h36 / px16), lg (h40 / px24)
 - **Typography**: `body-sm-medium`
 - **Table**: colHeaders=variants, rowGroups=sizes, rowLabels=states
-- **outline variant tokens** (resolved against dark theme — project default):
-  - default:  bg `input` @ 30%,  border `input` 1px,        text `foreground-primary`
-  - hover:    bg `input` @ 50%,  border `input` 1px,        text `foreground-strong`
-  - focus:    bg `input` @ 30%,  border `brand-deep` 2px,   text `foreground-primary`
-  - disabled: bg `input` @ 30%,  border `input` 1px,        text `foreground-muted` (component opacity 0.5)
+- **outline variant tokens** (resolved against actual running app -- no .dark class on HTML element):
+  - app/layout.tsx does NOT add .dark class, so dark: utilities are dead code in the running app.
+  - button.tsx: `border bg-background shadow-xs hover:bg-brand-default hover:text-foreground-strong`
+  - `border` without color = currentColor = text color = foreground-primary (near-white)
+  - default:  bg `background`,    border `foreground-primary` 1px, text `foreground-primary`, shadow-xs
+  - hover:    bg `brand-default`, border `foreground-primary` 1px, text `foreground-strong`,  shadow-xs
+  - focus:    bg `background`,    border `brand-deep` 2px,         text `foreground-primary`, shadow-xs
+  - disabled: bg `background`,    border `foreground-primary` 1px, text `foreground-muted` (component opacity 0.5)
 - **React mapping** (components/ui/button.tsx cva):
   - `default → primary`, `secondary → secondary`, `outline → outline`,
     `ghost → ghost`, `destructive → destructive`, `link → not represented` (text-only)

@@ -243,38 +243,38 @@ export default function SearchVisibilityPage() {
               <CardContent className="px-5 pb-5">
                 <div className="flex flex-wrap items-center gap-4">
                   {/* Date Range */}
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-foreground-muted" />
-                    <Select value={dateRange} onValueChange={setDateRange}>
-                      <SelectTrigger className="w-[160px] bg-surface-hover/50 border-border-secondary text-body-md-regular">
-                        <SelectValue placeholder="Select date range" />
+                  <Select value={dateRange} onValueChange={setDateRange}>
+                      <SelectTrigger className="h-9 w-[160px] bg-surface-hover/50 border-border-secondary">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Calendar className="h-4 w-4 text-foreground-muted shrink-0" />
+                          <SelectValue placeholder="Select date range" />
+                        </div>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="7d" className="text-body-md-regular">Last 7 days</SelectItem>
-                        <SelectItem value="30d" className="text-body-md-regular">Last 30 days</SelectItem>
-                        <SelectItem value="90d" className="text-body-md-regular">Last 90 days</SelectItem>
-                        <SelectItem value="1y" className="text-body-md-regular">Last year</SelectItem>
+                        <SelectItem value="7d">Last 7 days</SelectItem>
+                        <SelectItem value="30d">Last 30 days</SelectItem>
+                        <SelectItem value="90d">Last 90 days</SelectItem>
+                        <SelectItem value="1y">Last year</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
 
                   {/* Source Filter */}
-                  <div className="flex items-center gap-2">
-                    <Filter className="h-4 w-4 text-foreground-muted" />
-                    <Select value={sourceFilter} onValueChange={setSourceFilter}>
-                      <SelectTrigger className="w-[180px] bg-surface-hover/50 border-border-secondary text-body-md-regular">
-                        <SelectValue placeholder="Select source" />
+                  <Select value={sourceFilter} onValueChange={setSourceFilter}>
+                      <SelectTrigger className="h-9 w-[180px] bg-surface-hover/50 border-border-secondary">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Filter className="h-4 w-4 text-foreground-muted shrink-0" />
+                          <SelectValue placeholder="Select source" />
+                        </div>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all" className="text-body-md-regular">All Sources</SelectItem>
-                        <SelectItem value="ChatGPT" className="text-body-md-regular">ChatGPT</SelectItem>
-                        <SelectItem value="Claude" className="text-body-md-regular">Claude</SelectItem>
-                        <SelectItem value="Perplexity" className="text-body-md-regular">Perplexity</SelectItem>
-                        <SelectItem value="Google AI" className="text-body-md-regular">Google AI</SelectItem>
-                        <SelectItem value="Copilot" className="text-body-md-regular">Copilot</SelectItem>
+                        <SelectItem value="all">All Sources</SelectItem>
+                        <SelectItem value="ChatGPT">ChatGPT</SelectItem>
+                        <SelectItem value="Claude">Claude</SelectItem>
+                        <SelectItem value="Perplexity">Perplexity</SelectItem>
+                        <SelectItem value="Google AI">Google AI</SelectItem>
+                        <SelectItem value="Copilot">Copilot</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
 
                   {/* Search */}
                   <div className="relative flex-1 min-w-[240px]">
@@ -284,7 +284,7 @@ export default function SearchVisibilityPage() {
                       placeholder="Search by source or page..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 bg-surface-hover/50 border-border-secondary text-body-md-regular placeholder:text-border-primary"
+                      className="pl-10 bg-surface-hover/50 border-border-secondary placeholder:text-foreground-muted"
                     />
                   </div>
                 </div>
