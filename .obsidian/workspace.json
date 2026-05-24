@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "74d70f146ab81a69",
+        "id": "4dc05d94dd082cfc",
         "type": "tabs",
         "children": [
           {
-            "id": "93e68d574a079020",
+            "id": "ebc303fa2be857a6",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "CONTEXT_NEXT_SESSION.md",
+                "file": "EDITION-06-PORTFOLIO.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "CONTEXT_NEXT_SESSION"
+              "title": "EDITION-06-PORTFOLIO"
             }
           }
         ]
@@ -183,9 +183,14 @@
       "bases:Create new base": false
     }
   },
-  "active": "93e68d574a079020",
+  "active": "ebc303fa2be857a6",
   "lastOpenFiles": [
+    "EDITION-06.md",
     "EDITION-05.md",
+    "EDITION-06-PORTFOLIO.md",
+    "Untitled 1.canvas",
+    "Untitled.canvas",
+    "Untitled.base",
     "CONTEXT_NEXT_SESSION.md",
     "AI_NATIVE_WORKFLOW_LOG_CONTEXT.md",
     "MOLECULES.md",

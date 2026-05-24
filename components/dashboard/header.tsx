@@ -12,7 +12,7 @@ export function Header() {
         <h1 className="text-title-section-semibold md:text-title-page-semibold text-foreground-strong">
           Dashboard Overview
         </h1>
-        <p className="text-body-micro-medium md:text-body-md-regular font-medium text-foreground-tertiary">
+        <p className="hidden md:block text-body-micro-medium md:text-body-md-regular font-medium text-foreground-tertiary">
           Track your AI search visibility and performance
         </p>
       </div>

@@ -120,7 +120,7 @@ function hexToRgb(h) {
   return {
     r: parseInt(h.slice(1, 3), 16) / 255,
     g: parseInt(h.slice(3, 5), 16) / 255,
-    b: parseInt(h.slice(5, 7), 16) / 255,
+    b: parseInt(h.slice(5, 7), 16) / 255, 
   };
 }
 

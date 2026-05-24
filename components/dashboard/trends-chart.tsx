@@ -101,12 +101,12 @@ export function TrendsChart() {
 
   return (
     <Card className="bg-surface-default/60 transition-colors duration-150">
-      <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-4 px-5 pt-5 pb-1.5">
+      <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-4 px-5 pt-5 pb-3">
         <div>
-          <CardTitle className="text-title-section-semibold text-foreground-strong">
+          <CardTitle className="text-title-section-semibold text-foreground-secondary">
             Search Visibility Trends
           </CardTitle>
-          <p className="text-body-micro-medium text-foreground-tertiary mt-1">
+          <p className="hidden md:block text-body-micro-medium text-foreground-tertiary mt-1">
             Monthly performance with AI event markers
           </p>
         </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { AlertTriangle, Rocket, Zap, Sparkles } from "lucide-react"
@@ -69,24 +69,16 @@ const typeStyles = {
 
 export function StrategicInsights() {
   return (
-    <section className="space-y-4" aria-labelledby="insights-heading">
-      <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-default/15" aria-hidden="true">
-          <Sparkles className="h-4 w-4 text-brand-soft" />
-        </div>
-        <div>
-          <h2
-            id="insights-heading"
-            className="text-title-section-semibold text-foreground-secondary"
-          >
-            AI-Generated Strategic Insights
-          </h2>
-          <p className="text-body-micro-medium text-foreground-tertiary">
-            Actionable recommendations powered by Intelligence
-          </p>
-        </div>
-      </div>
-
+    <Card className="bg-surface-default/60 transition-colors duration-150">
+      <CardHeader className="px-5 pt-5 pb-3">
+        <CardTitle className="text-title-section-semibold text-foreground-secondary">
+          AI-Generated Strategic Insights
+        </CardTitle>
+        <p className="text-body-micro-medium text-foreground-tertiary mt-1">
+          Actionable recommendations powered by Intelligence
+        </p>
+      </CardHeader>
+      <CardContent className="px-5 pb-5 pt-0">
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {insights.map((insight) => {
           const Icon = insight.icon
@@ -147,6 +139,7 @@ export function StrategicInsights() {
           )
         })}
       </div>
-    </section>
+      </CardContent>
+    </Card>
   )
 }

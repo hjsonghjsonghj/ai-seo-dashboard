@@ -271,7 +271,7 @@ export default function SearchVisibilityPage() {
                         <SelectItem value="ChatGPT">ChatGPT</SelectItem>
                         <SelectItem value="Claude">Claude</SelectItem>
                         <SelectItem value="Perplexity">Perplexity</SelectItem>
-                        <SelectItem value="Google AI">Google AI</SelectItem>
+                        <SelectItem value="Gemini">Gemini</SelectItem>
                         <SelectItem value="Copilot">Copilot</SelectItem>
                       </SelectContent>
                     </Select>
