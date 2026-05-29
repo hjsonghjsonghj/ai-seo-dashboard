@@ -11,14 +11,13 @@
             "id": "ebc303fa2be857a6",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "bases",
               "state": {
-                "file": "EDITION-06-PORTFOLIO.md",
-                "mode": "source",
-                "source": false
+                "file": "Untitled.base",
+                "viewName": "Table"
               },
-              "icon": "lucide-file",
-              "title": "EDITION-06-PORTFOLIO"
+              "icon": "lucide-table",
+              "title": "Untitled"
             }
           }
         ]
@@ -185,19 +184,43 @@
   },
   "active": "ebc303fa2be857a6",
   "lastOpenFiles": [
+    "lib/platforms.ts",
+    "docs/context/CONTEXT_EDITION_08.md",
+    "node_modules/next/next-swc-fallback/@next/swc-linux-x64-gnu",
+    "node_modules/next/next-swc-fallback/@next",
+    "node_modules/next/next-swc-fallback",
+    "app/content-ops/page.tsx",
+    "app/content-ops",
+    "docs/context/CONTEXT_NEXT_SESSION_20260528.md",
+    "docs/context/LOVABLE_PROMPT_AI_VISIBILITY.md",
+    "docs/context/AI_NATIVE_WORKFLOW_LOG_CONTEXT.md",
+    "docs/context/CONTEXT_NEXT_SESSION.md",
+    "docs/design-system/STYLE_TYPOGRAPHY.md",
+    "docs/design-system/STYLE_SPACING.md",
+    "docs/design-system/STYLE_COLOR.md",
+    "docs/design-system/MOLECULES.md",
+    "docs/editions/EDITION-06.md",
+    "docs/editions/EDITION-06-PORTFOLIO.md",
+    "docs/editions/EDITION-05.md",
+    "docs/editions/EDITION-04.md",
+    "docs/editions/EDITION-03.md",
+    "docs/editions/EDITION-02.md",
+    "docs/editions/EDITION-01.md",
+    "docs/design-system/DESIGN_SYSTEM.md",
+    "docs/design-system/ATOMS.md",
+    "docs/editions",
+    "docs/design-system",
+    "docs/context",
+    "docs",
+    "Untitled.canvas",
+    "Untitled 1.canvas",
+    "Untitled.base",
+    "CLAUDE.md",
+    "EDITION-06-PORTFOLIO.md",
     "EDITION-06.md",
     "EDITION-05.md",
-    "EDITION-06-PORTFOLIO.md",
-    "Untitled 1.canvas",
-    "Untitled.canvas",
-    "Untitled.base",
     "CONTEXT_NEXT_SESSION.md",
     "AI_NATIVE_WORKFLOW_LOG_CONTEXT.md",
-    "MOLECULES.md",
-    "CLAUDE.md",
-    "ATOMS.md",
-    "STYLE_COLOR.md",
-    "STYLE_SPACING.md",
-    "STYLE_TYPOGRAPHY.md"
+    "MOLECULES.md"
   ]
 }

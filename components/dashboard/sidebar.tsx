@@ -14,7 +14,7 @@ import { usePathname } from "next/navigation"
 const navItems = [
   { icon: LayoutDashboard, label: "Overview",      href: "/" },
   { icon: Eye,             label: "AI Visibility", href: "/ai-visibility" },
-  { icon: FileText,        label: "Content Ops",   href: null },
+  { icon: FileText,        label: "Content Ops",   href: "/content-ops" },
   { icon: Settings,        label: "Settings",      href: null },
 ]
 

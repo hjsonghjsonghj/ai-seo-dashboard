@@ -15,6 +15,7 @@ import {
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts"
 import { Bell, Calendar, Activity, Target, BarChart2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { PLATFORMS, PLATFORM_COLORS, type Platform } from "@/lib/platforms"
 
 // ── Pie Chart Tooltip ────────────────────────────────────────────────────────
 
@@ -39,19 +40,6 @@ function CustomPieTooltip({
       </div>
     </div>
   )
-}
-
-// ── Constants ────────────────────────────────────────────────────────────────
-
-const PLATFORMS = ["ChatGPT", "Claude", "Perplexity", "Gemini", "Copilot"] as const
-type Platform = (typeof PLATFORMS)[number]
-
-const PLATFORM_COLORS: Record<Platform, string> = {
-  ChatGPT:    "#8b5cf6",  // brand-default
-  Claude:     "#10b981",  // positive-default
-  Perplexity: "#60a5fa",  // chart-4
-  "Gemini":"#f59e0b",  // caution-default
-  Copilot:    "#f87171",  // danger-soft
 }
 
 // ── Page ─────────────────────────────────────────────────────────────────────
@@ -93,7 +81,12 @@ export default function AiVisibilityPage() {
   }, [])
 
   const totalMentions      = platformStats.reduce((s, p) => s + p.totalMentions, 0)
-  const avgOptimization    = Math.round(platformStats.reduce((s, p) => s + p.avgOptimization, 0) / platformStats.length)
+  // Per-page unique score average — matches Content Ops calculation
+  const avgOptimization    = Math.round(
+    [...new Map(citationsData.map(c => [c.page, c.optimizationProgress])).values()]
+      .reduce((s, o) => s + o, 0) /
+    new Set(citationsData.map(c => c.page)).size
+  )
   const topPlatform        = platformStats.reduce((a, b) => a.totalMentions > b.totalMentions ? a : b)
   const sortedByMentions   = platformStats.slice().sort((a, b) => b.totalMentions - a.totalMentions)
   const sortedByOpt        = platformStats.slice().sort((a, b) => b.avgOptimization - a.avgOptimization)

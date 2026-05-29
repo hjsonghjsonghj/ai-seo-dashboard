@@ -1,9 +1,9 @@
 # Project Guidelines
 
 ## Style & Design System
-- Refer to STYLE_SPACING.md for layout and spacing rules.
-- Refer to STYLE_COLOR.md for theme colors and semantic tokens.
-- Refer to STYLE_TYPOGRAPHY.md for font scales and hierarchy.
+- Refer to docs/design-system/STYLE_SPACING.md for layout and spacing rules.
+- Refer to docs/design-system/STYLE_COLOR.md for theme colors and semantic tokens.
+- Refer to docs/design-system/STYLE_TYPOGRAPHY.md for font scales and hierarchy.
 - Strictly avoid hardcoded arbitrary values (e.g., m-[13px]). Use defined theme tokens in @theme block instead.
 
 ## Commands
@@ -23,4 +23,4 @@
 - `counterAxisSizingMode` only accepts `'FIXED'` or `'AUTO'`. Never set it to `'FILL'` — use `layoutSizingHorizontal = 'FILL'` on child nodes instead.
 - Never override `textCase` after setting `textStyleId` — it breaks the style binding in Figma's properties panel. Caps styles must have UPPER set inside the Figma text style itself.
 - Use `node.setBoundVariable(field, variable)` for ALL variable binding including Auto Layout spacing fields (paddingTop/Right/Bottom/Left, itemSpacing, counterAxisSpacing). `setBoundVariableForLayout` does NOT exist in the current Figma API and will silently fail.
-- Refer to ATOMS.md for the full atom inventory, plugin architecture, and verified API patterns.
+- Refer to docs/design-system/ATOMS.md for the full atom inventory, plugin architecture, and verified API patterns.
