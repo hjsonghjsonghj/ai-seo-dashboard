@@ -20,6 +20,7 @@ Four pages, each answering a different question:
 ## What this project is really about
 
 The dashboard is the artifact. The actual work was building the system behind it.
+I built this because I wanted to work in a fully AI-native way, something that isn't possible inside a company. Every tool, every decision, every workflow was mine to define.
 
 Over 7 documented editions, I built a full code-to-canvas pipeline from scratch:
 
